@@ -21,7 +21,7 @@ export default function SplashScreen() {
       <View style={styles.bottomcontainer}>
         <Pressable
           style={styles.btnBackground}
-          onPress={() => router.push("/splash-one")}
+          onPress={() => router.push("/createAccount")}
         >
           <Text style={styles.btnText}>Next</Text>
         </Pressable>

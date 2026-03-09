@@ -9,17 +9,17 @@ import {
 
 import { SafeAreaView } from "react-native-safe-area-context";
 
-export default function createAccount() {
-  const Input = ({ InputText, placeholder }) => (
-    <View style={styles.input}>
-      <Text style={{ marginBottom: 8 }}>{InputText}</Text>
-      <TextInput
-        style={styles.formInput}
-        placeholder={placeholder}
-        placeholderTextColor={"grey"}
-      />
-    </View>
-  );
+const Input = ({ InputText, placeholder }) => (
+  <View style={styles.input}>
+    <Text style={{ marginBottom: 8 }}>{InputText}</Text>
+    <TextInput
+      style={styles.formInput}
+      placeholder={placeholder}
+      placeholderTextColor={"grey"}
+    />
+  </View>
+);
+export default function CreateAccount() {
   return (
     <SafeAreaView style={styles.safeview}>
       <View>
@@ -32,13 +32,7 @@ export default function createAccount() {
           <Text style={styles.googletext}>Google</Text>
         </TouchableOpacity>
       </View>
-      <View
-        style={{
-          flexDirection: "row",
-          alignItems: "center",
-          justifyContent: "space-between",
-        }}
-      >
+      <View style={styles.dividerContainer}>
         <View style={styles.border} />
         <Text>or</Text>
         <View style={styles.border} />
@@ -55,12 +49,10 @@ export default function createAccount() {
         <Text style={styles.btnText}>Create Account</Text>
       </TouchableOpacity>
       <View style={styles.bottomText}>
-        <Text style={styles.loginText}>
-          Already have an account?
-          <TouchableOpacity>
-            <Text style={styles.loginPress}> Login</Text>
-          </TouchableOpacity>
-        </Text>
+        <Text style={styles.loginText}>Already have an account? </Text>
+        <TouchableOpacity>
+          <Text style={styles.loginPress}> Login</Text>
+        </TouchableOpacity>
       </View>
     </SafeAreaView>
   );
@@ -68,6 +60,11 @@ export default function createAccount() {
 
 const styles = StyleSheet.create({
   safeview: { padding: 30 },
+  dividerContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
   createBtn: {
     backgroundColor: "navy",
     width: "95%",
@@ -137,5 +134,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
 
-  bottomText: { position: "absolute", bottom: 10, alignSelf: "center" },
+  bottomText: {
+    position: "absolute",
+    bottom: 20,
+    alignSelf: "center",
+    flexDirection: "row",
+    alignItems: "center",
+  },
 });

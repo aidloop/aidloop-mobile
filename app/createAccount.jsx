@@ -1,12 +1,13 @@
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { useState } from "react";
 import {
-  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
-  TouchableWithoutFeedback,
   View,
 } from "react-native";
 
@@ -37,8 +38,15 @@ export default function CreateAccount() {
 
   return (
     <SafeAreaView style={styles.safeview}>
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <View style={{ flex: 1 }}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={{ flex: 1 }}
+      >
+        <ScrollView
+          contentContainerStyle={styles.scrollContainer}
+          keyboardShouldPersistTaps="handled" // Automatically dismisses keyboard on tap!
+          showsVerticalScrollIndicator={false}
+        >
           <View>
             <View>
               <Text style={styles.heading}>Create an Account</Text>
@@ -96,14 +104,14 @@ export default function CreateAccount() {
               <Text style={styles.loginPress}> Login</Text>
             </TouchableOpacity>
           </View>
-        </View>
-      </TouchableWithoutFeedback>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  safeview: { padding: 30, flex: 1 },
+  safeview: { flex: 1 },
   dividerContainer: {
     flexDirection: "row",
     alignItems: "center",
@@ -161,6 +169,8 @@ const styles = StyleSheet.create({
     height: 50,
     borderRadius: 10,
   },
+
+  scrollContainer: { padding: 30 },
   border: {
     borderWidth: 0.25,
     width: "45%",

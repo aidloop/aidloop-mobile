@@ -11,6 +11,7 @@ import {
   View,
 } from "react-native";
 import Google from "../assets/images/Google.svg";
+import { COLORS } from "../constants/colors";
 
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -90,7 +91,9 @@ export default function CreateAccount() {
           >
             <Text style={styles.btnText}>Log In</Text>
           </TouchableOpacity>
-          <Text style={styles.forgot}>Forgotten Password</Text>
+          <TouchableOpacity>
+            <Text style={styles.forgot}>Forgotten Password</Text>
+          </TouchableOpacity>
           <View style={styles.bottomText}>
             <Text style={styles.loginText}>Do not have an account? </Text>
             <TouchableOpacity
@@ -214,7 +217,7 @@ const styles = StyleSheet.create({
   },
 
   forgot: {
-    color: "#1F3A5F",
+    color: COLORS.primary,
     fontFamily: "PoppinsRegular",
     fontSize: 16,
     fontWeight: 400,

@@ -1,30 +1,25 @@
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { useState } from "react";
 import {
+  Keyboard,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
+  TouchableWithoutFeedback,
   View,
 } from "react-native";
+
 import { SafeAreaView } from "react-native-safe-area-context";
 
-const Input = ({
-  InputText,
-  placeholder,
-  value,
-  onChangeText,
-  secureTextEntry,
-}) => (
+const Input = ({ InputText, placeholder, ...props }) => (
   <View style={styles.input}>
     <Text style={{ marginBottom: 8 }}>{InputText}</Text>
     <TextInput
       style={styles.formInput}
       placeholder={placeholder}
       placeholderTextColor={"grey"}
-      value={value}
-      onChangeText={onChangeText}
-      secureTextEntry={secureTextEntry}
+      {...props}
     />
   </View>
 );
@@ -33,70 +28,89 @@ export default function CreateAccount() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  const isFormValid =
+    fullName.length > 0 && email.length > 0 && password.length > 0;
+
   const handleRegister = () => {
     console.log("User Data:", "name:", fullName, "email", email);
   };
 
   return (
     <SafeAreaView style={styles.safeview}>
-      <View>
-        <View>
-          <Text style={styles.heading}>Create an Account</Text>
-          <Text style={styles.text}>Continue supporting your community</Text>
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <View style={{ flex: 1 }}>
+          <View>
+            <View>
+              <Text style={styles.heading}>Create an Account</Text>
+              <Text style={styles.text}>
+                Continue supporting your community
+              </Text>
+            </View>
+            <TouchableOpacity style={styles.googleBtn}>
+              <AntDesign name="google" size={24} color="green" />
+              <Text style={styles.googletext}>Google</Text>
+            </TouchableOpacity>
+          </View>
+          <View style={styles.dividerContainer}>
+            <View style={styles.border} />
+            <Text>or</Text>
+            <View style={styles.border} />
+          </View>
+          <View style={styles.form}>
+            <Input
+              InputText={"Full Name"}
+              placeholder={"e.g. John Doe Scott"}
+              value={fullName}
+              onChangeText={setFullName}
+              autoCapitalize="words"
+            />
+            <Input
+              InputText={"Email Address"}
+              placeholder={"Your Email Address here..."}
+              value={email}
+              onChangeText={setEmail}
+              keyboardType="email-address"
+              autoCapitalize="none"
+            />
+            <Input
+              InputText={"Password"}
+              placeholder={"Your password here"}
+              value={password}
+              onChangeText={setPassword}
+              secureTextEntry={true}
+            />
+          </View>
+          <TouchableOpacity
+            onPress={handleRegister}
+            disabled={!isFormValid}
+            style={[
+              styles.createBtn,
+              { backgroundColor: isFormValid ? "navy" : "grey" },
+            ]}
+          >
+            <Text style={styles.btnText}>Create Account</Text>
+          </TouchableOpacity>
+          <View style={styles.bottomText}>
+            <Text style={styles.loginText}>Already have an account? </Text>
+            <TouchableOpacity>
+              <Text style={styles.loginPress}> Login</Text>
+            </TouchableOpacity>
+          </View>
         </View>
-        <TouchableOpacity style={styles.googleBtn}>
-          <AntDesign name="google" size={24} color="green" />
-          <Text style={styles.googletext}>Google</Text>
-        </TouchableOpacity>
-      </View>
-      <View style={styles.dividerContainer}>
-        <View style={styles.border} />
-        <Text>or</Text>
-        <View style={styles.border} />
-      </View>
-      <View style={styles.form}>
-        <Input
-          InputText={"Full Name"}
-          placeholder={"e.g. John Doe Scott"}
-          value={fullName}
-          onChangeText={setFullName}
-        />
-        <Input
-          InputText={"Email Address"}
-          placeholder={"Your Email Address here..."}
-          value={email}
-          onChangeText={setEmail}
-        />
-        <Input
-          InputText={"Password"}
-          placeholder={"Your password here"}
-          value={password}
-          onChangeText={setPassword}
-          secureTextEntry={true}
-        />
-      </View>
-      <TouchableOpacity onPress={handleRegister} style={styles.createBtn}>
-        <Text style={styles.btnText}>Create Account</Text>
-      </TouchableOpacity>
-      <View style={styles.bottomText}>
-        <Text style={styles.loginText}>Already have an account? </Text>
-        <TouchableOpacity>
-          <Text style={styles.loginPress}> Login</Text>
-        </TouchableOpacity>
-      </View>
+      </TouchableWithoutFeedback>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  safeview: { padding: 30 },
+  safeview: { padding: 30, flex: 1 },
   dividerContainer: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
   },
   createBtn: {
-    backgroundColor: "navy",
+    // backgroundColor: "navy",
     width: "95%",
     alignSelf: "center",
     justifyContent: "center",
@@ -165,7 +179,7 @@ const styles = StyleSheet.create({
   },
 
   bottomText: {
-    position: "absolute",
+    position: "relative",
     bottom: 20,
     alignSelf: "center",
     flexDirection: "row",

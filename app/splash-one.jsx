@@ -59,6 +59,7 @@ const styles = StyleSheet.create({
     lineHeight: 26,
     marginTop: 20,
     paddingHorizontal: 60,
+    fontFamily: FONTS.regular,
   },
   image: {
     justifyContent: "center",
@@ -76,6 +77,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "#fff",
     textAlign: "center",
+    fontFamily: FONTS.semibold,
   },
   skipBtnBackground: {
     marginTop: 10,
@@ -85,5 +87,6 @@ const styles = StyleSheet.create({
     fontSize: 18,
     lineHeight: 26,
     textDecorationLine: "underline",
+    fontFamily: FONTS.regular,
   },
 });

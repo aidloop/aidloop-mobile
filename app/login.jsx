@@ -26,15 +26,13 @@ const Input = ({ InputText, placeholder, ...props }) => (
   </View>
 );
 export default function CreateAccount() {
-  const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const isFormValid =
-    fullName.length > 0 && email.length > 0 && password.length > 0;
+  const isFormValid = email.length > 0 && password.length > 0;
 
   const handleRegister = () => {
-    console.log("User Data:", "name:", fullName, "email", email);
+    console.log("User Data:", "email", email);
   };
 
   return (
@@ -50,7 +48,7 @@ export default function CreateAccount() {
         >
           <View>
             <View>
-              <Text style={styles.heading}>Create an Account</Text>
+              <Text style={styles.heading}>Welcome Back</Text>
               <Text style={styles.text}>
                 Continue supporting your community
               </Text>
@@ -66,13 +64,6 @@ export default function CreateAccount() {
             <View style={styles.border} />
           </View>
           <View style={styles.form}>
-            <Input
-              InputText={"Full Name"}
-              placeholder={"e.g. John Doe Scott"}
-              value={fullName}
-              onChangeText={setFullName}
-              autoCapitalize="words"
-            />
             <Input
               InputText={"Email Address"}
               placeholder={"Your Email Address here..."}
@@ -97,16 +88,17 @@ export default function CreateAccount() {
               { backgroundColor: isFormValid ? "#1F3A5F" : "grey" },
             ]}
           >
-            <Text style={styles.btnText}>Create Account</Text>
+            <Text style={styles.btnText}>Log In</Text>
           </TouchableOpacity>
+          <Text style={styles.forgot}>Forgotten Password</Text>
           <View style={styles.bottomText}>
-            <Text style={styles.loginText}>Already have an account? </Text>
+            <Text style={styles.loginText}>Do not have an account? </Text>
             <TouchableOpacity
               onPress={() => {
-                router.replace("/login");
+                router.replace("/createAccount");
               }}
             >
-              <Text style={styles.loginPress}> Login</Text>
+              <Text style={styles.loginPress}> Sign Up</Text>
             </TouchableOpacity>
           </View>
         </ScrollView>
@@ -190,7 +182,7 @@ const styles = StyleSheet.create({
     borderColor: "#9E9E9E",
   },
 
-  // form: { marginVertical: 20 },
+  form: { marginVertical: 20 },
   input: { marginVertical: 10 },
 
   formInput: {
@@ -207,7 +199,7 @@ const styles = StyleSheet.create({
 
   bottomText: {
     position: "absolute",
-    bottom: 0,
+    bottom: -50,
     alignSelf: "center",
     flexDirection: "row",
     alignItems: "center",
@@ -219,5 +211,13 @@ const styles = StyleSheet.create({
     fontFamily: "PoppinsRegular",
     fontSize: 16,
     fontWeight: 400,
+  },
+
+  forgot: {
+    color: "#1F3A5F",
+    fontFamily: "PoppinsRegular",
+    fontSize: 16,
+    fontWeight: 400,
+    textAlign: "center",
   },
 });

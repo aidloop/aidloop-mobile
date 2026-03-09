@@ -1,4 +1,5 @@
 import AntDesign from "@expo/vector-icons/AntDesign";
+import { useState } from "react";
 import {
   StyleSheet,
   Text,
@@ -6,20 +7,36 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-
 import { SafeAreaView } from "react-native-safe-area-context";
 
-const Input = ({ InputText, placeholder }) => (
+const Input = ({
+  InputText,
+  placeholder,
+  value,
+  onChangeText,
+  secureTextEntry,
+}) => (
   <View style={styles.input}>
     <Text style={{ marginBottom: 8 }}>{InputText}</Text>
     <TextInput
       style={styles.formInput}
       placeholder={placeholder}
       placeholderTextColor={"grey"}
+      value={value}
+      onChangeText={onChangeText}
+      secureTextEntry={secureTextEntry}
     />
   </View>
 );
 export default function CreateAccount() {
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const handleRegister = () => {
+    console.log("User Data:", "name:", fullName, "email", email);
+  };
+
   return (
     <SafeAreaView style={styles.safeview}>
       <View>
@@ -38,14 +55,27 @@ export default function CreateAccount() {
         <View style={styles.border} />
       </View>
       <View style={styles.form}>
-        <Input InputText={"Full Name"} placeholder={"e.g. John Doe Scott"} />
+        <Input
+          InputText={"Full Name"}
+          placeholder={"e.g. John Doe Scott"}
+          value={fullName}
+          onChangeText={setFullName}
+        />
         <Input
           InputText={"Email Address"}
           placeholder={"Your Email Address here..."}
+          value={email}
+          onChangeText={setEmail}
         />
-        <Input InputText={"Password"} placeholder={"Your password here"} />
+        <Input
+          InputText={"Password"}
+          placeholder={"Your password here"}
+          value={password}
+          onChangeText={setPassword}
+          secureTextEntry={true}
+        />
       </View>
-      <TouchableOpacity style={styles.createBtn}>
+      <TouchableOpacity onPress={handleRegister} style={styles.createBtn}>
         <Text style={styles.btnText}>Create Account</Text>
       </TouchableOpacity>
       <View style={styles.bottomText}>

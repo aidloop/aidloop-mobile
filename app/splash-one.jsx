@@ -1,6 +1,7 @@
 import { useRouter } from "expo-router";
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
-
+import { COLORS } from "../constants/colors";
+import { FONTS } from "../constants/fonts";
 export default function SplashScreen() {
   const router = useRouter();
 
@@ -27,7 +28,7 @@ export default function SplashScreen() {
         </Pressable>
         <Pressable
           style={styles.skipBtnBackground}
-          onPress={() => router.push("/splash")}
+          onPress={() => router.push("/")}
         >
           <Text style={styles.skipBtnText}>Skip</Text>
         </Pressable>
@@ -48,8 +49,9 @@ const styles = StyleSheet.create({
   },
   heading: {
     fontSize: 28,
-    fontWeight: "bold",
+    fontWeight: 500,
     textAlign: "center",
+    fontFamily: FONTS.semibold,
   },
   text: {
     textAlign: "center",
@@ -57,6 +59,7 @@ const styles = StyleSheet.create({
     lineHeight: 26,
     marginTop: 20,
     paddingHorizontal: 60,
+    fontFamily: FONTS.regular,
   },
   image: {
     justifyContent: "center",
@@ -64,7 +67,7 @@ const styles = StyleSheet.create({
     height: 250,
   },
   btnBackground: {
-    backgroundColor: "navy",
+    backgroundColor: COLORS.primary,
     width: 250,
     borderRadius: 100,
     paddingVertical: 7,
@@ -74,6 +77,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "#fff",
     textAlign: "center",
+    fontFamily: FONTS.semibold,
   },
   skipBtnBackground: {
     marginTop: 10,
@@ -83,5 +87,6 @@ const styles = StyleSheet.create({
     fontSize: 18,
     lineHeight: 26,
     textDecorationLine: "underline",
+    fontFamily: FONTS.regular,
   },
 });

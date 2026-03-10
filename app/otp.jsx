@@ -32,6 +32,9 @@ export default function Otp() {
             numberOfDigits={6}
             focusColor={COLORS.primary}
             onTextChange={(text) => setOtpCode(text)}
+            onFilled={() => {
+              router.push("/resetPassword");
+            }}
             theme={{
               pinCodeContainerStyle: styles.pinCodeContainer,
               pinCodeTextStyle: styles.pinCodeText,
@@ -48,6 +51,9 @@ export default function Otp() {
 
         <TouchableOpacity
           disabled={otpCode.length < 6}
+          onPress={() => {
+            router.push("/resetPassword");
+          }}
           style={[
             styles.createBtn,
             {
@@ -64,7 +70,7 @@ export default function Otp() {
 }
 
 const styles = StyleSheet.create({
-  safeview: { padding: 30, flex: 1 },
+  safeview: { paddingHorizontal: 30, flex: 1 },
   heading: {
     fontSize: 28,
     color: COLORS.primary,

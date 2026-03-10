@@ -69,7 +69,7 @@ export default function ForgotPassword() {
 }
 
 const styles = StyleSheet.create({
-  safeview: { padding: 30 },
+  safeview: { paddingHorizontal: 30 },
   heading: {
     fontSize: 28,
     color: "#000000",

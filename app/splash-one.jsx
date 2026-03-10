@@ -1,24 +1,8 @@
 import { useRouter } from "expo-router";
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-=======
 import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS } from "../constants/colors";
 import { FONTS } from "../constants/fonts";
->>>>>>> Stashed changes
-=======
-import { SafeAreaView } from "react-native-safe-area-context";
-import { COLORS } from "../constants/colors";
-import { FONTS } from "../constants/fonts";
->>>>>>> Stashed changes
-=======
-import { SafeAreaView } from "react-native-safe-area-context";
-import { COLORS } from "../constants/colors";
-import { FONTS } from "../constants/fonts";
->>>>>>> Stashed changes
-
 export default function SplashScreen() {
   const router = useRouter();
 
@@ -52,39 +36,7 @@ export default function SplashScreen() {
           </Pressable>
         </View>
       </View>
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-      <View style={styles.middlecontainer}>
-        <Image
-          source={require("../assets/images/aidloop-logo-image.jpeg")}
-          style={styles.image}
-        />
-      </View>
-      <View style={styles.bottomcontainer}>
-        <Pressable
-          style={styles.btnBackground}
-          onPress={() => router.push("/splash-two")}
-        >
-          <Text style={styles.btnText}>Next</Text>
-        </Pressable>
-        <Pressable
-          style={styles.skipBtnBackground}
-          onPress={() => router.push("/splash")}
-        >
-          <Text style={styles.skipBtnText}>Skip</Text>
-        </Pressable>
-      </View>
-    </View>
-=======
     </SafeAreaView>
->>>>>>> Stashed changes
-=======
-    </SafeAreaView>
->>>>>>> Stashed changes
-=======
-    </SafeAreaView>
->>>>>>> Stashed changes
   );
 }
 
@@ -103,26 +55,17 @@ const styles = StyleSheet.create({
   },
   heading: {
     fontSize: 28,
-    fontWeight: "bold",
+    fontWeight: 500,
     textAlign: "center",
+    fontFamily: FONTS.semibold,
   },
   text: {
     textAlign: "center",
     fontSize: 18,
     lineHeight: 26,
     marginTop: 20,
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-    paddingHorizontal: 60,
-=======
-=======
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
     paddingHorizontal: 50,
     fontFamily: FONTS.regular,
->>>>>>> Stashed changes
   },
   image: {
     justifyContent: "center",
@@ -130,7 +73,7 @@ const styles = StyleSheet.create({
     height: 260,
   },
   btnBackground: {
-    backgroundColor: "navy",
+    backgroundColor: COLORS.primary,
     width: 250,
     borderRadius: 100,
     paddingVertical: 9,
@@ -140,6 +83,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: COLORS.white,
     textAlign: "center",
+    fontFamily: FONTS.semibold,
   },
   skipBtnBackground: {
     marginTop: 10,
@@ -149,5 +93,6 @@ const styles = StyleSheet.create({
     fontSize: 18,
     lineHeight: 26,
     textDecorationLine: "underline",
+    fontFamily: FONTS.regular,
   },
 });

@@ -28,7 +28,7 @@ export default function SplashScreen() {
         </Pressable>
         <Pressable
           style={styles.skipBtnBackground}
-          onPress={() => router.push("/")}
+          onPress={() => router.push("/createAccount")}
         >
           <Text style={styles.skipBtnText}>Skip</Text>
         </Pressable>

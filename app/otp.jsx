@@ -33,7 +33,7 @@ export default function Otp() {
             focusColor={COLORS.primary}
             onTextChange={(text) => setOtpCode(text)}
             onFilled={() => {
-              router.push("/resetPassword");
+              router.replace("/resetPassword");
             }}
             theme={{
               pinCodeContainerStyle: styles.pinCodeContainer,

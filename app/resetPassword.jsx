@@ -121,7 +121,7 @@ export default function ResetPassword() {
 
             <TouchableOpacity
               onPress={() => {
-                // router.push("/login");
+                router.replace("/resetSuccessful");
               }}
               disabled={!valid}
               style={[

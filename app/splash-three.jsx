@@ -35,39 +35,7 @@ export default function SplashScreen() {
           </Pressable>
         </View>
       </View>
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-      <View style={styles.middlecontainer}>
-        <Image
-          source={require("../assets/images/aidloop-logo-image.jpeg")}
-          style={styles.image}
-        />
-      </View>
-      <View style={styles.bottomcontainer}>
-        <Pressable
-          style={styles.btnBackground}
-          onPress={() => router.push("/createAccount")}
-        >
-          <Text style={styles.btnText}>Next</Text>
-        </Pressable>
-        <Pressable
-          style={styles.skipBtnBackground}
-          onPress={() => router.push("/createAccount")}
-        >
-          <Text style={styles.skipBtnText}>Skip</Text>
-        </Pressable>
-      </View>
-    </View>
-=======
     </SafeAreaView>
->>>>>>> Stashed changes
-=======
-    </SafeAreaView>
->>>>>>> Stashed changes
-=======
-    </SafeAreaView>
->>>>>>> Stashed changes
   );
 }
 

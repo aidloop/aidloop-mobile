@@ -13,6 +13,7 @@ import {
 import Google from "../assets/images/Google.svg";
 
 import { SafeAreaView } from "react-native-safe-area-context";
+import { FONTS } from "../constants/fonts";
 
 const Input = ({ InputText, placeholder, ...props }) => (
   <View style={styles.input}>
@@ -152,14 +153,14 @@ const styles = StyleSheet.create({
     fontSize: 28,
     color: "#000000",
     textAlign: "center",
-    fontFamily: "PoppinsSemiBold",
+    fontFamily: FONTS.semibold,
   },
   text: {
     textAlign: "center",
     fontSize: 18,
     color: "#6B7C93",
     fontWeight: 400,
-    fontFamily: "PoppinsRegular",
+    fontFamily: FONTS.regular,
     lineHeight: 26,
     marginTop: 20,
     paddingHorizontal: 60,

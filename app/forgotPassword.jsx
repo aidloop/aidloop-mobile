@@ -29,6 +29,7 @@ export default function ForgotPassword() {
   return (
     <SafeAreaView style={{}}>
       <Back
+        style={{ margin: 20 }}
         width={30}
         height={30}
         onPress={() => {
@@ -49,24 +50,26 @@ export default function ForgotPassword() {
           value={email}
           onChangeText={setEmail}
         />
-      </View>
 
-      <TouchableOpacity
-        // onPress={}
-        disabled={email.length < 1}
-        style={[
-          styles.createBtn,
-          { backgroundColor: email.length > 0 ? COLORS.primary : "grey" },
-        ]}
-      >
-        <Text style={styles.btnText}>Send Code</Text>
-      </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => {
+            router.push("/otp");
+          }}
+          disabled={email.length < 1}
+          style={[
+            styles.createBtn,
+            { backgroundColor: email.length > 0 ? COLORS.primary : "grey" },
+          ]}
+        >
+          <Text style={styles.btnText}>Send Code</Text>
+        </TouchableOpacity>
+      </View>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  safeview: { flex: 1, padding: 30 },
+  safeview: { padding: 30 },
   heading: {
     fontSize: 28,
     color: "#000000",
@@ -90,7 +93,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     height: 60,
     borderRadius: 30,
-    marginTop: 160,
+    // marginTop: 160,
     paddingHorizontal: 30,
   },
 

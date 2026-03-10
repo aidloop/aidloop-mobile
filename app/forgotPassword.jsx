@@ -1,3 +1,4 @@
+import { router } from "expo-router";
 import { useState } from "react";
 import {
   StyleSheet,
@@ -7,6 +8,7 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import Back from "../assets/images/Back.svg";
 import { COLORS } from "../constants/colors";
 import { FONTS } from "../constants/fonts";
 
@@ -25,8 +27,15 @@ export default function ForgotPassword() {
   const [email, setEmail] = useState("");
 
   return (
-    <SafeAreaView style={styles.safeview}>
-      <View>
+    <SafeAreaView style={{}}>
+      <Back
+        width={30}
+        height={30}
+        onPress={() => {
+          router.back();
+        }}
+      />
+      <View style={styles.safeview}>
         <View>
           <Text style={styles.heading}>Forgot Password</Text>
           <Text style={styles.text}>
@@ -81,7 +90,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     height: 60,
     borderRadius: 30,
-    marginTop: 60,
+    marginTop: 160,
     paddingHorizontal: 30,
   },
 

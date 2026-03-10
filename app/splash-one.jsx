@@ -1,6 +1,12 @@
 import { useRouter } from "expo-router";
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
+=======
+import { SafeAreaView } from "react-native-safe-area-context";
+import { COLORS } from "../constants/colors";
+import { FONTS } from "../constants/fonts";
+>>>>>>> Stashed changes
 =======
 import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS } from "../constants/colors";
@@ -41,6 +47,7 @@ export default function SplashScreen() {
         </View>
       </View>
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
       <View style={styles.middlecontainer}>
         <Image
           source={require("../assets/images/aidloop-logo-image.jpeg")}
@@ -62,6 +69,9 @@ export default function SplashScreen() {
         </Pressable>
       </View>
     </View>
+=======
+    </SafeAreaView>
+>>>>>>> Stashed changes
 =======
     </SafeAreaView>
 >>>>>>> Stashed changes
@@ -92,8 +102,11 @@ const styles = StyleSheet.create({
     lineHeight: 26,
     marginTop: 20,
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
     paddingHorizontal: 60,
 =======
+=======
+>>>>>>> Stashed changes
     paddingHorizontal: 50,
     fontFamily: FONTS.regular,
 >>>>>>> Stashed changes

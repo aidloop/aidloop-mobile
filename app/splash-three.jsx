@@ -36,6 +36,7 @@ export default function SplashScreen() {
         </View>
       </View>
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
       <View style={styles.middlecontainer}>
         <Image
           source={require("../assets/images/aidloop-logo-image.jpeg")}
@@ -57,6 +58,9 @@ export default function SplashScreen() {
         </Pressable>
       </View>
     </View>
+=======
+    </SafeAreaView>
+>>>>>>> Stashed changes
 =======
     </SafeAreaView>
 >>>>>>> Stashed changes

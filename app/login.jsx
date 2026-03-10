@@ -26,7 +26,7 @@ const Input = ({ InputText, placeholder, ...props }) => (
     />
   </View>
 );
-export default function CreateAccount() {
+export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -91,8 +91,12 @@ export default function CreateAccount() {
           >
             <Text style={styles.btnText}>Log In</Text>
           </TouchableOpacity>
-          <TouchableOpacity>
-            <Text style={styles.forgot}>Forgotten Password</Text>
+          <TouchableOpacity
+            onPress={() => {
+              router.push("/forgotPassword");
+            }}
+          >
+            <Text style={styles.forgot}>Forgot Password</Text>
           </TouchableOpacity>
           <View style={styles.bottomText}>
             <Text style={styles.loginText}>Do not have an account? </Text>
@@ -222,5 +226,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 400,
     textAlign: "center",
+    textDecorationLine: "underline",
   },
 });

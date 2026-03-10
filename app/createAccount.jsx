@@ -10,9 +10,10 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import Google from "../assets/images/Google.svg";
-
 import { SafeAreaView } from "react-native-safe-area-context";
+import Back from "../assets/images/Back.svg";
+import Google from "../assets/images/Google.svg";
+import { FONTS } from "../constants/fonts";
 
 const Input = ({ InputText, placeholder, ...props }) => (
   <View style={styles.input}>
@@ -43,6 +44,14 @@ export default function CreateAccount() {
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={{ flex: 1 }}
       >
+        <Back
+          width={30}
+          height={30}
+          onPress={() => {
+            router.back();
+          }}
+        />
+
         <ScrollView
           contentContainerStyle={styles.scrollContainer}
           keyboardShouldPersistTaps="handled"
@@ -152,14 +161,14 @@ const styles = StyleSheet.create({
     fontSize: 28,
     color: "#000000",
     textAlign: "center",
-    fontFamily: "PoppinsSemiBold",
+    fontFamily: FONTS.semibold,
   },
   text: {
     textAlign: "center",
     fontSize: 18,
     color: "#6B7C93",
     fontWeight: 400,
-    fontFamily: "PoppinsRegular",
+    fontFamily: FONTS.regular,
     lineHeight: 26,
     marginTop: 20,
     paddingHorizontal: 60,

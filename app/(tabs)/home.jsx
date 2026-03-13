@@ -83,6 +83,7 @@ export default function HomeScreen() {
               resizeMode="cover"
             />
           }
+          eventName={"Beach Cleanup"}
         />
       </ScrollView>
     </SafeAreaView>

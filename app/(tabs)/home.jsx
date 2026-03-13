@@ -87,6 +87,39 @@ export default function HomeScreen() {
           eventDate={"June 14"}
           eventTime={"9:00 AM - 1:00 PM"}
           eventLocation={"Tarkwa Bay"}
+          eventRatings={"4.9"}
+          eventStatus={"Co-Worker"}
+          eventSlots={"12/20 Slots"}
+        />
+        <EventCards
+          image={
+            <Image
+              source={require("../../assets/images/image 2.png")}
+              resizeMode="cover"
+            />
+          }
+          eventName={"Beach Cleanup"}
+          eventDate={"June 14"}
+          eventTime={"9:00 AM - 1:00 PM"}
+          eventLocation={"Tarkwa Bay"}
+          eventRatings={"4.9"}
+          eventStatus={"Co-Worker"}
+          eventSlots={"12/20 Slots"}
+        />
+        <EventCards
+          image={
+            <Image
+              source={require("../../assets/images/image 2.png")}
+              resizeMode="cover"
+            />
+          }
+          eventName={"Beach Cleanup"}
+          eventDate={"June 14"}
+          eventTime={"9:00 AM - 1:00 PM"}
+          eventLocation={"Tarkwa Bay"}
+          eventRatings={"4.9"}
+          eventStatus={"Co-Worker"}
+          eventSlots={"12/20 Slots"}
         />
       </ScrollView>
     </SafeAreaView>

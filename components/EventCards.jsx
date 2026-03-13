@@ -5,6 +5,7 @@ import Slot from "../assets/images/Slot.svg";
 import Star from "../assets/images/Star.svg";
 import Status from "../assets/images/Status.svg";
 import Time from "../assets/images/Time.svg";
+import Upload from "../assets/images/Upload.svg";
 import { COLORS } from "../constants/colors";
 import { FONTS } from "../constants/fonts";
 
@@ -56,11 +57,12 @@ const EventCards = ({
           />
         </View>
         <View style={styles.buttons}>
-          <View>
-            <TouchableOpacity style={styles.viewButton}>
-              <Text style={styles.buttonText}>View Details</Text>
-            </TouchableOpacity>
-          </View>
+          <TouchableOpacity style={styles.viewButton}>
+            <Text style={styles.buttonText}>View Details</Text>
+          </TouchableOpacity>
+          <TouchableOpacity>
+            <Upload />
+          </TouchableOpacity>
         </View>
       </View>
     </View>
@@ -88,14 +90,27 @@ const styles = StyleSheet.create({
     shadowRadius: 10,
     elevation: 10,
   },
-  viewButton: { backgroundColor: COLORS.primary },
+  viewButton: {
+    backgroundColor: COLORS.primary,
+    flex: 1,
+    borderRadius: 28,
+    height: 40.83,
+    alignItems: "center",
+    justifyContent: "center",
+  },
 
-  buttonText: { fontFamily: FONTS.semibold, fontSize: 24, color: COLORS.white },
+  buttonText: {
+    fontFamily: FONTS.semibold,
+    fontSize: 24,
+    color: COLORS.white,
+    textAlign: "center",
+  },
   buttons: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
     paddingTop: 10,
+    gap: 15,
     // backgroundColor: "pink",
   },
   eventImage: {

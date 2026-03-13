@@ -1,29 +1,82 @@
 import { useRouter } from "expo-router";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import {
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import Filter from "../../assets/images/Filter.svg";
+import Notification from "../../assets/images/Notification.svg";
+import Search from "../../assets/images/Seacrh.svg";
 import { COLORS } from "../../constants/colors";
 import { FONTS } from "../../constants/fonts";
 
+const Input = ({ InputText, placeholder, icon, icon2, ...props }) => {
+  return (
+    <View style={styles.input}>
+      <View style={styles.searchstyle}>
+        <View style={styles.searchIcon}>{icon}</View>
+        <TextInput
+          style={styles.searchInput}
+          placeholder={placeholder}
+          placeholderTextColor={COLORS.neutral}
+          {...props}
+        />
+        <TouchableOpacity>{icon2}</TouchableOpacity>
+      </View>
+    </View>
+  );
+};
 export default function HomeScreen() {
   const router = useRouter();
 
   return (
     <SafeAreaView style={styles.safeareaview}>
-      <View>
-        <Text>Home Screen</Text>
-        <Pressable
-          style={styles.skipBtnBackground}
-          onPress={() => router.push("/(tabs)/home")}
-        >
-          <Text style={styles.skipBtnText}>Skip</Text>
-        </Pressable>
-      </View>
+      <ScrollView style={{ flex: 1 }}>
+        <View style={styles.topBar}>
+          <Text style={styles.topText}>AIDLoop</Text>
+          <TouchableOpacity>
+            <Notification
+              height={27}
+              width={24}
+              color={COLORS.primary}
+              style={
+                {
+                  // backgroundColor: "red",
+                }
+              }
+            />
+          </TouchableOpacity>
+          <TouchableOpacity>
+            <Notification
+              height={27}
+              width={24}
+              color={COLORS.primary}
+              style={
+                {
+                  // backgroundColor: "red",
+                }
+              }
+            />
+          </TouchableOpacity>
+        </View>
+        <View>
+          <Input
+            icon={<Search />}
+            placeholder={"Search Events"}
+            icon2={<Filter />}
+          />
+        </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  safeareaview: { flex: 1, paddingHorizontal: 10 },
+  safeareaview: { flex: 1, paddingHorizontal: 15 },
   container: {
     flex: 1,
     justifyContent: "space-around",
@@ -48,4 +101,34 @@ const styles = StyleSheet.create({
     color: COLORS.white,
     textAlign: "center",
   },
+
+  topBar: {
+    flexDirection: "row",
+    gap: 20,
+    marginVertical: 20,
+    // backgroundColor: COLORS.highlight,
+    alignItems: "center",
+  },
+
+  topText: {
+    flex: 1,
+    color: COLORS.primary,
+    fontFamily: FONTS.semibold,
+    fontSize: 28,
+  },
+
+  searchInput: {
+    borderColor: COLORS.neutral,
+    borderWidth: 1,
+    borderRadius: 12,
+    height: 54,
+    width: "85%",
+    paddingHorizontal: 45,
+    fontFamily: FONTS.regular,
+    fontSize: 16,
+    color: COLORS.primary,
+  },
+
+  searchstyle: { flexDirection: "row", alignItems: "center", gap: 10 },
+  searchIcon: { position: "absolute", left: 10 },
 });

@@ -117,7 +117,7 @@ const styles = StyleSheet.create({
     borderTopStartRadius: 18,
     borderTopEndRadius: 18,
     height: 165,
-    backgroundColor: "red",
+    backgroundColor: COLORS.highlight,
     overflow: "hidden",
     // marginBottom: 5,
   },

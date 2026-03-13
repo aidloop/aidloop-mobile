@@ -15,7 +15,6 @@ import Search from "../../assets/images/Seacrh.svg";
 import EventCards from "../../components/EventCards";
 import { COLORS } from "../../constants/colors";
 import { FONTS } from "../../constants/fonts";
-
 const Input = ({ InputText, placeholder, icon, icon2, ...props }) => {
   return (
     <View style={styles.input}>
@@ -81,6 +80,7 @@ export default function HomeScreen() {
             <Image
               source={require("../../assets/images/image 2.png")}
               resizeMode="cover"
+              style={{ width: "100%", height: "100%" }}
             />
           }
           eventName={"Beach Cleanup"}
@@ -94,23 +94,9 @@ export default function HomeScreen() {
         <EventCards
           image={
             <Image
-              source={require("../../assets/images/image 2.png")}
+              source={require("../../assets/images/splash-image.png")}
               resizeMode="cover"
-            />
-          }
-          eventName={"Beach Cleanup"}
-          eventDate={"June 14"}
-          eventTime={"9:00 AM - 1:00 PM"}
-          eventLocation={"Tarkwa Bay"}
-          eventRatings={"4.9"}
-          eventStatus={"Co-Worker"}
-          eventSlots={"12/20 Slots"}
-        />
-        <EventCards
-          image={
-            <Image
-              source={require("../../assets/images/image 2.png")}
-              resizeMode="cover"
+              style={{ width: "100%", height: "100%" }}
             />
           }
           eventName={"Beach Cleanup"}
@@ -173,7 +159,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 12,
     height: 54,
-    width: "85%",
+    // width: "85%",
+    flex: 1,
     paddingHorizontal: 45,
     fontFamily: FONTS.regular,
     fontSize: 16,

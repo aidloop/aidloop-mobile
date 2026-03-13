@@ -35,34 +35,38 @@ export default function HomeScreen() {
 
   return (
     <SafeAreaView style={styles.safeareaview}>
-      <ScrollView style={{ flex: 1 }}>
-        <View style={styles.topBar}>
-          <Text style={styles.topText}>AIDLoop</Text>
-          <TouchableOpacity>
-            <Notification
-              height={27}
-              width={24}
-              color={COLORS.primary}
-              style={
-                {
-                  // backgroundColor: "red",
-                }
+      <View style={styles.topBar}>
+        <Text style={styles.topText}>AIDLoop</Text>
+        <TouchableOpacity>
+          <Notification
+            height={27}
+            width={24}
+            color={COLORS.primary}
+            style={
+              {
+                // backgroundColor: "red",
               }
-            />
-          </TouchableOpacity>
-          <TouchableOpacity>
-            <Notification
-              height={27}
-              width={24}
-              color={COLORS.primary}
-              style={
-                {
-                  // backgroundColor: "red",
-                }
+            }
+          />
+        </TouchableOpacity>
+        <TouchableOpacity>
+          <Notification
+            height={27}
+            width={24}
+            color={COLORS.primary}
+            style={
+              {
+                // backgroundColor: "red",
               }
-            />
-          </TouchableOpacity>
-        </View>
+            }
+          />
+        </TouchableOpacity>
+      </View>
+      <ScrollView
+        style={{ flex: 1 }}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+      >
         <View>
           <Input
             icon={<Search />}

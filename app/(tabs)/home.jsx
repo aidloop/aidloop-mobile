@@ -84,6 +84,9 @@ export default function HomeScreen() {
             />
           }
           eventName={"Beach Cleanup"}
+          eventDate={"June 14"}
+          eventTime={"9:00 AM - 1:00 PM"}
+          eventLocation={"Tarkwa Bay"}
         />
       </ScrollView>
     </SafeAreaView>

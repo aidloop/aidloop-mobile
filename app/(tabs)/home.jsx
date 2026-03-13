@@ -1,5 +1,6 @@
 import { useRouter } from "expo-router";
 import {
+  Image,
   ScrollView,
   StyleSheet,
   Text,
@@ -11,6 +12,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import Filter from "../../assets/images/Filter.svg";
 import Notification from "../../assets/images/Notification.svg";
 import Search from "../../assets/images/Seacrh.svg";
+import EventCards from "../../components/EventCards";
 import { COLORS } from "../../constants/colors";
 import { FONTS } from "../../constants/fonts";
 
@@ -74,6 +76,14 @@ export default function HomeScreen() {
             icon2={<Filter />}
           />
         </View>
+        <EventCards
+          image={
+            <Image
+              source={require("../../assets/images/image 2.png")}
+              resizeMode="cover"
+            />
+          }
+        />
       </ScrollView>
     </SafeAreaView>
   );
@@ -135,4 +145,6 @@ const styles = StyleSheet.create({
 
   searchstyle: { flexDirection: "row", alignItems: "center", gap: 10 },
   searchIcon: { position: "absolute", left: 10 },
+
+  input: { marginBottom: 20 },
 });

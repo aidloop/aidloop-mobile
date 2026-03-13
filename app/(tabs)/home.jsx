@@ -8,7 +8,7 @@ export default function HomeScreen() {
   const router = useRouter();
 
   return (
-    <SafeAreaView>
+    <SafeAreaView style={styles.safeareaview}>
       <View>
         <Text>Home Screen</Text>
         <Pressable
@@ -23,7 +23,7 @@ export default function HomeScreen() {
 }
 
 const styles = StyleSheet.create({
-  safeareaview: { flex: 1 },
+  safeareaview: { flex: 1, paddingHorizontal: 10 },
   container: {
     flex: 1,
     justifyContent: "space-around",

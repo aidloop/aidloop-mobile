@@ -1,11 +1,11 @@
 import { router } from "expo-router";
-import { StyleSheet, Text, TouchableOpacity } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Back from "../assets/images/Back.svg";
 import { COLORS } from "../constants/colors";
 import { FONTS } from "../constants/fonts";
 
-const ScreenInfo = ({ ScreenTitle }) => {
+const ScreenInfo = ({ ScreenTitle, subtext, icon }) => {
   return (
     <SafeAreaView style={styles.header}>
       <TouchableOpacity
@@ -15,7 +15,12 @@ const ScreenInfo = ({ ScreenTitle }) => {
       >
         <Back color={COLORS.white} height={48} width={24} />
       </TouchableOpacity>
-      <Text style={styles.titleText}>{ScreenTitle}</Text>
+      <View style={{ flex: 1 }}>
+        <Text style={styles.titleText}>{ScreenTitle}</Text>
+        {subtext && subtext}
+      </View>
+
+      {icon && icon}
     </SafeAreaView>
   );
 };

@@ -1,4 +1,5 @@
 import { router } from "expo-router";
+import { useState } from "react";
 import {
   KeyboardAvoidingView,
   Platform,
@@ -14,25 +15,57 @@ import SearchBar from "../components/searchbar";
 import { COLORS } from "../constants/colors";
 import { FONTS } from "../constants/fonts";
 
-const SearchListItem = ({ text }) => (
+const SearchListItem = ({ text, onSearch, onCancel }) => (
   <View
     style={{ flexDirection: "row", alignItems: "center", paddingVertical: 10 }}
   >
-    <TouchableOpacity style={{ flex: 1 }}>
+    <TouchableOpacity style={{ flex: 1 }} onPress={() => onSearch(text)}>
       <Text style={styles.componentText}>{text}</Text>
     </TouchableOpacity>
-    <TouchableOpacity>
+    <TouchableOpacity
+      onPress={() => {
+        onCancel(text);
+      }}
+    >
       <Cancel color={COLORS.highlight} />
     </TouchableOpacity>
   </View>
 );
 const Search = () => {
+  const [searchQuery, setSearchQuery] = useState("");
+  const recentSearches = [
+    "Community Cleanup",
+    "Youth Program",
+    "Food Bank",
+    "Empowerment",
+  ];
+  const popularCategories = [
+    "Environmental",
+    "Health & Wellness",
+    "Food Bank",
+    "Arts & Culture",
+    "Youth & Sports",
+  ];
+
+  const handleSearch = (searchQuery) => {
+    if (!searchQuery.trim()) return; //this works in the case of an empty search it does nothing
+
+    console.log("Searching for:", searchQuery);
+  };
+
+  const handleCancelItem = (cancelledItem) => {
+    console.log("Remove this item from history:", cancelledItem);
+  };
   return (
     <View style={{ flex: 1 }}>
       <ScreenInfo ScreenTitle={"Search Events"} />
       <View style={styles.safeview}>
         <SearchBar
           autoFocus={true}
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+          search={() => handleSearch(searchQuery)}
+          onSubmitEditing={() => handleSearch(searchQuery)}
           onFilterPress={() => {
             console.log("OPen Filter screen");
             router.push("/filter");
@@ -49,20 +82,27 @@ const Search = () => {
             <View style={styles.section}>
               <Text style={styles.property}>{"Recent Searches"}</Text>
               <View style={styles.propView}>
-                <SearchListItem text={"Community Cleanup"} />
-                <SearchListItem text={"Youth Program"} />
-                <SearchListItem text={"Food Bank"} />
-                <SearchListItem text={"Empowerment"} />
+                {recentSearches.map((item, index) => (
+                  <SearchListItem
+                    key={index}
+                    text={item}
+                    onSearch={handleSearch}
+                    onCancel={handleCancelItem}
+                  />
+                ))}
               </View>
             </View>
             <View style={styles.section}>
               <Text style={styles.property}>{"Popular Categories"}</Text>
               <View style={styles.propView}>
-                <SearchListItem text={"Environmental "} />
-                <SearchListItem text={"Health & Wellness"} />
-                <SearchListItem text={"Food Bank"} />
-                <SearchListItem text={"Arts & Culture"} />
-                <SearchListItem text={"Youth & Sports"} />
+                {popularCategories.map((item, index) => (
+                  <SearchListItem
+                    key={index}
+                    text={item}
+                    onSearch={handleSearch}
+                    onCancel={handleCancelItem}
+                  />
+                ))}
               </View>
             </View>
           </ScrollView>

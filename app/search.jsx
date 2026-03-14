@@ -1,3 +1,4 @@
+import { router } from "expo-router";
 import {
   KeyboardAvoidingView,
   Platform,
@@ -32,7 +33,10 @@ const Search = () => {
       <View style={styles.safeview}>
         <SearchBar
           autoFocus={true}
-          onFilterPress={() => console.log("OPen Filter screen")}
+          onFilterPress={() => {
+            console.log("OPen Filter screen");
+            router.push("/filter");
+          }}
         />
         <KeyboardAvoidingView
           behavior={Platform.OS === "ios" ? "padding" : "height"}

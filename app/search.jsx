@@ -33,12 +33,12 @@ const SearchListItem = ({ text, onSearch, onCancel }) => (
 );
 const Search = () => {
   const [searchQuery, setSearchQuery] = useState("");
-  const recentSearches = [
+  const [recentSearches, setRecentSearches] = useState([
     "Community Cleanup",
     "Youth Program",
     "Food Bank",
     "Empowerment",
-  ];
+  ]);
   const popularCategories = [
     "Environmental",
     "Health & Wellness",
@@ -54,7 +54,10 @@ const Search = () => {
   };
 
   const handleCancelItem = (cancelledItem) => {
-    console.log("Remove this item from history:", cancelledItem);
+    setRecentSearches((prevSearches) =>
+      prevSearches.filter((item) => item !== cancelledItem),
+    );
+    console.log(`Remove ${cancelledItem} from history`);
   };
   return (
     <View style={{ flex: 1 }}>
@@ -79,19 +82,21 @@ const Search = () => {
             keyboardShouldPersistTaps="handled"
             showsVerticalScrollIndicator={false}
           >
-            <View style={styles.section}>
-              <Text style={styles.property}>{"Recent Searches"}</Text>
-              <View style={styles.propView}>
-                {recentSearches.map((item, index) => (
-                  <SearchListItem
-                    key={index}
-                    text={item}
-                    onSearch={handleSearch}
-                    onCancel={handleCancelItem}
-                  />
-                ))}
+            {recentSearches.length > 0 && (
+              <View style={styles.section}>
+                <Text style={styles.property}>{"Recent Searches"}</Text>
+                <View style={styles.propView}>
+                  {recentSearches.map((item, index) => (
+                    <SearchListItem
+                      key={index}
+                      text={item}
+                      onSearch={handleSearch}
+                      onCancel={handleCancelItem}
+                    />
+                  ))}
+                </View>
               </View>
-            </View>
+            )}
             <View style={styles.section}>
               <Text style={styles.property}>{"Popular Categories"}</Text>
               <View style={styles.propView}>
@@ -100,7 +105,9 @@ const Search = () => {
                     key={index}
                     text={item}
                     onSearch={handleSearch}
-                    onCancel={handleCancelItem}
+                    onCancel={() =>
+                      console.log("Cannot delete fixed categories ")
+                    }
                   />
                 ))}
               </View>

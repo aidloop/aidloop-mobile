@@ -13,6 +13,7 @@ export default function SearchBar({ search, onFilterPress, ...props }) {
           placeholder="Search events"
           placeholderTextColor={COLORS.neutral}
           style={styles.input}
+          returnKeyType="search"
           {...props}
         />
         <TouchableOpacity onPress={search} style={styles.searchIcon}>

@@ -1,4 +1,4 @@
-import { router } from "expo-router";
+import { router, useNavigation } from "expo-router";
 import { useState } from "react";
 import {
   KeyboardAvoidingView,
@@ -27,6 +27,8 @@ const Input = ({ InputText, placeholder, ...props }) => (
   </View>
 );
 export default function Login() {
+  const navigation = useNavigation();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -34,6 +36,11 @@ export default function Login() {
 
   const handleRegister = () => {
     console.log("User Data:", "email", email);
+    navigation.reset({
+      index: 0,
+      routes: [{ name: "(tabs)" }],
+    });
+    // router.push("/home");
   };
 
   return (

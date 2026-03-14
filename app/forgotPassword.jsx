@@ -32,6 +32,7 @@ export default function ForgotPassword() {
         style={{ margin: 20 }}
         width={30}
         height={30}
+        color={COLORS.primary}
         onPress={() => {
           router.back();
         }}

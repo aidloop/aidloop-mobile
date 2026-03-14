@@ -5,7 +5,7 @@ import SearchIcon from "../assets/images/searchicon.svg";
 import { COLORS } from "../constants/colors";
 import { FONTS } from "../constants/fonts";
 
-export default function SearchBar() {
+export default function SearchBar({ search, onFilterPress, ...props }) {
   return (
     <View style={styles.container}>
       <View style={styles.inputContainer}>
@@ -13,11 +13,19 @@ export default function SearchBar() {
           placeholder="Search events"
           placeholderTextColor={COLORS.neutral}
           style={styles.input}
+          returnKeyType="search"
+          {...props}
         />
-        <SearchIcon style={styles.searchIcon} width={20} height={20} />
+        <TouchableOpacity onPress={search} style={styles.searchIcon}>
+          <SearchIcon
+            // style={styles.searchIcon}
+            width={20}
+            height={20}
+          />
+        </TouchableOpacity>
       </View>
 
-      <TouchableOpacity style={styles.filterButton}>
+      <TouchableOpacity style={styles.filterButton} onPress={onFilterPress}>
         <FilterIcon width={24} height={24} />
       </TouchableOpacity>
     </View>
@@ -37,8 +45,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
     borderColor: COLORS.neutral,
     borderWidth: 1,
-    borderRadius: 30,
+    borderRadius: 12,
     width: 280,
+    height: 52,
     paddingLeft: 40,
   },
   searchIcon: {

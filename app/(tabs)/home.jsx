@@ -1,11 +1,12 @@
 import { useRouter } from "expo-router";
-import { ScrollView, StyleSheet } from "react-native";
+import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import EventCard from "../../components/eventcard";
 import Header from "../../components/header";
 import SearchBar from "../../components/searchbar";
 
 import { COLORS } from "../../constants/colors";
+
 export default function HomeScreen() {
   const router = useRouter();
 
@@ -13,7 +14,16 @@ export default function HomeScreen() {
     <SafeAreaView style={styles.safeareaview}>
       <ScrollView style={styles.scrollview}>
         <Header />
-        <SearchBar />
+
+        <TouchableOpacity
+          activeOpacity={0.8}
+          onPress={() => router.push("../search")}
+        >
+          <View pointerEvents="none">
+            <SearchBar />
+          </View>
+        </TouchableOpacity>
+        {/* <SearchBar /> */}
 
         <EventCard
           image={require("../../assets/images/eventimage-1.png")}

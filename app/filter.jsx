@@ -1,4 +1,10 @@
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import Education from "../assets/images/Education.svg";
 import Heart from "../assets/images/Heart.svg";
 import PaintIcon from "../assets/images/PaintIcon.svg";
@@ -16,7 +22,11 @@ const Filter = () => {
   return (
     <View style={{ flex: 1 }}>
       <ScreenInfo ScreenTitle={"Filter Events"} />
-      <View style={styles.safeview}>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps={"handled"}
+        style={styles.safeview}
+      >
         <Text style={styles.filterText}>Filter</Text>
         {/* CATEGORY */}
         <View style={styles.section}>
@@ -56,7 +66,16 @@ const Filter = () => {
             <ContentButton text={"West Africa"} />
           </View>
         </View>
-      </View>
+
+        <View style={styles.buttons}>
+          <TouchableOpacity style={styles.bottomBtn}>
+            <Text style={styles.btnText}>Clear</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.bottomBtn}>
+            <Text style={styles.btnText}>Apply</Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
     </View>
   );
 };
@@ -106,6 +125,27 @@ const styles = StyleSheet.create({
     // justifyContent: "flex-end",
   },
 
-  section: { marginVertical: 20 },
+  section: { marginVertical: 10 },
+
+  buttons: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    position: "relative",
+    bottom: 0,
+    marginVertical: 15,
+  },
+  bottomBtn: {
+    backgroundColor: COLORS.primary,
+    flex: 0.45,
+    paddingVertical: 9,
+    paddingHorizontal: 30,
+    borderRadius: 28,
+  },
+  btnText: {
+    textAlign: "center",
+    color: COLORS.white,
+    fontFamily: FONTS.semibold,
+    fontSize: 24,
+  },
 });
 export default Filter;

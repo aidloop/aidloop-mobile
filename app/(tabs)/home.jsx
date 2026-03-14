@@ -19,7 +19,6 @@ export default function HomeScreen() {
           activeOpacity={0.8}
           onPress={() => router.push("../search")}
         >
-          {/* pointerEvents="none" stops the text input from opening the keyboard! */}
           <View pointerEvents="none">
             <SearchBar />
           </View>

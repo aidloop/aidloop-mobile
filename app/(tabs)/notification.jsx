@@ -19,19 +19,19 @@ import ScreenInfo from "../../components/screenInfo";
 import { COLORS } from "../../constants/colors";
 import { FONTS } from "../../constants/fonts";
 
-const Notification = ({ icon, Head, Details, button, Date }) => {
-  const [read, setRead] = useState(false);
+const Notification = ({
+  icon,
+  Head,
+  Details,
+  button,
+  Date,
+  isRead,
+  onToggle,
+}) => {
   return (
     <TouchableOpacity
-      onPress={() => setRead(!read)}
-      style={[
-        styles.notification,
-        read && styles.readnotification,
-        // {
-        //   borderColor: read ? undefined : "#448AFFA8",
-        //   borderWidth: read ? 0 : 1,
-        // },
-      ]}
+      onPress={onToggle}
+      style={[styles.notification, isRead && styles.readnotification]}
     >
       <View>{icon}</View>
       <View style={{ flex: 1, gap: 5 }}>
@@ -40,13 +40,73 @@ const Notification = ({ icon, Head, Details, button, Date }) => {
         {button && button}
         <Text style={styles.notificationDate}>{Date}</Text>
       </View>
-      {!read && <Read />}
+      {!isRead && <Read />}
     </TouchableOpacity>
   );
 };
 
 export default function NotificationScreen() {
   const router = useRouter();
+  const [notifications, setNotifications] = useState([
+    {
+      id: 1,
+      icon: <Calendar />,
+      head: "Coastal Clean-Up Exercise",
+      details: "Your Events starts tomorrow at 8:00AM",
+      date: "2 hrs ago",
+      isRead: false,
+    },
+    {
+      id: 2,
+      icon: <Confirm />,
+      head: "Registration Confirmed",
+      details: "You are registered for Green Lagos Tree Planting.",
+      date: "1 day ago",
+      isRead: false,
+    },
+    {
+      id: 3,
+      icon: <Update />,
+      head: "Event Update",
+      details:
+        "The start time for Food Distribution Drive has changed to 10:30 AM.",
+      date: "2 days ago",
+      isRead: true,
+    },
+    {
+      id: 4,
+      icon: <Ready />,
+      head: "Certificate Ready",
+      details: "Your certificate for beach cleanup is now available",
+      date: "3 days ago",
+      isRead: true,
+      button: (
+        <TouchableOpacity style={styles.button}>
+          <Text style={styles.btnText}>Download it right now</Text>
+          <Download />
+        </TouchableOpacity>
+      ),
+    },
+    {
+      id: 5,
+      icon: <Event />,
+      head: "New Event Near You",
+      details: "Community Health Outreach is happening near you this weekend.",
+      date: "4 days ago",
+      isRead: true,
+    },
+  ]);
+
+  const unreadCount = notifications.filter((notif) => !notif.isRead).length; //this counts the total number of unread notifications
+
+  // Function to toggle a specific notification's read state
+  const toggleReadStatus = (id) => {
+    setNotifications((prevNotifs) =>
+      prevNotifs.map((notif) =>
+        notif.id === id ? { ...notif, isRead: !notif.isRead } : notif,
+      ),
+    );
+  };
 
   return (
     <View style={{ flex: 1 }}>
@@ -62,7 +122,7 @@ export default function NotificationScreen() {
               fontSize: 14,
             }}
           >
-            2 unread
+            {unreadCount} unread
           </Text>
         }
         icon={<Notify />}
@@ -72,46 +132,18 @@ export default function NotificationScreen() {
         contentContainerStyle={{ paddingBottom: 20 }}
         showsVerticalScrollIndicator={false}
       >
-        <Notification
-          icon={<Calendar />}
-          Head={"Coastal Clean-Up Exercise"}
-          Details={"Your Events starts tomorrow at 8:00AM"}
-          Date={"2 hrs ago"}
-        />
-        <Notification
-          icon={<Confirm />}
-          Head={"Registration Confirmed"}
-          Details={"You are registered for Green Lagos Tree Planting."}
-          Date={"1 day ago"}
-        />
-        <Notification
-          icon={<Update />}
-          Head={"Event Update"}
-          Details={
-            "The start time for Food Distribution Drive has changed to 10:30 AM."
-          }
-          Date={"2 days ago"}
-        />
-        <Notification
-          icon={<Ready />}
-          Head={"Certificate Ready"}
-          Details={"Your certificate for beach cleanup is now available"}
-          button={
-            <TouchableOpacity style={styles.button}>
-              <Text style={styles.btnText}>Download it right now</Text>
-              <Download />
-            </TouchableOpacity>
-          }
-          Date={"3 days ago"}
-        />
-        <Notification
-          icon={<Event />}
-          Head={"New Event Near You"}
-          Details={
-            "Community Health Outreach is happening near you this weekend."
-          }
-          Date={"4 days ago"}
-        />
+        {notifications.map((notifications) => (
+          <Notification
+            key={notifications.id}
+            icon={notifications.icon}
+            Head={notifications.head}
+            Details={notifications.details}
+            Date={notifications.date}
+            button={notifications.button}
+            isRead={notifications.isRead}
+            onToggle={() => toggleReadStatus(notifications.id)}
+          />
+        ))}
       </ScrollView>
     </View>
   );
@@ -150,7 +182,8 @@ const styles = StyleSheet.create({
   },
 
   readnotification: {
-    borderWidth: 0,
+    // borderWidth: 0,
+    borderColor: "transparent",
     shadowColor: "#000000",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.15,

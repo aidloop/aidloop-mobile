@@ -1,4 +1,5 @@
 import { useRouter } from "expo-router";
+<<<<<<< Updated upstream
 import {
   Image,
   ScrollView,
@@ -31,11 +32,22 @@ const Input = ({ InputText, placeholder, icon, icon2, ...props }) => {
     </View>
   );
 };
+=======
+import { ScrollView, StyleSheet } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import EventCard from "../../components/eventcard";
+import Header from "../../components/header";
+import SearchBar from "../../components/searchbar";
+
+import { COLORS } from "../../constants/colors";
+
+>>>>>>> Stashed changes
 export default function HomeScreen() {
   const router = useRouter();
 
   return (
     <SafeAreaView style={styles.safeareaview}>
+<<<<<<< Updated upstream
       <View style={styles.topBar}>
         <Text style={styles.topText}>AIDLoop</Text>
         <TouchableOpacity>
@@ -106,6 +118,44 @@ export default function HomeScreen() {
           eventRatings={"4.9"}
           eventStatus={"Co-Worker"}
           eventSlots={"12/20 Slots"}
+=======
+      <ScrollView style={styles.scrollview}>
+        <Header />
+        <SearchBar />
+
+        <EventCard
+          image={require("../../assets/images/eventimage-1.png")}
+          status="Verified"
+          title="Beach Cleanup"
+          date="June 14, 2026"
+          location="Tarkwa Bay"
+          time="9:00 AM - 1:00 PM"
+          people="12/20 Slots"
+          role="Co-Worker"
+          rating="4.9"
+        />
+        <EventCard
+          image={require("../../assets/images/eventimage-3.jpg")}
+          status="Verified"
+          title="Community Food Drive"
+          date="July 2, 2026"
+          location="Yaba, Lagos"
+          time="10:00 AM - 3:00 PM"
+          people="85/120 Slots"
+          role="Volunteer"
+          rating="4.7"
+        />
+        <EventCard
+          image={require("../../assets/images/eventimage-2.jpg")}
+          status="Verified"
+          title="Tree Planting Initiative"
+          date="August 10, 2026"
+          location="Lekki Conservation Centre"
+          time="8:00 AM - 12:00 PM"
+          people="45/60 Slots"
+          role="Team Lead"
+          rating="4.8"
+>>>>>>> Stashed changes
         />
       </ScrollView>
     </SafeAreaView>
@@ -113,30 +163,17 @@ export default function HomeScreen() {
 }
 
 const styles = StyleSheet.create({
+<<<<<<< Updated upstream
   safeareaview: { flex: 1, paddingHorizontal: 15 },
   container: {
+=======
+  safeareaview: { flex: 1, backgroundColor: COLORS.white },
+  scrollview: {
+>>>>>>> Stashed changes
     flex: 1,
-    justifyContent: "space-around",
-    alignItems: "center",
     backgroundColor: COLORS.white,
-  },
-  logo: {
-    marginTop: 100,
-    justifyContent: "center",
-    width: 230,
-    height: 250,
-  },
-  btnBackground: {
-    backgroundColor: COLORS.primary,
-    width: 250,
-    borderRadius: 100,
-    paddingVertical: 7,
-  },
-  btnText: {
-    fontSize: 24,
-    fontWeight: FONTS.bold,
-    color: COLORS.white,
-    textAlign: "center",
+    paddingHorizontal: 20,
+    marginTop: 20,
   },
 
   topBar: {

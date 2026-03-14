@@ -43,7 +43,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.primary,
     width: 250,
     borderRadius: 100,
-    paddingVertical: 7,
+    paddingVertical: 9,
   },
   btnText: {
     fontSize: 24,

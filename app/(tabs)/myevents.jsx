@@ -1,19 +1,3 @@
-<<<<<<< Updated upstream
-import { Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-
-const Profile = () => {
-  return (
-    <SafeAreaView>
-      <View>
-        <Text>This is the profile screen</Text>
-      </View>
-    </SafeAreaView>
-  );
-};
-
-export default Profile;
-=======
 import { useRouter } from "expo-router";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -26,7 +10,7 @@ export default function HomeScreen() {
   return (
     <SafeAreaView style={styles.safeareaview}>
       <View>
-        <Text style={styles.text}>Profile Screen</Text>
+        <Text style={styles.text}>My Events Screen</Text>
         <TouchableOpacity
           onPress={() => router.push("/createAccount")}
           style={styles.button}
@@ -64,4 +48,3 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
 });
->>>>>>> Stashed changes

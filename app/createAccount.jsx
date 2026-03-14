@@ -13,6 +13,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import Back from "../assets/images/Back.svg";
 import Google from "../assets/images/Google.svg";
+import { COLORS } from "../constants/colors";
 import { FONTS } from "../constants/fonts";
 
 const Input = ({ InputText, placeholder, ...props }) => (
@@ -47,6 +48,7 @@ export default function CreateAccount() {
         <Back
           width={30}
           height={30}
+          color={COLORS.primary}
           onPress={() => {
             router.back();
           }}

@@ -12,13 +12,14 @@ import Confirm from "../../assets/images/Checked.svg";
 import Ready from "../../assets/images/conrgrats.svg";
 import Event from "../../assets/images/EventNotification.svg";
 import Notify from "../../assets/images/notify.svg";
+import Download from "../../assets/images/quill_download.svg";
 import Read from "../../assets/images/read.svg";
 import Update from "../../assets/images/Update.svg";
 import ScreenInfo from "../../components/screenInfo";
 import { COLORS } from "../../constants/colors";
 import { FONTS } from "../../constants/fonts";
 
-const Notification = ({ icon, Head, Details, unread, Date }) => {
+const Notification = ({ icon, Head, Details, button, Date }) => {
   const [read, setRead] = useState(false);
   return (
     <TouchableOpacity
@@ -33,9 +34,10 @@ const Notification = ({ icon, Head, Details, unread, Date }) => {
       ]}
     >
       <View>{icon}</View>
-      <View style={{ flex: 1 }}>
+      <View style={{ flex: 1, gap: 5 }}>
         <Text style={styles.notificationHead}>{Head}</Text>
         <Text style={styles.notificationDetail}>{Details}</Text>
+        {button && button}
         <Text style={styles.notificationDate}>{Date}</Text>
       </View>
       {!read && <Read />}
@@ -94,6 +96,12 @@ export default function NotificationScreen() {
           icon={<Ready />}
           Head={"Certificate Ready"}
           Details={"Your certificate for beach cleanup is now available"}
+          button={
+            <TouchableOpacity style={styles.button}>
+              <Text style={styles.btnText}>Download it right now</Text>
+              <Download />
+            </TouchableOpacity>
+          }
           Date={"3 days ago"}
         />
         <Notification
@@ -149,4 +157,16 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 5,
   },
+  button: {
+    backgroundColor: "#1F3A5F66",
+    alignSelf: "flex-start",
+    padding: 10,
+    borderWidth: 1,
+    borderColor: "#448AFF8F",
+    borderRadius: 10,
+    flexDirection: "row",
+    alignItems: "center",
+  },
+
+  btnText: { fontFamily: FONTS.semibold, fontSize: 14, color: COLORS.primary },
 });

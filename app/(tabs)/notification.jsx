@@ -97,7 +97,7 @@ export default function NotificationScreen() {
     },
   ]);
 
-  const unreadCount = notifications.filter((notif) => !notif.isRead).length; //this counts the total number of unread notifications
+  const unreadCount = notifications.filter((item) => !item.isRead).length; //this counts the total number of unread notifications
 
   // Function to toggle a specific notification's read state
   const toggleReadStatus = (id) => {
@@ -132,16 +132,16 @@ export default function NotificationScreen() {
         contentContainerStyle={{ paddingBottom: 20 }}
         showsVerticalScrollIndicator={false}
       >
-        {notifications.map((notifications) => (
+        {notifications.map((item) => (
           <Notification
-            key={notifications.id}
-            icon={notifications.icon}
-            Head={notifications.head}
-            Details={notifications.details}
-            Date={notifications.date}
-            button={notifications.button}
-            isRead={notifications.isRead}
-            onToggle={() => toggleReadStatus(notifications.id)}
+            key={item.id}
+            icon={item.icon}
+            Head={item.head}
+            Details={item.details}
+            Date={item.date}
+            button={item.button}
+            isRead={item.isRead}
+            onToggle={() => toggleReadStatus(item.id)}
           />
         ))}
       </ScrollView>

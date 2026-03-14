@@ -30,12 +30,18 @@ const Search = () => {
     <View style={{ flex: 1 }}>
       <ScreenInfo ScreenTitle={"Search Events"} />
       <View style={styles.safeview}>
-        <SearchBar />
+        <SearchBar
+          autoFocus={true}
+          onFilterPress={() => console.log("OPen Filter screen")}
+        />
         <KeyboardAvoidingView
           behavior={Platform.OS === "ios" ? "padding" : "height"}
           style={{ flex: 1 }}
         >
-          <ScrollView keyboardShouldPersistTaps="handled">
+          <ScrollView
+            keyboardShouldPersistTaps="handled"
+            showsVerticalScrollIndicator={false}
+          >
             <View style={styles.section}>
               <Text style={styles.property}>{"Recent Searches"}</Text>
               <View style={styles.propView}>

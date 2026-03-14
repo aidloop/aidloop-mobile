@@ -40,6 +40,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 12,
     width: 280,
+    height: 52,
     paddingLeft: 40,
   },
   searchIcon: {

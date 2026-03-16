@@ -1,5 +1,5 @@
 import { router } from "expo-router";
-import { ScrollView, StyleSheet, View } from "react-native";
+import { ScrollView, View } from "react-native";
 import Privacy from "../assets/images/flat-color-icons_privacy.svg";
 import Help from "../assets/images/ic_sharp-help.svg";
 import Logout from "../assets/images/line-md_logout.svg";
@@ -64,5 +64,3 @@ export default function Settings() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({});

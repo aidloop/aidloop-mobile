@@ -45,7 +45,7 @@ export default function EventCard({
         <View style={styles.infoContainer}>
           <View style={styles.divider}></View>
           <View style={styles.infoItem}>
-            <DateIcon width={14} height={14} />
+            <DateIcon width={14} height={14} color={"#6B7C93"} />
             <Text style={styles.subtext}>{date}</Text>
           </View>
           <View style={styles.infoItem}>

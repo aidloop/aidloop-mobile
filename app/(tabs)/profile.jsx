@@ -27,6 +27,9 @@ export default function ProfileScreen() {
       icon: <Calendar width={20} height={20} color={"#448AFF"} />,
       title: "My Events",
       subtitle: "View upcoming and completed events",
+      onpress: () => {
+        router.push("/myevents");
+      },
     },
     {
       id: 2,

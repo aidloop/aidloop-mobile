@@ -12,29 +12,12 @@ import Certificate from "../../assets/images/certificate.svg";
 import Calendar from "../../assets/images/dateicon.svg";
 import Edit from "../../assets/images/edit.svg";
 import Signout from "../../assets/images/line-md_logout.svg";
-import Right from "../../assets/images/right.svg";
 import Settings from "../../assets/images/settings.svg";
+import Row from "../../components/ProfileOptions";
 import ScreenInfo from "../../components/screenInfo";
 import { COLORS } from "../../constants/colors";
 import { FONTS } from "../../constants/fonts";
 
-const Row = ({ icon, title, subtitle, logout }) => (
-  <View
-    style={[
-      styles.rowContainer,
-      { borderColor: logout ? "#F44336" : "#448AFF" },
-    ]}
-  >
-    <View style={styles.rowIcon}>{icon}</View>
-    <View style={{ flex: 1 }}>
-      <Text style={styles.title}>{title}</Text>
-      <Text style={styles.subtitle}>{subtitle}</Text>
-    </View>
-    <TouchableOpacity>
-      <Right color={COLORS.primary} />
-    </TouchableOpacity>
-  </View>
-);
 export default function ProfileScreen() {
   const router = useRouter();
 
@@ -56,12 +39,18 @@ export default function ProfileScreen() {
       icon: <Notification width={20} height={20} color={"#448AFF"} />,
       title: "Notifications",
       subtitle: "View updates and reminders",
+      onpress: () => {
+        router.push("/notification");
+      },
     },
     {
       id: 4,
       icon: <Settings width={20} height={20} color={"#448AFF"} />,
       title: "Settings",
       subtitle: "View updates and reminders",
+      onpress: () => {
+        router.push("/settings");
+      },
     },
     {
       id: 5,
@@ -150,6 +139,7 @@ export default function ProfileScreen() {
               title={item.title}
               subtitle={item.subtitle}
               logout={item.logout}
+              onPress={item.onpress}
             />
           ))}
         </View>
@@ -219,26 +209,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
 
-  rowContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 10,
-    backgroundColor: "#F9F9F9",
-    borderWidth: 0.5,
-    // borderColor: "#448AFF",
-    borderRadius: 20,
-    paddingHorizontal: 10,
-    paddingVertical: 10,
-    marginVertical: 5,
-  },
-
   status: { fontFamily: FONTS.semibold, fontSize: 14, color: "#599F61" },
-
-  rowIcon: { backgroundColor: "#A5A5A540", padding: 5, borderRadius: "50%" },
-
-  title: { fontFamily: FONTS.medium, fontSize: 16 },
-
-  subtitle: { fontFamily: FONTS.regular, fontSize: 14, color: "#000000A8" },
 
   certView: {
     flexDirection: "row",

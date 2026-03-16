@@ -4,6 +4,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import EventCard from "../../components/eventcard";
 import Header from "../../components/header";
 import SearchBar from "../../components/searchbar";
+import { events } from "../../data/events";
 
 import { COLORS } from "../../constants/colors";
 
@@ -12,7 +13,10 @@ export default function HomeScreen() {
 
   return (
     <SafeAreaView style={styles.safeareaview}>
-      <ScrollView style={styles.scrollview}>
+      <ScrollView
+        style={styles.scrollview}
+        showsVerticalScrollIndicator={false}
+      >
         <Header />
 
         <TouchableOpacity
@@ -25,39 +29,25 @@ export default function HomeScreen() {
         </TouchableOpacity>
         {/* <SearchBar /> */}
 
-        <EventCard
-          image={require("../../assets/images/eventimage-1.png")}
-          status="Verified"
-          title="Beach Cleanup"
-          date="June 14, 2026"
-          location="Tarkwa Bay"
-          time="9:00 AM - 1:00 PM"
-          people="12/20 Slots"
-          role="Co-Worker"
-          rating="4.9"
-        />
-        <EventCard
-          image={require("../../assets/images/eventimage-3.jpg")}
-          status="Verified"
-          title="Community Food Drive"
-          date="July 2, 2026"
-          location="Yaba, Lagos"
-          time="10:00 AM - 3:00 PM"
-          people="85/120 Slots"
-          role="Volunteer"
-          rating="4.7"
-        />
-        <EventCard
-          image={require("../../assets/images/eventimage-2.jpg")}
-          status="Verified"
-          title="Tree Planting Initiative"
-          date="August 10, 2026"
-          location="Lekki Conservation Centre"
-          time="8:00 AM - 12:00 PM"
-          people="45/60 Slots"
-          role="Team Lead"
-          rating="4.8"
-        />
+        {events.map((event) => (
+          <EventCard
+            key={event.id}
+            image={event.image}
+            verification={event.verification}
+            title={event.title}
+            date={event.date}
+            location={event.location}
+            time={event.time}
+            people={event.people}
+            role={event.role}
+            rating={event.rating}
+            about={event.about}
+            category={event.category}
+            hostedBy={event.hostedBy}
+            benefits={event.benefits}
+            volunteerRequirements={event.volunteerRequirements}
+          />
+        ))}
       </ScrollView>
     </SafeAreaView>
   );

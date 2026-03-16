@@ -5,4 +5,5 @@ export const COLORS = {
   neutral: "#6B7C93",
   background: "#F4F7FA",
   white: "#FFFFFF",
+  shadow: "#EEEEEE",
 };

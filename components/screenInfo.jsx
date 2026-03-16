@@ -13,7 +13,7 @@ const ScreenInfo = ({ ScreenTitle }) => {
           router.back();
         }}
       >
-        <Back color={COLORS.white} height={48} width={24} />
+        <Back color={COLORS.white} height={34} width={34} />
       </TouchableOpacity>
       <Text style={styles.titleText}>{ScreenTitle}</Text>
     </SafeAreaView>
@@ -34,7 +34,7 @@ const styles = StyleSheet.create({
     flex: 1,
     fontFamily: FONTS.semibold,
     color: COLORS.white,
-    fontSize: 28,
+    fontSize: 24,
   },
 });
 export default ScreenInfo;

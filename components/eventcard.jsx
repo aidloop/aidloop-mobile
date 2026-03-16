@@ -1,3 +1,4 @@
+import { useRouter } from "expo-router";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import CheckMark from "../assets/images/checkmark.svg";
 import DateIcon from "../assets/images/dateicon.svg";
@@ -10,17 +11,23 @@ import TimeIcon from "../assets/images/timeicon.svg";
 import { COLORS } from "../constants/colors";
 import { FONTS } from "../constants/fonts";
 
-export default function EventCCard({
-  image,
-  status,
+export default function EventCard({
   title,
+  image,
   date,
-  location,
   time,
+  location,
   people,
-  role,
   rating,
+  role,
+  verification,
+  hostedBy,
+  volunteerRequirements,
+  benefits,
+  about,
+  category,
 }) {
+  const router = useRouter();
   return (
     <View style={styles.container}>
       <View style={styles.imageContainer}>
@@ -28,7 +35,7 @@ export default function EventCCard({
         <View style={styles.statusContainer}>
           <CheckMark width={22} height={22} style={styles.statusIcon} />
           <View style={styles.statusTextContainer}>
-            <Text style={styles.statusText}>{status}</Text>
+            <Text style={styles.statusText}>{verification}</Text>
           </View>
         </View>
       </View>
@@ -65,7 +72,31 @@ export default function EventCCard({
           </View>
         </View>
         <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.viewDetailsButton}>
+          <TouchableOpacity
+            style={styles.viewDetailsButton}
+            activeOpacity={0.9}
+            onPress={() =>
+              router.push({
+                pathname: "/eventdetails",
+                params: {
+                  title,
+                  image,
+                  date,
+                  time,
+                  location,
+                  people,
+                  rating,
+                  role,
+                  verification,
+                  hostedBy,
+                  volunteerRequirements,
+                  benefits,
+                  about,
+                  category,
+                },
+              })
+            }
+          >
             <Text style={styles.viewDetailsText}>View Details</Text>
           </TouchableOpacity>
           <RegisterIcon width={22} height={22} />
@@ -98,9 +129,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     top: "10%",
     transform: [{ translateY: -7 }],
-  },
-  statusIcon: {
-    marginRight: 5,
   },
   statusTextContainer: {
     backgroundColor: COLORS.neutral,

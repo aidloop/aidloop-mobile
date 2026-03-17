@@ -32,22 +32,21 @@ export default function HomeScreen() {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  const fetchEvents = async () => {
+    try {
+      setLoading(true);
+      const response = await API.get("/events");
+
+      console.log("Fetched Events:", response.data);
+
+      setEvents(response.data.events);
+    } catch (error) {
+      console.error("Error fetching events:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
   useEffect(() => {
-    const fetchEvents = async () => {
-      try {
-        setLoading(true);
-        const response = await API.get("/events");
-
-        console.log("Fetched Events:", response.data);
-
-        setEvents(response.data.data);
-      } catch (error) {
-        console.error("Error fetching events:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchEvents();
   }, []);
 
@@ -72,11 +71,11 @@ export default function HomeScreen() {
             alignItems: "center",
           }}
         >
-          <ActivityIndicator size={40} color={COLORS.primary} />
+          <ActivityIndicator size={40} color={COLORS.highlight} />
           <Text
             style={{
               marginTop: 10,
-              color: COLORS.neutral,
+              color: COLORS.primary,
             }}
           >
             Loading Events...
@@ -144,15 +143,39 @@ export default function HomeScreen() {
             />
           ))
         ) : (
-          <Text
+          <View
             style={{
-              textAlign: "center",
-              marginTop: 50,
-              color: COLORS.neutral,
+              // flex: 1,
+              alignItems: "center",
+              justifyContent: "center",
+              // backgroundColor: COLORS.highlight,
+              gap: 10,
             }}
           >
-            No events available right now.
-          </Text>
+            <Text
+              style={{
+                // textAlign: "center",
+                marginTop: 50,
+                color: COLORS.neutral,
+              }}
+            >
+              No events available right now.
+            </Text>
+            <TouchableOpacity
+              style={{
+                borderColor: COLORS.primary,
+                paddingHorizontal: 20,
+                // alignSelf: "flex-start",
+                paddingVertical: 10,
+                borderRadius: 20,
+                borderWidth: 1,
+                // marginTop: 20,
+              }}
+              onPress={fetchEvents}
+            >
+              <Text>Refresh</Text>
+            </TouchableOpacity>
+          </View>
         )}
       </ScrollView>
     </SafeAreaView>

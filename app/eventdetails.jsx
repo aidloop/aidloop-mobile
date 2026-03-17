@@ -117,7 +117,7 @@ export default function EventDetails() {
   const displayDate = formatDate(event.date);
   const displayTime = `${event.startTime} - ${event.endTime}`;
   const displayLocation = `${event.location?.venue || "TBD"}, ${event.location?.city || "Unknown"}`;
-  const people = `${event.volunteerSlots} Slots`;
+  const people = `${event.volunteerProgress.filled}/${event.volunteerProgress.total} slots`;
   const benefits = event?.certificateEnabled
     ? "Certificate Provided"
     : "Community Service";

@@ -1,4 +1,5 @@
 import { useRouter } from "expo-router";
+import { useEffect, useState } from "react";
 import {
   Pressable,
   ScrollView,
@@ -7,6 +8,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import API from "../../api/api";
 import Notification from "../../assets/images/Notification.svg";
 import Certificate from "../../assets/images/certificate.svg";
 import Calendar from "../../assets/images/dateicon.svg";
@@ -19,6 +21,8 @@ import { COLORS } from "../../constants/colors";
 import { FONTS } from "../../constants/fonts";
 
 export default function ProfileScreen() {
+  const [profile, setProfile] = useState([]);
+  const [loading, setLoading] = useState(true);
   const router = useRouter();
 
   const rows = [
@@ -64,6 +68,20 @@ export default function ProfileScreen() {
     },
   ];
 
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const response = await API.get("/users/me");
+        console.log(response.data);
+      } catch (error) {
+        console.error("Error fetching events:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProfile();
+  }, []);
   return (
     <View style={styles.safeareaview}>
       <View>

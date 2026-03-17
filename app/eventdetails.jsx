@@ -30,7 +30,7 @@ export default function EventDetails() {
     if (!dateString) return "TBD";
     const date = new Date(dateString);
     return date.toLocaleDateString("en-US", {
-      year: "numeric",
+      // year: "numeric",
       month: "long",
       day: "numeric",
     });

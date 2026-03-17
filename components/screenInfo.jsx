@@ -10,7 +10,7 @@ const ScreenInfo = ({ ScreenTitle, subtext, icon }) => {
     <SafeAreaView style={styles.header}>
       <TouchableOpacity
         onPress={() => {
-          router.back();
+          router.push("/home");
         }}
       >
         <Back color={COLORS.white} height={34} width={34} />

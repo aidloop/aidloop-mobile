@@ -3,6 +3,7 @@ import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
+  Alert,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -11,6 +12,7 @@ import {
   View,
 } from "react-native";
 import API from "../../api/api";
+import { logout } from "../../api/auth";
 import Notification from "../../assets/images/Notification.svg";
 import Certificate from "../../assets/images/certificate.svg";
 import Calendar from "../../assets/images/dateicon.svg";
@@ -25,7 +27,36 @@ import { FONTS } from "../../constants/fonts";
 export default function ProfileScreen() {
   const [user, setUser] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loggingout, setLoggingout] = useState(false);
   const router = useRouter();
+
+  const fetchProfile = async () => {
+    try {
+      setLoading(true);
+      const response = await API.get("/auth/status");
+      console.log(response.data);
+      setUser(response.data.user);
+    } catch (error) {
+      console.error("Error fetching events:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      setLoggingout(true);
+      await logout();
+    } catch (error) {
+      Alert.alert("Logout Failed", error);
+    } finally {
+      setLoggingout(false);
+    }
+  };
+  // const logout = async ()=>{}
+  useEffect(() => {
+    fetchProfile();
+  }, []);
 
   const rows = [
     {
@@ -69,22 +100,6 @@ export default function ProfileScreen() {
       subtitle: "Sign out of your account",
     },
   ];
-
-  const fetchProfile = async () => {
-    try {
-      setLoading(true);
-      const response = await API.get("/auth/status");
-      console.log(response.data);
-      setUser(response.data.user);
-    } catch (error) {
-      console.error("Error fetching events:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-  useEffect(() => {
-    fetchProfile();
-  }, []);
 
   const userName = user?.fullName || "User";
   const email = user?.email || "user@email.com";

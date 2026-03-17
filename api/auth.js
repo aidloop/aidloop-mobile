@@ -15,6 +15,17 @@ export const login = async (email, password) => {
   }
 };
 
+//LOGOUT
+export const logout = async () => {
+  try {
+    const response = await API.post("/auth/logout");
+    return response.data;
+  } catch (error) {
+    console.error("Unable to logout", error);
+    throw error;
+  }
+};
+
 //REGISTER AUTHENTICATION
 
 export const register = async (fullName, email, password) => {

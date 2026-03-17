@@ -1,6 +1,8 @@
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import {
+  ActivityIndicator,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -68,23 +70,26 @@ export default function ProfileScreen() {
     },
   ];
 
+  const fetchProfile = async () => {
+    try {
+      setLoading(true);
+      const response = await API.get("/auth/status");
+      console.log(response.data);
+      setUser(response.data.user);
+    } catch (error) {
+      console.error("Error fetching events:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
   useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const response = await API.get("/auth/status");
-        console.log(response.data);
-        setUser(response.data.user);
-      } catch (error) {
-        console.error("Error fetching events:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchProfile();
   }, []);
 
-  const isActive = user?.isActive ? "Active" : "";
+  const userName = user?.fullName || "User";
+  const email = user?.email || "user@email.com";
+  const isActive = user?.isActive ? "Active" : "" || "Undefined";
+  const role = user?.role || "Volunteer";
   return (
     <View style={styles.safeareaview}>
       <View>
@@ -102,16 +107,31 @@ export default function ProfileScreen() {
         contentContainerStyle={{ paddingVertical: 30 }}
         showsVerticalScrollIndicator={false}
       >
-        <View style={styles.dp}>
-          <Text style={styles.dptext}>{user.fullName[0].toUpperCase()}</Text>
-        </View>
-        <View style={{ marginVertical: 10, alignItems: "center", gap: 3 }}>
-          <Text style={styles.username}>{user.fullName}</Text>
-          <Text style={styles.email}>{user.email}</Text>
-          <Pressable style={styles.badge}>
-            <Text style={styles.status}>{`${isActive} ${user.role}`}</Text>
-          </Pressable>
-        </View>
+        {!loading ? (
+          <View>
+            <View style={styles.dp}>
+              <Text style={styles.dptext}>{userName[0]}</Text>
+            </View>
+            <View style={{ marginVertical: 10, alignItems: "center", gap: 3 }}>
+              <Text style={styles.username}>{userName}</Text>
+              <Text style={styles.email}>{email}</Text>
+              <View style={{ flexDirection: "row", alignItems: "center" }}>
+                <Pressable style={styles.badge}>
+                  <Text style={styles.status}>{`${isActive} ${role}`}</Text>
+                </Pressable>
+                <TouchableOpacity onPress={fetchProfile}>
+                  <MaterialIcons
+                    name="refresh"
+                    size={20}
+                    color={COLORS.neutral}
+                  />
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        ) : (
+          <ActivityIndicator />
+        )}
 
         <View style={styles.certView}>
           <Pressable style={styles.certPress}>

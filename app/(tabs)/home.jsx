@@ -107,6 +107,7 @@ export default function HomeScreen() {
           events.map((event) => (
             <EventCard
               key={event._id || "undefined"}
+              eventId={event._id}
               image={
                 event.image
                   ? { uri: event.image }

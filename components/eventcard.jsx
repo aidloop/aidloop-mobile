@@ -27,6 +27,7 @@ export default function EventCard({
   benefits,
   about,
   category,
+  eventId,
 }) {
   const router = useRouter();
   return (
@@ -80,21 +81,7 @@ export default function EventCard({
               router.push({
                 pathname: "/eventdetails",
                 params: {
-                  title,
-                  image,
-                  date,
-                  time,
-                  location,
-                  people,
-                  city,
-                  rating,
-                  role,
-                  verification,
-                  hostedBy,
-                  volunteerRequirements,
-                  benefits,
-                  about,
-                  category,
+                  eventId,
                 },
               })
             }

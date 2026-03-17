@@ -18,6 +18,7 @@ export default function EventCard({
   time,
   location,
   people,
+  city,
   rating,
   role,
   verification,
@@ -85,6 +86,7 @@ export default function EventCard({
                   time,
                   location,
                   people,
+                  city,
                   rating,
                   role,
                   verification,
@@ -132,10 +134,11 @@ const styles = StyleSheet.create({
   },
   statusTextContainer: {
     backgroundColor: COLORS.neutral,
-    paddingHorizontal: 7,
+    paddingHorizontal: 2,
     paddingVertical: 1,
     borderRadius: 3,
     boxShadow: "0px 1px 5px rgba(0, 0, 0, 0.5)",
+    width: 50,
   },
   statusText: {
     color: COLORS.white,

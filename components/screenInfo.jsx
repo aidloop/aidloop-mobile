@@ -15,7 +15,7 @@ const ScreenInfo = ({ ScreenTitle, subtext, icon }) => {
       >
         <Back color={COLORS.white} height={34} width={34} />
       </TouchableOpacity>
-      <View style={{ flex: 1 }}>
+      <View style={{ flex: 1, alignSelf: "center" }}>
         <Text style={styles.titleText}>{ScreenTitle}</Text>
         {subtext && subtext}
       </View>
@@ -29,9 +29,10 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: "row",
     backgroundColor: COLORS.primary,
-    // height: 80,
+    height: 105,
+    // justifyContent: "",
     padding: 10,
-    alignItems: "center",
+    alignItems: "flex-start",
     justifyContent: "center",
   },
   titleText: {
@@ -40,6 +41,7 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.semibold,
     color: COLORS.white,
     fontSize: 24,
+    alignSelf: "center",
   },
 });
 export default ScreenInfo;

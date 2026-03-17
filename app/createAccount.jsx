@@ -1,6 +1,7 @@
-import { router } from "expo-router";
+import { useRouter } from "expo-router";
 import { useState } from "react";
 import {
+  Alert,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -11,9 +12,9 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { register } from "../api/auth";
 import Back from "../assets/images/Back.svg";
 import Google from "../assets/images/Google.svg";
-import { COLORS } from "../constants/colors";
 import { FONTS } from "../constants/fonts";
 
 const Input = ({ InputText, placeholder, ...props }) => (
@@ -28,6 +29,10 @@ const Input = ({ InputText, placeholder, ...props }) => (
   </View>
 );
 export default function CreateAccount() {
+  const router = useRouter();
+
+  const [loading, setLoading] = useState(false);
+
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -35,8 +40,21 @@ export default function CreateAccount() {
   const isFormValid =
     fullName.length > 0 && email.length > 0 && password.length > 0;
 
-  const handleRegister = () => {
-    console.log("User Data:", "name:", fullName, "email", email);
+  const handleRegister = async () => {
+    try {
+      setLoading(true);
+
+      await register(fullName, email.trim(), password);
+      Alert.alert("Success", "OTP sent to your email");
+      router.push({ pathname: "/otp", params: { email } });
+    } catch (error) {
+      Alert.alert(
+        "Error",
+        error.response?.data?.message || "Registration failed",
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -48,7 +66,6 @@ export default function CreateAccount() {
         <Back
           width={30}
           height={30}
-          color={COLORS.primary}
           onPress={() => {
             router.back();
           }}
@@ -108,7 +125,9 @@ export default function CreateAccount() {
               { backgroundColor: isFormValid ? "#1F3A5F" : "grey" },
             ]}
           >
-            <Text style={styles.btnText}>Create Account</Text>
+            <Text style={styles.btnText}>
+              {loading ? "Creating Account..." : "Create Account"}
+            </Text>
           </TouchableOpacity>
           <View style={styles.bottomText}>
             <Text style={styles.loginText}>Already have an account? </Text>

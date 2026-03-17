@@ -26,6 +26,7 @@ export default function EventDetails() {
     time,
     location,
     people,
+    city,
     rating,
     role,
     verification,
@@ -92,7 +93,7 @@ export default function EventDetails() {
             </View>
             <View style={styles.infoContainer}>
               <Location width={16} height={16} />
-              <Text style={styles.infoText}>{location}</Text>
+              <Text style={styles.infoText}>{`${location}, ${city}`}</Text>
             </View>
           </View>
           <View style={styles.titleContainer}>

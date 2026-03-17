@@ -106,26 +106,39 @@ export default function HomeScreen() {
         {events.length > 0 ? (
           events.map((event) => (
             <EventCard
-              key={event._id} // Backend usually uses _id instead of id
-              image={event.image}
-              verification={event.organizationId.verificationStatus} // Fallback if backend misses it
-              title={event.name}
-              date={formatDate(event.date)}
-              location={event.location.venue}
-              time={`${event.startTime} - ${event.endTime}`}
-              people={event.volunteerSlots}
-              role={event.role || "No specified role"} //If role isn't provided by the backend
-              rating={event.rating || "No Ratings"} //ratings not provided by the backend
-              about={event.about}
-              category={event.category}
-              hostedBy={event.hostedBy}
-              benefits={event.benefits}
-              volunteerRequirements={event.volunteerRequirements}
-              onPress={() =>
-                router.push({
-                  pathname: "/eventdetails",
-                  params: { ...event },
-                })
+              key={event._id || "undefined"}
+              image={
+                event.image
+                  ? { uri: event.image }
+                  : require("../../assets/images/eventimage-1.png")
+              }
+              verification={
+                event.organizationId?.verificationStatus === "approved"
+                  ? "Verified"
+                  : "Unverified"
+              }
+              title={event.name || "Untitled Event"}
+              date={formatDate(event.date) || "TBD"}
+              location={event.location?.venue || "TBD"}
+              city={event.location?.city || "Undefined"}
+              time={`${event.startTime} - ${event.endTime}` || "TBD"}
+              people={`${event.volunteerSlots} slots` || "Undefined"}
+              role={
+                event.roles?.length > 0 ? event.roles.join(", ") : "Volunteer"
+              }
+              rating={event.rating || "No Ratings"}
+              about={event.description || "No Description"}
+              category={event.category || "Undefined"}
+              hostedBy={event.organizationId.fullName || "Unknown Host "}
+              benefits={
+                event.certificateEnabled
+                  ? "Certificate of Participation"
+                  : "No benefits"
+              }
+              volunteerRequirements={
+                event.requirements?.length > 0
+                  ? event.requirements.join(", ")
+                  : "None"
               }
             />
           ))

@@ -1,4 +1,3 @@
-import { useRouter } from "expo-router";
 import { useState } from "react";
 import {
   ScrollView,
@@ -46,7 +45,6 @@ const Notification = ({
 };
 
 export default function NotificationScreen() {
-  const router = useRouter();
   const [notifications, setNotifications] = useState([
     {
       id: 1,

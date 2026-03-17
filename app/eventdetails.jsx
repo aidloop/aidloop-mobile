@@ -1,5 +1,7 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
+import { useEffect, useState } from "react";
 import {
+  ActivityIndicator,
   Image,
   ScrollView,
   StyleSheet,
@@ -7,8 +9,9 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import API from "../api/api";
 import CheckMark from "../assets/images/checkmark.svg";
-import Date from "../assets/images/dateicon.svg";
+import DateIcon from "../assets/images/dateicon.svg";
 import Host from "../assets/images/hosticon.svg";
 import Location from "../assets/images/locationicon.svg";
 import Role from "../assets/images/roleicon.svg";
@@ -19,25 +22,114 @@ import { COLORS } from "../constants/colors";
 import { FONTS } from "../constants/fonts";
 
 export default function EventDetails() {
-  const {
-    title,
-    image,
-    date,
-    time,
-    location,
-    people,
-    city,
-    rating,
-    role,
-    verification,
-    hostedBy,
-    volunteerRequirements,
-    benefits,
-    about,
-    category,
-  } = useLocalSearchParams();
-
   const router = useRouter();
+  const { eventId } = useLocalSearchParams();
+  const [event, setEvent] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const formatDate = (dateString) => {
+    if (!dateString) return "TBD";
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+  };
+
+  useEffect(() => {
+    const fetchEventDetails = async () => {
+      if (!eventId) {
+        setLoading(false);
+        return;
+      }
+
+      try {
+        setLoading(true);
+        const response = await API.get(`/events/${eventId}`);
+        console.log("Event Details", response.data);
+        setEvent(response.data.data);
+      } catch (error) {
+        console.error("Error fetching event details:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchEventDetails();
+  }, [eventId]);
+
+  if (loading) {
+    return (
+      <View style={{ flex: 1, backgroundColor: COLORS.white }}>
+        <ScreenInfo />
+        <View
+          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+        >
+          <ActivityIndicator size="large" color={COLORS.primary} />
+          <Text
+            style={{
+              marginTop: 10,
+              color: COLORS.neutral,
+              fontFamily: FONTS.medium,
+            }}
+          >
+            Loading event details...
+          </Text>
+        </View>
+      </View>
+    );
+  }
+
+  if (!event) {
+    return (
+      <View
+        style={{
+          flex: 1,
+          justifyContent: "center",
+          alignItems: "center",
+          backgroundColor: COLORS.white,
+        }}
+      >
+        <Text style={{ fontFamily: FONTS.medium, fontSize: 18 }}>
+          Event not found.
+        </Text>
+        <TouchableOpacity
+          onPress={() => router.back()}
+          style={{ marginTop: 20 }}
+        >
+          <Text style={{ color: COLORS.primary, fontFamily: FONTS.semibold }}>
+            Go Back
+          </Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
+  const title = event.name || "Untitled Event";
+  const category = event.category || "Uncategorized";
+  const hostedBy = event.organizationId?.fullName || "Unknown Host";
+  const verification =
+    event.organizationId?.verificationStatus === "approved"
+      ? "Verified"
+      : "Unverified";
+  const rating = event.rating || "No Ratings";
+  const role = event.roles?.length > 0 ? event.roles.join(", ") : "Volunteer";
+  const displayDate = formatDate(event.date);
+  const displayTime = `${event.startTime} - ${event.endTime}`;
+  const displayLocation = `${event.location?.venue || "TBD"}, ${event.location?.city || "Unknown"}`;
+  const people = `${event.volunteerSlots} Slots`;
+  const benefits = event?.certificateEnabled
+    ? "Certificate Provided"
+    : "Community Service";
+  const about = event.description || "No Description";
+
+  const imageSource =
+    event.image && event.image.startsWith("http")
+      ? { uri: event.image }
+      : require("../assets/images/eventimage-1.png");
+
+  const requirementsArray =
+    event.requirements?.length > 0 ? event.requirements : ["None"];
 
   return (
     <View style={{ flex: 1 }}>
@@ -48,7 +140,7 @@ export default function EventDetails() {
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.imageContainer}>
-          <Image source={image} style={styles.image} />
+          <Image source={imageSource} style={styles.image} />
           <View style={styles.statusContainer}>
             <CheckMark width={22} height={22} style={styles.statusIcon} />
             <View style={styles.statusTextContainer}>
@@ -84,16 +176,16 @@ export default function EventDetails() {
           </View>
           <View style={styles.coloredContainer}>
             <View style={styles.infoContainer}>
-              <Date width={16} height={16} />
-              <Text style={styles.infoText}>{date}</Text>
+              <DateIcon width={16} height={16} />
+              <Text style={styles.infoText}>{displayDate}</Text>
             </View>
             <View style={styles.infoContainer}>
               <Time width={16} height={16} />
-              <Text style={styles.infoText}>{time}</Text>
+              <Text style={styles.infoText}>{displayTime}</Text>
             </View>
             <View style={styles.infoContainer}>
               <Location width={16} height={16} />
-              <Text style={styles.infoText}>{`${location}, ${city}`}</Text>
+              <Text style={styles.infoText}>{`${displayLocation}`}</Text>
             </View>
           </View>
           <View style={styles.titleContainer}>
@@ -112,7 +204,15 @@ export default function EventDetails() {
           </View>
           <View style={styles.titleContainer}>
             <Text style={styles.infoText2}>Volunteer Requirement</Text>
-            <Text style={styles.subText}>{volunteerRequirements}</Text>
+
+            <View style={styles.bulletListContainer}>
+              {requirementsArray.map((req, index) => (
+                <View key={index} style={styles.bulletRow}>
+                  <Text style={styles.bulletPoint}>•</Text>
+                  <Text style={styles.bulletText}>{req}</Text>
+                </View>
+              ))}
+            </View>
             <TouchableOpacity
               style={styles.registerButton}
               activeOpacity={0.9}
@@ -263,5 +363,21 @@ const styles = StyleSheet.create({
     color: COLORS.white,
     textAlign: "center",
     fontFamily: FONTS.semibold,
+  },
+
+  bulletListContainer: { marginTop: 8, gap: 6 },
+  bulletRow: { flexDirection: "row", alignItems: "flex-start" },
+  bulletPoint: {
+    fontSize: 16,
+    fontFamily: FONTS.regular,
+    color: "#000000",
+    marginRight: 8,
+    marginTop: 2,
+  },
+  bulletText: {
+    fontSize: 16,
+    fontFamily: FONTS.regular,
+    lineHeight: 22,
+    flex: 1,
   },
 });

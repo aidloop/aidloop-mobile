@@ -21,7 +21,7 @@ import { COLORS } from "../../constants/colors";
 import { FONTS } from "../../constants/fonts";
 
 export default function ProfileScreen() {
-  const [profile, setProfile] = useState([]);
+  const [user, setUser] = useState([]);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
@@ -71,8 +71,9 @@ export default function ProfileScreen() {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const response = await API.get("/users/me");
+        const response = await API.get("/auth/status");
         console.log(response.data);
+        setUser(response.data.user);
       } catch (error) {
         console.error("Error fetching events:", error);
       } finally {
@@ -82,6 +83,8 @@ export default function ProfileScreen() {
 
     fetchProfile();
   }, []);
+
+  const isActive = user?.isActive ? "Active" : "";
   return (
     <View style={styles.safeareaview}>
       <View>
@@ -100,13 +103,13 @@ export default function ProfileScreen() {
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.dp}>
-          <Text style={styles.dptext}>FS</Text>
+          <Text style={styles.dptext}>{user.fullName[0].toUpperCase()}</Text>
         </View>
         <View style={{ marginVertical: 10, alignItems: "center", gap: 3 }}>
-          <Text style={styles.username}>Favour Shiyanbola</Text>
-          <Text style={styles.email}>favour@gmail.com</Text>
+          <Text style={styles.username}>{user.fullName}</Text>
+          <Text style={styles.email}>{user.email}</Text>
           <Pressable style={styles.badge}>
-            <Text style={styles.status}>Active Volunteer</Text>
+            <Text style={styles.status}>{`${isActive} ${user.role}`}</Text>
           </Pressable>
         </View>
 

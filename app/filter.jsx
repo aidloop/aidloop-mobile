@@ -1,4 +1,5 @@
 import { router } from "expo-router";
+
 import { useState } from "react";
 import {
   Alert,
@@ -42,13 +43,23 @@ const Filter = () => {
   };
 
   const handleApply = () => {
-    const filterSearchEvents = {
-      category: selectedCategory,
-      date: selectedDate,
-      location: selectedLocation,
-    };
-    console.log("Search filters", filterSearchEvents);
-    router.back();
+    console.log("Applying filters:", {
+      selectedCategory,
+      selectedLocation,
+      selectedDate,
+    });
+
+    router.push({
+      pathname: "/search",
+      params: {
+        filterCategory:
+          selectedCategory === "All Categories" ? "" : selectedCategory,
+
+        filterLocation: selectedLocation || "",
+
+        filterDate: selectedDate || "",
+      },
+    });
   };
   return (
     <View style={{ flex: 1, backgroundColor: COLORS.white }}>
@@ -134,17 +145,19 @@ const Filter = () => {
         <View style={styles.section}>
           <Text style={styles.sectionHeader}>Location</Text>
           <View style={styles.sectionContents}>
-            {["Lagos", "Nigeria", "West Africa"].map((location) => (
-              <ContentButton
-                key={location}
-                text={location}
-                isSelected={selectedLocation === location}
-                onPress={() => {
-                  setSelectedLocation(location);
-                  console.log("Preferred location is: ", location);
-                }}
-              />
-            ))}
+            {["Lagos", "Nigeria", "West Africa", "Abuja", "Jos"].map(
+              (location) => (
+                <ContentButton
+                  key={location}
+                  text={location}
+                  isSelected={selectedLocation === location}
+                  onPress={() => {
+                    setSelectedLocation(location);
+                    console.log("Preferred location is: ", location);
+                  }}
+                />
+              ),
+            )}
           </View>
         </View>
       </ScrollView>

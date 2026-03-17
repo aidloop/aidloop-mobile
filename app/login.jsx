@@ -1,6 +1,7 @@
-import { router, useNavigation } from "expo-router";
+import { useNavigation, useRouter } from "expo-router";
 import { useState } from "react";
 import {
+  Alert,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -10,6 +11,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { login } from "../api/auth";
 import Google from "../assets/images/Google.svg";
 import { COLORS } from "../constants/colors";
 
@@ -27,20 +29,32 @@ const Input = ({ InputText, placeholder, ...props }) => (
   </View>
 );
 export default function Login() {
+  const router = useRouter();
+
   const navigation = useNavigation();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const isFormValid = email.length > 0 && password.length > 0;
 
-  const handleRegister = () => {
-    console.log("User Data:", "email", email);
-    navigation.reset({
-      index: 0,
-      routes: [{ name: "(tabs)" }],
-    });
-    // router.push("/home");
+  const handleLogin = async () => {
+    if (!isFormValid) return;
+
+    try {
+      setLoading(true);
+      await login(email.trim(), password);
+      Alert.alert("Success", "Logged in successfully");
+      router.replace("/(tabs)/home");
+    } catch (error) {
+      Alert.alert(
+        "Login Failed",
+        error.response?.data?.message || "Invalid credentials",
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -89,14 +103,16 @@ export default function Login() {
             />
           </View>
           <TouchableOpacity
-            onPress={handleRegister}
-            disabled={!isFormValid}
+            onPress={handleLogin}
+            disabled={!isFormValid || loading}
             style={[
               styles.createBtn,
               { backgroundColor: isFormValid ? "#1F3A5F" : "grey" },
             ]}
           >
-            <Text style={styles.btnText}>Log In</Text>
+            <Text style={styles.btnText}>
+              {loading ? "Logging in..." : "Log In"}
+            </Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => {

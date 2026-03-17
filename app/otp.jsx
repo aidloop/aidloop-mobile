@@ -1,14 +1,67 @@
-import { router } from "expo-router";
-import { useState } from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import { useEffect, useState } from "react";
+import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { OtpInput } from "react-native-otp-entry";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { resendOTP, verifyOTP } from "../api/auth";
 import Back from "../assets/images/Back.svg";
 import { COLORS } from "../constants/colors";
 import { FONTS } from "../constants/fonts";
 
 export default function Otp() {
+  const router = useRouter();
+  const { email } = useLocalSearchParams();
+
   const [otpCode, setOtpCode] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const [timer, setTimer] = useState(30);
+  const [resending, setResending] = useState(false);
+
+  useEffect(() => {
+    if (timer === 0) return;
+
+    const interval = setInterval(() => setTimer((prev) => prev - 1), 1000);
+    return () => clearInterval(interval);
+  }, [timer]);
+
+  const handleVerifyCode = async () => {
+    if (otpCode.length !== 6) {
+      Alert.alert("Invalid OTP", "Please enter the 6-digit code");
+      return;
+    }
+    try {
+      setLoading(true);
+      await verifyOTP(String(email), otpCode);
+      Alert.alert("Success", "Account verified successfully");
+      router.replace("/login");
+    } catch (error) {
+      Alert.alert(
+        "Error",
+        error.response?.data?.message || "Verification failed",
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleResendCode = async () => {
+    if (timer > 0) return;
+
+    try {
+      setResending(true);
+      await resendOTP(String(email));
+      Alert.alert("OTP Sent", "A new OTP has been sent to your email");
+      setTimer(30);
+    } catch (error) {
+      Alert.alert(
+        "Error",
+        error.response?.data?.message || "Failed to resend OTP",
+      );
+    } finally {
+      setResending(false);
+    }
+  };
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#fff" }}>
@@ -23,7 +76,7 @@ export default function Otp() {
         <View>
           <Text style={styles.heading}>Verify Code</Text>
           <Text style={styles.text}>
-            Enter the 6-digit code sent to your email.
+            Enter the 6-digit code sent to {email}.
           </Text>
         </View>
 
@@ -32,9 +85,9 @@ export default function Otp() {
             numberOfDigits={6}
             focusColor={COLORS.primary}
             onTextChange={(text) => setOtpCode(text)}
-            onFilled={() => {
-              router.replace("/resetPassword");
-            }}
+            // onFilled={() => {
+            //   router.replace("/resetPassword");
+            // }}
             theme={{
               pinCodeContainerStyle: styles.pinCodeContainer,
               pinCodeTextStyle: styles.pinCodeText,
@@ -44,16 +97,22 @@ export default function Otp() {
 
         <View>
           <Text style={styles.text1}>Didn&apos;t receive the code</Text>
-          <TouchableOpacity>
-            <Text style={styles.text2}>Resend Code</Text>
+          <TouchableOpacity
+            disabled={timer > 0 || resending}
+            onPress={handleResendCode}
+          >
+            <Text style={styles.text2}>
+              {timer > 0 ? `Resend in (${timer}s)` : "Resend Code"}
+            </Text>
           </TouchableOpacity>
         </View>
 
         <TouchableOpacity
-          disabled={otpCode.length < 6}
-          onPress={() => {
-            router.push("/resetPassword");
-          }}
+          disabled={otpCode.length < 6 || loading}
+          // onPress={() => {
+          //   router.push("/resetPassword");
+          // }}
+          onPress={handleVerifyCode}
           style={[
             styles.createBtn,
             {
@@ -62,7 +121,9 @@ export default function Otp() {
             },
           ]}
         >
-          <Text style={styles.btnText}>Verify Code</Text>
+          <Text style={styles.btnText}>
+            {loading ? "Verifying..." : "Verify Code"}
+          </Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>

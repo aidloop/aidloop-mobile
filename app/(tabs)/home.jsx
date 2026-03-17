@@ -4,12 +4,44 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import EventCard from "../../components/eventcard";
 import Header from "../../components/header";
 import SearchBar from "../../components/searchbar";
+// import API from "../../api/api";
 import { events } from "../../data/events";
 
 import { COLORS } from "../../constants/colors";
 
 export default function HomeScreen() {
   const router = useRouter();
+
+  // const [events, setEvents] = useState([]);
+  // const [loading, setLoading] = useState(true);
+
+  // useEffect(() => {
+  //   const fetchEvents = async () => {
+  //     try {
+  //       setLoading(true);
+  //       const response = await API.get("/events");
+  //       setEvents(response.data);
+  //     } catch (error) {
+  //       console.error("Error fetching events:", error);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
+
+  //   fetchEvents();
+  // }, []);
+
+  // if (loading)
+  //   return (
+  //     <SafeAreaView
+  //       style={[
+  //         styles.safeareaview,
+  //         { justifyContent: "center", alignItems: "center" },
+  //       ]}
+  //     >
+  //       <ActivityIndicator size="large" color={COLORS.primary} />
+  //     </SafeAreaView>
+  //   );
 
   return (
     <SafeAreaView style={styles.safeareaview}>
@@ -46,6 +78,12 @@ export default function HomeScreen() {
             hostedBy={event.hostedBy}
             benefits={event.benefits}
             volunteerRequirements={event.volunteerRequirements}
+            onPress={() =>
+              router.push({
+                pathname: "/eventdetails",
+                params: { ...event },
+              })
+            }
           />
         ))}
       </ScrollView>

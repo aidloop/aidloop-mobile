@@ -37,7 +37,7 @@ export default function ProfileScreen() {
       console.log(response.data);
       setUser(response.data.user);
     } catch (error) {
-      console.error("Error fetching events:", error);
+      console.error("Error fetching user details:", error);
     } finally {
       setLoading(false);
     }
@@ -46,14 +46,15 @@ export default function ProfileScreen() {
   const handleLogout = async () => {
     try {
       setLoggingout(true);
-      await logout();
+      await logout(email);
+      Alert.alert("Logout Successful", "You have been securely logged out ");
+      router.replace("/login");
     } catch (error) {
       Alert.alert("Logout Failed", error);
     } finally {
       setLoggingout(false);
     }
   };
-  // const logout = async ()=>{}
   useEffect(() => {
     fetchProfile();
   }, []);
@@ -98,6 +99,12 @@ export default function ProfileScreen() {
       title: "Log out",
       logout: true,
       subtitle: "Sign out of your account",
+      onpress: () => {
+        Alert.alert("Confirm Logout", "Are you sure you want to logout?", [
+          { text: "Yes", onPress: () => handleLogout() },
+          { text: "No", style: "cancel" },
+        ]);
+      },
     },
   ];
 

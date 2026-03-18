@@ -68,7 +68,7 @@ const Search = () => {
       try {
         setLoading(true);
         const response = await API.get("/events");
-        const data = response.data.data;
+        const data = response.data.events;
         setAllEvents(data);
       } catch (error) {
         console.error("Error fetching for search:", error);

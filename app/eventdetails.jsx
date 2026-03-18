@@ -1,7 +1,9 @@
+import { Picker } from "@react-native-picker/picker";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
+  Alert,
   Image,
   ScrollView,
   StyleSheet,
@@ -10,6 +12,7 @@ import {
   View,
 } from "react-native";
 import API from "../api/api";
+import { registerForEvent } from "../api/events";
 import CheckMark from "../assets/images/checkmark.svg";
 import DateIcon from "../assets/images/dateicon.svg";
 import Host from "../assets/images/hosticon.svg";
@@ -26,6 +29,8 @@ export default function EventDetails() {
   const { eventId } = useLocalSearchParams();
   const [event, setEvent] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [registering, setRegistering] = useState(false);
+  const [selectedRole, setSelectedRole] = useState("");
   const formatDate = (dateString) => {
     if (!dateString) return "TBD";
     const date = new Date(dateString);
@@ -57,6 +62,25 @@ export default function EventDetails() {
 
     fetchEventDetails();
   }, [eventId]);
+
+  const handleRegister = async () => {
+    if (!selectedRole) {
+      Alert.alert("Please select a volunteer role");
+      return;
+    }
+    try {
+      setRegistering(true);
+      await registerForEvent(event._id, selectedRole);
+
+      router.push("/eventregistrationsuccess");
+    } catch (error) {
+      Alert.alert(
+        error.response?.data?.message || error.message || "Registration failed",
+      );
+    } finally {
+      setRegistering(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -130,6 +154,8 @@ export default function EventDetails() {
 
   const requirementsArray =
     event.requirements?.length > 0 ? event.requirements : ["None"];
+
+  const rolesArray = event.roles?.length > 0 ? event.roles : [];
 
   return (
     <View style={{ flex: 1 }}>
@@ -213,12 +239,40 @@ export default function EventDetails() {
                 </View>
               ))}
             </View>
+
+            {rolesArray.length > 0 && (
+              <View style={styles.pickerContainer}>
+                <Picker
+                  selectedValue={selectedRole}
+                  onValueChange={(itemValue) => setSelectedRole(itemValue)}
+                  style={styles.picker}
+                  dropdownIconColor={COLORS.primary}
+                >
+                  <Picker.Item
+                    label="Select Role"
+                    value=""
+                    color={COLORS.neutral}
+                  />
+                  {rolesArray.map((role) => (
+                    <Picker.Item key={role} label={role} value={role} />
+                  ))}
+                </Picker>
+              </View>
+            )}
+
             <TouchableOpacity
-              style={styles.registerButton}
-              activeOpacity={0.9}
-              onPress={() => router.push("/eventregistrationsuccess")}
+              style={[
+                styles.registerButton,
+                { opacity: registering ? 0.7 : 1 },
+              ]}
+              disabled={!selectedRole || registering}
+              onPress={handleRegister}
             >
-              <Text style={styles.registerText}>Register</Text>
+              {registering ? (
+                <ActivityIndicator color={COLORS.white} />
+              ) : (
+                <Text style={styles.registerText}>Register</Text>
+              )}
             </TouchableOpacity>
           </View>
         </View>
@@ -330,10 +384,11 @@ const styles = StyleSheet.create({
     gap: 7,
     alignItems: "center",
     backgroundColor: COLORS.shadow,
-    paddingHorizontal: 20,
+    // paddingHorizontal: 20,
+    paddingRight: 10,
+    paddingLeft: 10,
     paddingVertical: 5,
     borderRadius: 20,
-    alignSelf: "flex-start",
     borderColor: COLORS.neutral,
     borderWidth: 1,
   },
@@ -347,6 +402,25 @@ const styles = StyleSheet.create({
 
   benefitContainer: {
     marginTop: 20,
+  },
+
+  pickerContainer: {
+    backgroundColor: COLORS.shadow,
+    paddingRight: 10,
+    paddingLeft: 10,
+    paddingVertical: 0,
+    height: 50,
+    borderRadius: 20,
+    borderColor: COLORS.neutral,
+    borderWidth: 1,
+    overflow: "hidden",
+    marginTop: 20,
+  },
+  picker: {
+    color: COLORS.primary,
+    fontSize: 16,
+    fontFamily: FONTS.medium,
+    paddingHorizontal: 10,
   },
 
   registerButton: {

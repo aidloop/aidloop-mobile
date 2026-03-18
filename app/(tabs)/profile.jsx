@@ -108,7 +108,11 @@ export default function ProfileScreen() {
     },
   ];
 
-  const userName = user?.fullName || "User";
+  const name = user?.fullName || "User";
+  const userName = name
+    .split(/([ -])/)
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join("");
   const email = user?.email || "user@email.com";
   const isActive = user?.isActive ? "Active" : "" || "Undefined";
   const role = user?.role || "Volunteer";

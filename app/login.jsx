@@ -50,7 +50,7 @@ export default function Login() {
     } catch (error) {
       Alert.alert(
         "Login Failed",
-        error.response?.data?.message || "Invalid credentials",
+        error.response?.data?.message || "Invalid credentials/Network Error",
       );
     } finally {
       setLoading(false);

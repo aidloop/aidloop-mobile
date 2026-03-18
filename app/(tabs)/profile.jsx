@@ -1,5 +1,9 @@
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { useRouter } from "expo-router";
+import { useEffect, useState } from "react";
 import {
+  ActivityIndicator,
+  Alert,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -7,6 +11,8 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import API from "../../api/api";
+import { logout } from "../../api/auth";
 import Notification from "../../assets/images/Notification.svg";
 import Certificate from "../../assets/images/certificate.svg";
 import Calendar from "../../assets/images/dateicon.svg";
@@ -19,7 +25,39 @@ import { COLORS } from "../../constants/colors";
 import { FONTS } from "../../constants/fonts";
 
 export default function ProfileScreen() {
+  const [user, setUser] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [loggingout, setLoggingout] = useState(false);
   const router = useRouter();
+
+  const fetchProfile = async () => {
+    try {
+      setLoading(true);
+      const response = await API.get("/auth/status");
+      console.log(response.data);
+      setUser(response.data.user);
+    } catch (error) {
+      console.error("Error fetching user details:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      setLoggingout(true);
+      await logout();
+      Alert.alert("Logout Successful", "You have been securely logged out ");
+      router.replace("/login");
+    } catch (error) {
+      Alert.alert("Logout Failed", error);
+    } finally {
+      setLoggingout(false);
+    }
+  };
+  useEffect(() => {
+    fetchProfile();
+  }, []);
 
   const rows = [
     {
@@ -61,9 +99,23 @@ export default function ProfileScreen() {
       title: "Log out",
       logout: true,
       subtitle: "Sign out of your account",
+      onpress: () => {
+        Alert.alert("Confirm Logout", "Are you sure you want to logout?", [
+          { text: "Yes", onPress: () => handleLogout() },
+          { text: "No", style: "cancel" },
+        ]);
+      },
     },
   ];
 
+  const name = user?.fullName || "User";
+  const userName = name
+    .split(/([ -])/)
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join("");
+  const email = user?.email || "user@email.com";
+  const isActive = user?.isActive ? "Active" : "" || "Undefined";
+  const role = user?.role || "Volunteer";
   return (
     <View style={styles.safeareaview}>
       <View>
@@ -81,16 +133,31 @@ export default function ProfileScreen() {
         contentContainerStyle={{ paddingVertical: 30 }}
         showsVerticalScrollIndicator={false}
       >
-        <View style={styles.dp}>
-          <Text style={styles.dptext}>FS</Text>
-        </View>
-        <View style={{ marginVertical: 10, alignItems: "center", gap: 3 }}>
-          <Text style={styles.username}>Favour Shiyanbola</Text>
-          <Text style={styles.email}>favour@gmail.com</Text>
-          <Pressable style={styles.badge}>
-            <Text style={styles.status}>Active Volunteer</Text>
-          </Pressable>
-        </View>
+        {!loading ? (
+          <View>
+            <View style={styles.dp}>
+              <Text style={styles.dptext}>{userName[0]}</Text>
+            </View>
+            <View style={{ marginVertical: 10, alignItems: "center", gap: 3 }}>
+              <Text style={styles.username}>{userName}</Text>
+              <Text style={styles.email}>{email}</Text>
+              <View style={{ flexDirection: "row", alignItems: "center" }}>
+                <Pressable style={styles.badge}>
+                  <Text style={styles.status}>{`${isActive} ${role}`}</Text>
+                </Pressable>
+                <TouchableOpacity onPress={fetchProfile}>
+                  <MaterialIcons
+                    name="refresh"
+                    size={20}
+                    color={COLORS.neutral}
+                  />
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        ) : (
+          <ActivityIndicator />
+        )}
 
         <View style={styles.certView}>
           <Pressable style={styles.certPress}>

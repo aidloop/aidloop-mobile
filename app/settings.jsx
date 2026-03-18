@@ -1,5 +1,6 @@
 import { router } from "expo-router";
-import { ScrollView, View } from "react-native";
+import { Alert, ScrollView, View } from "react-native";
+import { logout } from "../api/auth";
 import Privacy from "../assets/images/flat-color-icons_privacy.svg";
 import Help from "../assets/images/ic_sharp-help.svg";
 import Logout from "../assets/images/line-md_logout.svg";
@@ -9,7 +10,23 @@ import ScreenInfo from "../components/screenInfo";
 import Row from "../components/SettingsOptions";
 import { COLORS } from "../constants/colors";
 
+import { useState } from "react";
+
 export default function Settings() {
+  const [loggingout, setLoggingout] = useState(false);
+
+  const handleLogout = async () => {
+    try {
+      setLoggingout(true);
+      await logout();
+      Alert.alert("Logout Successful", "You have been securely logged out ");
+      router.replace("/login");
+    } catch (error) {
+      Alert.alert("Logout Failed", error);
+    } finally {
+      setLoggingout(false);
+    }
+  };
   const rows = [
     {
       id: 1,
@@ -44,6 +61,12 @@ export default function Settings() {
       title: "Logout",
       logout: true,
       subtitle: "Sign out of your account",
+      onpress: () => {
+        Alert.alert("Confirm Logout", "Are you sure you want to logout?", [
+          { text: "Yes", onPress: () => handleLogout() },
+          { text: "No", style: "cancel" },
+        ]);
+      },
     },
   ];
   return (

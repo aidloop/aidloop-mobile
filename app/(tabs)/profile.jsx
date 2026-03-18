@@ -46,7 +46,7 @@ export default function ProfileScreen() {
   const handleLogout = async () => {
     try {
       setLoggingout(true);
-      await logout(email);
+      await logout();
       Alert.alert("Logout Successful", "You have been securely logged out ");
       router.replace("/login");
     } catch (error) {

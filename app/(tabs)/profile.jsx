@@ -97,9 +97,9 @@ export default function ProfileScreen() {
     {
       id: 5,
       icon: <Signout width={20} height={20} color={"#448AFF"} />,
-      title: "Log out",
+      title: loggingout ? "Logging Out" : "Log Out",
       logout: true,
-      subtitle: "Sign out of your account",
+      subtitle: loggingout ? "Please Hold on" : "Sign out of your account",
       onpress: () => {
         Alert.alert("Confirm Logout", "Are you sure you want to logout?", [
           { text: "Yes", onPress: () => handleLogout() },

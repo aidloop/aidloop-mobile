@@ -62,12 +62,16 @@ export default function EventDetails() {
         const registeredEvents = regRes.data || [];
 
         const foundEvent = registeredEvents.find(
-          (item) => item.eventId?._id === eventId,
+          (item) =>
+            item.eventId?._id === eventId && item.status !== "cancelled",
         );
 
         if (foundEvent) {
           setAlreadyRegistered(true);
           setUserRole(foundEvent.role);
+        } else {
+          setAlreadyRegistered(false);
+          setUserRole("");
         }
       } catch (error) {
         console.error("Error loading data:", error);

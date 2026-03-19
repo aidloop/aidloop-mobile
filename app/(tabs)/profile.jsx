@@ -33,9 +33,9 @@ export default function ProfileScreen() {
   const fetchProfile = async () => {
     try {
       setLoading(true);
-      const response = await API.get("/auth/status");
+      const response = await API.get("/user/me");
       console.log(response.data);
-      setUser(response.data.user);
+      setUser(response.data);
     } catch (error) {
       console.error("Error fetching user details:", error);
     } finally {
@@ -169,14 +169,14 @@ export default function ProfileScreen() {
                 color: COLORS.primary,
               }}
             >
-              3
+              {/* {noOfEvents} */}
             </Text>
             <View>
               <Text style={{ fontFamily: FONTS.regular, fontSize: 12 }}>
-                Certificate
+                Events
               </Text>
               <Text style={{ fontFamily: FONTS.regular, fontSize: 12 }}>
-                Earned
+                Attended
               </Text>
             </View>
           </Pressable>
@@ -189,7 +189,7 @@ export default function ProfileScreen() {
                 color: COLORS.primary,
               }}
             >
-              3
+              {/* {noOfCertificate} */}
             </Text>
             <View>
               <Text style={{ fontFamily: FONTS.regular, fontSize: 12 }}>

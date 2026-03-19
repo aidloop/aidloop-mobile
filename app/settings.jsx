@@ -46,14 +46,20 @@ export default function Settings() {
     {
       id: 3,
       icon: <Conditions width={30} height={30} />,
-      title: "Terms & Conditions",
-      subtitle: "View platform policies",
+      title: "Terms Of Service",
+      subtitle: "View terms and conditions",
+      onpress: () => {
+        router.push("/terms");
+      },
     },
     {
       id: 4,
       icon: <Help width={30} height={30} />,
-      title: "Help & Support",
-      subtitle: "Contact support or view FAQs",
+      title: "Privacy Policy",
+      subtitle: "Check out Aidloop's privacy policy",
+      onpress: () => {
+        router.push("/policy");
+      },
     },
     {
       id: 5,

@@ -8,11 +8,7 @@ import { FONTS } from "../constants/fonts";
 const ScreenInfo = ({ ScreenTitle, subtext, icon }) => {
   return (
     <SafeAreaView style={styles.header}>
-      <TouchableOpacity
-        onPress={() => {
-          router.push("/home");
-        }}
-      >
+      <TouchableOpacity onPress={() => router.back()}>
         <Back color={COLORS.white} height={34} width={34} />
       </TouchableOpacity>
       <View style={{ flex: 1, alignSelf: "center" }}>

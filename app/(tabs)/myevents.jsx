@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   ScrollView,
   StyleSheet,
@@ -10,12 +10,60 @@ import MyEventsCard from "../../components/myeventscard";
 import ScreenInfo from "../../components/screenInfo";
 import { COLORS } from "../../constants/colors";
 import { FONTS } from "../../constants/fonts";
-import { completedEvents, upcomingEvents } from "../../data/myevents";
+
+import API from "../../api/api";
 
 export default function MyEventsScreen() {
   const [activeTab, setActiveTab] = useState("upcoming");
+  const [events, setEvents] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const events = activeTab === "upcoming" ? upcomingEvents : completedEvents;
+  const filteredEvents =
+    activeTab === "upcoming"
+      ? events.filter((item) => item.status === "registered")
+      : events.filter((item) => item.status === "attended");
+
+  const formatDate = (dateString) => {
+    if (!dateString) return "TBD";
+
+    const date = new Date(dateString);
+
+    return date.toLocaleDateString("en-US", {
+      month: "long",
+      day: "numeric",
+    });
+  };
+
+  useEffect(() => {
+    const fetchMyEvents = async () => {
+      try {
+        setLoading(true);
+
+        const response = await API.get("/applications/registrations/me");
+
+        console.log("MY EVENTS:", response.data);
+
+        setEvents(response.data || []);
+      } catch (error) {
+        console.error("Error fetching my events:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchMyEvents();
+  }, []);
+
+  if (loading) {
+    return (
+      <View style={styles.container}>
+        <ScreenInfo ScreenTitle={"My Events"} />
+        <Text style={{ textAlign: "center", marginTop: 50 }}>
+          Loading your events...
+        </Text>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
@@ -55,26 +103,68 @@ export default function MyEventsScreen() {
         showsVerticalScrollIndicator={false}
         style={styles.scrollView}
       >
-        {events.map((event) => (
-          <MyEventsCard
-            key={event.id}
-            image={event.image}
-            verification={event.verification}
-            title={event.title}
-            date={event.date}
-            location={event.location}
-            time={event.time}
-            people={event.people}
-            role={event.role}
-            rating={event.rating}
-            hostedBy={event.hostedBy}
-            benefits={event.benefits}
-            about={event.about}
-            category={event.category}
-            status={event.status}
-            volunteerRequirements={event.volunteerRequirements}
-          />
-        ))}
+        {filteredEvents.length === 0 ? (
+          <Text style={styles.emptyText}>No {activeTab} events yet</Text>
+        ) : (
+          filteredEvents.map((item) => {
+            const event = item.eventId;
+
+            const imageSource =
+              event?.image && event.image.startsWith("https")
+                ? { uri: event.image }
+                : require("../../assets/images/eventimage-1.png");
+
+            const hostedBy =
+              typeof event?.organizationId === "object"
+                ? event.organizationId.fullName
+                : "Organization";
+
+            const people = event?.volunteerProgress
+              ? `${event.volunteerProgress.filled}/${event.volunteerProgress.total}`
+              : `${event?.registeredCount || 0}/${event?.volunteerSlots || 0}`;
+
+            const getStatusText = (status) => {
+              switch (status) {
+                case "registered":
+                  return "You're Registered";
+                case "attended":
+                  return "Completed";
+                default:
+                  return "Unknown";
+              }
+            };
+
+            return (
+              <MyEventsCard
+                key={item._id}
+                image={imageSource}
+                verification={
+                  event?.organizationId?.verificationStatus === "approved"
+                    ? "Verified"
+                    : "Unverified"
+                }
+                title={event?.name}
+                date={formatDate(event?.date)}
+                location={`${event?.location?.venue || "TBD"}, ${event?.location?.city || "Unknown"}`}
+                time={`${event?.startTime} - ${event?.endTime}`}
+                people={people}
+                role={item?.role}
+                rating={"No Ratings"}
+                hostedBy={hostedBy}
+                benefits={
+                  event?.certificateEnabled
+                    ? "Certificate Provided"
+                    : "Community Service"
+                }
+                about={event?.description}
+                category={event?.category}
+                status={getStatusText(item?.status)}
+                volunteerRequirements={event?.requirements}
+                eventId={item.eventId._id}
+              />
+            );
+          })
+        )}
       </ScrollView>
     </View>
   );
@@ -108,6 +198,14 @@ const styles = StyleSheet.create({
 
   activeText: {
     color: COLORS.primary,
+  },
+
+  emptyText: {
+    textAlign: "center",
+    marginTop: 50,
+    fontSize: 16,
+    fontFamily: FONTS.medium,
+    color: COLORS.neutral,
   },
 
   scrollView: {

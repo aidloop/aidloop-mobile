@@ -110,7 +110,7 @@ const styles = StyleSheet.create({
     height: 150,
   },
   statusContainer: {
-    width: 50,
+    width: 55,
     alignItems: "center",
     gap: 2,
     position: "absolute",

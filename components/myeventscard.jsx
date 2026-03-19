@@ -25,6 +25,7 @@ export default function MyEventsCard({
   about,
   category,
   status,
+  eventId,
 }) {
   const router = useRouter();
 
@@ -39,23 +40,7 @@ export default function MyEventsCard({
         onPress={() =>
           router.push({
             pathname: "/eventdetails",
-            params: {
-              title,
-              image,
-              date,
-              time,
-              location,
-              people,
-              rating,
-              role,
-              verification,
-              hostedBy,
-              volunteerRequirements,
-              benefits,
-              about,
-              category,
-              status,
-            },
+            params: { eventId },
           })
         }
       >
@@ -118,7 +103,7 @@ const styles = StyleSheet.create({
     height: 150,
   },
   verificationContainer: {
-    width: 50,
+    width: 55,
     alignItems: "center",
     gap: 2,
     position: "absolute",

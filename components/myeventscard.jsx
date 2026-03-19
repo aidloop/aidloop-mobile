@@ -38,6 +38,7 @@ export default function MyEventsCard({
   category,
   status,
   eventId,
+  onRefreshTrigger,
 }) {
   const router = useRouter();
 
@@ -61,6 +62,25 @@ export default function MyEventsCard({
     setIsCancelModalVisible(true);
   };
 
+  const handleRateEvent = () => {
+    setIsMenuVisible(false);
+    router.push({
+      pathname: "/rateEvents",
+      params: { eventKey: eventId },
+    });
+  };
+
+  const handleViewCertificate = () => {
+    setIsMenuVisible(false);
+    console.log("Navigating to view certificate for:", eventId);
+  };
+
+  const handleDownloadCertificate = () => {
+    setIsMenuVisible(false);
+    console.log("Triggering download for certificate:", eventId);
+    Alert.alert("Downloading", "Your certificate is downloading...");
+  };
+
   const confirmCancel = async () => {
     try {
       setIsCanceling(true);
@@ -76,6 +96,10 @@ export default function MyEventsCard({
         "Registration Cancelled",
         "You have successfully cancelled your registration for this event.",
       );
+
+      if (onRefreshTrigger) {
+        onRefreshTrigger();
+      }
     } catch (error) {
       console.error("Error canceling event:", error);
       Alert.alert(
@@ -151,19 +175,54 @@ export default function MyEventsCard({
           onPressOut={() => setIsMenuVisible(false)}
         >
           <View style={styles.menuBox}>
-            <TouchableOpacity
-              style={styles.menuItem}
-              onPress={handleViewDetails}
-            >
-              <Text style={styles.menuText}>View Details</Text>
-            </TouchableOpacity>
+            {isCompleted ? (
+              <>
+                <TouchableOpacity
+                  style={styles.menuItem}
+                  onPress={handleRateEvent}
+                >
+                  <Text style={styles.menuText}>Rate Event</Text>
+                </TouchableOpacity>
 
-            <TouchableOpacity
-              style={styles.menuItem}
-              onPress={handleCancelRegistration}
-            >
-              <Text style={styles.menuText}>Cancel Registration</Text>
-            </TouchableOpacity>
+                <View style={styles.menuDivider} />
+
+                <TouchableOpacity
+                  style={styles.menuItem}
+                  onPress={handleViewCertificate}
+                >
+                  <Text style={styles.menuText}>View Certificate</Text>
+                </TouchableOpacity>
+
+                <View style={styles.menuDivider} />
+
+                <TouchableOpacity
+                  style={styles.menuItem}
+                  onPress={handleDownloadCertificate}
+                >
+                  <Text style={styles.menuText}>Download Certificate</Text>
+                </TouchableOpacity>
+              </>
+            ) : (
+              <>
+                <TouchableOpacity
+                  style={styles.menuItem}
+                  onPress={handleViewDetails}
+                >
+                  <Text style={styles.menuText}>View Details</Text>
+                </TouchableOpacity>
+
+                <View style={styles.menuDivider} />
+
+                <TouchableOpacity
+                  style={styles.menuItem}
+                  onPress={handleCancelRegistration}
+                >
+                  <Text style={[styles.menuText, { color: "#EB4E4E" }]}>
+                    Cancel Registration
+                  </Text>
+                </TouchableOpacity>
+              </>
+            )}
           </View>
         </TouchableOpacity>
       </Modal>
@@ -201,7 +260,7 @@ export default function MyEventsCard({
               disabled={isCanceling}
             >
               {isCanceling ? (
-                <ActivityIndicator color={COLORS.neutral} />
+                <ActivityIndicator color={COLORS.white} />
               ) : (
                 <Text style={styles.yesButtonText}>Yes, Cancel Event</Text>
               )}
@@ -301,7 +360,6 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
 
-  /* --- MODAL MENU STYLES --- */
   modalOverlay: {
     flex: 1,
     backgroundColor: "rgba(0,0,0,0.4)",
@@ -320,7 +378,6 @@ const styles = StyleSheet.create({
   menuText: { fontFamily: FONTS.semibold, fontSize: 18, color: COLORS.primary },
   menuDivider: { height: 1, backgroundColor: "#E0E0E0", width: "100%" },
 
-  /* --- NEW CANCEL MODAL STYLES --- */
   cancelModalBox: {
     backgroundColor: COLORS.white,
     width: "85%",
@@ -330,9 +387,7 @@ const styles = StyleSheet.create({
     boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.2)",
     elevation: 5,
   },
-  warningIconContainer: {
-    marginBottom: 10,
-  },
+  warningIconContainer: { marginBottom: 10 },
   cancelTitle: {
     fontFamily: FONTS.semibold,
     fontSize: 22,
@@ -357,11 +412,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 12,
   },
-  noButtonText: {
-    fontFamily: FONTS.semibold,
-    fontSize: 18,
-    color: "#000",
-  },
+  noButtonText: { fontFamily: FONTS.semibold, fontSize: 18, color: "#000" },
   yesButton: {
     width: "100%",
     backgroundColor: "#EB4E4E",

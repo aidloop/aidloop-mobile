@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
+  RefreshControl,
   ScrollView,
   StyleSheet,
   Text,
@@ -19,6 +20,8 @@ export default function MyEventsScreen() {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  const [refreshing, setRefreshing] = useState(false);
+
   const filteredEvents =
     activeTab === "upcoming"
       ? events.filter((item) => item.status === "registered")
@@ -26,33 +29,37 @@ export default function MyEventsScreen() {
 
   const formatDate = (dateString) => {
     if (!dateString) return "TBD";
-
     const date = new Date(dateString);
-
     return date.toLocaleDateString("en-US", {
       month: "long",
       day: "numeric",
     });
   };
 
+  const fetchMyEvents = async () => {
+    try {
+      const response = await API.get("/applications/registrations/me");
+      console.log("MY EVENTS:", response.data);
+      setEvents(response.data || []);
+    } catch (error) {
+      console.error("Error fetching my events:", error);
+    }
+  };
+
   useEffect(() => {
-    const fetchMyEvents = async () => {
-      try {
-        setLoading(true);
-
-        const response = await API.get("/applications/registrations/me");
-
-        console.log("MY EVENTS:", response.data);
-
-        setEvents(response.data || []);
-      } catch (error) {
-        console.error("Error fetching my events:", error);
-      } finally {
-        setLoading(false);
-      }
+    const loadInitialData = async () => {
+      setLoading(true);
+      await fetchMyEvents();
+      setLoading(false);
     };
 
-    fetchMyEvents();
+    loadInitialData();
+  }, []);
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await fetchMyEvents();
+    setRefreshing(false);
   }, []);
 
   if (loading) {
@@ -103,6 +110,14 @@ export default function MyEventsScreen() {
       <ScrollView
         showsVerticalScrollIndicator={false}
         style={styles.scrollView}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            tintColor={COLORS.highlight}
+            colors={[COLORS.highlight]}
+          />
+        }
       >
         {filteredEvents.length === 0 ? (
           <Text style={styles.emptyText}>No {activeTab} events yet</Text>
@@ -112,7 +127,7 @@ export default function MyEventsScreen() {
             const eventKey = event._id;
 
             const imageSource =
-              event?.image && event.image.startsWith("https")
+              event?.image && event.image.startsWith("http")
                 ? { uri: event.image }
                 : require("../../assets/images/eventimage-1.png");
 
@@ -163,6 +178,7 @@ export default function MyEventsScreen() {
                 status={getStatusText(item?.status)}
                 volunteerRequirements={event?.requirements}
                 eventId={item.eventId._id}
+                onRefreshTrigger={onRefresh}
                 onpress={() =>
                   router.push({
                     pathname: "/rateEvents",
@@ -181,35 +197,17 @@ export default function MyEventsScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: COLORS.white,
-  },
+  container: { flex: 1, backgroundColor: COLORS.white },
   tabsContainer: {
     flexDirection: "row",
     justifyContent: "center",
     gap: 20,
     paddingVertical: 25,
   },
-  tab: {
-    paddingVertical: 5,
-    paddingHorizontal: 5,
-  },
-  activeTab: {
-    borderBottomWidth: 2,
-    borderBottomColor: COLORS.primary,
-  },
-
-  tabText: {
-    fontSize: 24,
-    fontFamily: FONTS.semibold,
-    color: "#9E9E9E99",
-  },
-
-  activeText: {
-    color: COLORS.primary,
-  },
-
+  tab: { paddingVertical: 5, paddingHorizontal: 5 },
+  activeTab: { borderBottomWidth: 2, borderBottomColor: COLORS.primary },
+  tabText: { fontSize: 24, fontFamily: FONTS.semibold, color: "#9E9E9E99" },
+  activeText: { color: COLORS.primary },
   emptyText: {
     textAlign: "center",
     marginTop: 50,
@@ -217,8 +215,5 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.medium,
     color: COLORS.neutral,
   },
-
-  scrollView: {
-    paddingHorizontal: 20,
-  },
+  scrollView: { paddingHorizontal: 20 },
 });

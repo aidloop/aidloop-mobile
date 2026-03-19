@@ -1,6 +1,8 @@
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import {
+  ActivityIndicator,
+  Alert,
   Image,
   Modal,
   StyleSheet,
@@ -8,6 +10,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import API from "../api/api";
 import Cancel from "../assets/images/cancelevent.svg";
 import CheckMark from "../assets/images/checkmark.svg";
 import CheckMark2 from "../assets/images/checkmark2.svg";
@@ -38,9 +41,9 @@ export default function MyEventsCard({
 }) {
   const router = useRouter();
 
-  // --- 1. OUR TWO MODAL STATES ---
   const [isMenuVisible, setIsMenuVisible] = useState(false);
-  const [isCancelModalVisible, setIsCancelModalVisible] = useState(false); // NEW STATE!
+  const [isCancelModalVisible, setIsCancelModalVisible] = useState(false);
+  const [isCanceling, setIsCanceling] = useState(false);
 
   const isCompleted = status === "Completed";
   const iconColor = isCompleted ? "#448AFF" : "#1FDD19";
@@ -53,17 +56,35 @@ export default function MyEventsCard({
     });
   };
 
-  // --- 2. OPEN THE CANCEL MODAL INSTEAD OF AN ALERT ---
   const handleCancelRegistration = () => {
-    setIsMenuVisible(false); // Close the hamburger menu
-    setIsCancelModalVisible(true); // Open the warning popup
+    setIsMenuVisible(false);
+    setIsCancelModalVisible(true);
   };
 
-  // --- 3. EXECUTE THE CANCELLATION ---
-  const confirmCancel = () => {
-    console.log("Canceling event:", eventId);
-    setIsCancelModalVisible(false); // Close the modal
-    // TODO: We will add the API call here next!
+  const confirmCancel = async () => {
+    try {
+      setIsCanceling(true);
+
+      const response = await API.delete(
+        `/applications/events/${eventId}/cancel`,
+      );
+      console.log("Cancel Success:", response.data);
+
+      setIsCancelModalVisible(false);
+
+      Alert.alert(
+        "Registration Cancelled",
+        "You have successfully cancelled your registration for this event.",
+      );
+    } catch (error) {
+      console.error("Error canceling event:", error);
+      Alert.alert(
+        "Oops!",
+        "Something went wrong while trying to cancel. Please try again.",
+      );
+    } finally {
+      setIsCanceling(false);
+    }
   };
 
   return (
@@ -118,7 +139,6 @@ export default function MyEventsCard({
         </View>
       </View>
 
-      {/* --- MENU MODAL --- */}
       <Modal
         animationType="fade"
         transparent={true}
@@ -148,7 +168,6 @@ export default function MyEventsCard({
         </TouchableOpacity>
       </Modal>
 
-      {/* --- NEW DESIGNED CANCEL CONFIRMATION MODAL --- */}
       <Modal
         animationType="fade"
         transparent={true}
@@ -157,7 +176,6 @@ export default function MyEventsCard({
       >
         <View style={styles.modalOverlay}>
           <View style={styles.cancelModalBox}>
-            {/* Warning Icon Placeholder (Replace this Text with your SVG if you have one!) */}
             <View style={styles.warningIconContainer}>
               <Cancel width={100} height={100} />
             </View>
@@ -180,8 +198,13 @@ export default function MyEventsCard({
               style={styles.yesButton}
               activeOpacity={0.7}
               onPress={confirmCancel}
+              disabled={isCanceling}
             >
-              <Text style={styles.yesButtonText}>Yes, Cancel Event</Text>
+              {isCanceling ? (
+                <ActivityIndicator color={COLORS.neutral} />
+              ) : (
+                <Text style={styles.yesButtonText}>Yes, Cancel Event</Text>
+              )}
             </TouchableOpacity>
           </View>
         </View>
@@ -341,7 +364,7 @@ const styles = StyleSheet.create({
   },
   yesButton: {
     width: "100%",
-    backgroundColor: "#EB4E4E", // The bright red from your Figma design
+    backgroundColor: "#EB4E4E",
     borderRadius: 12,
     paddingVertical: 14,
     alignItems: "center",

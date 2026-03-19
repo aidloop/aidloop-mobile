@@ -11,6 +11,7 @@ import ScreenInfo from "../../components/screenInfo";
 import { COLORS } from "../../constants/colors";
 import { FONTS } from "../../constants/fonts";
 
+import { router } from "expo-router";
 import API from "../../api/api";
 
 export default function MyEventsScreen() {
@@ -108,6 +109,7 @@ export default function MyEventsScreen() {
         ) : (
           filteredEvents.map((item) => {
             const event = item.eventId;
+            const eventKey = event._id;
 
             const imageSource =
               event?.image && event.image.startsWith("https")
@@ -161,6 +163,14 @@ export default function MyEventsScreen() {
                 status={getStatusText(item?.status)}
                 volunteerRequirements={event?.requirements}
                 eventId={item.eventId._id}
+                onpress={() =>
+                  router.push({
+                    pathname: "/rateEvents",
+                    params: {
+                      eventKey,
+                    },
+                  })
+                }
               />
             );
           })

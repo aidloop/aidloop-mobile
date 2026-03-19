@@ -1,15 +1,11 @@
 import { useRouter } from "expo-router";
-import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Image, StyleSheet, Text, View } from "react-native";
 import CheckMark from "../assets/images/checkmark.svg";
-import CheckMark2 from "../assets/images/checkmark2.svg";
-import DateIcon from "../assets/images/dateicon.svg";
-import HamburgerIcon from "../assets/images/hamburgericon.svg";
-import LocationIcon from "../assets/images/locationicon.svg";
-import TimeIcon from "../assets/images/timeicon.svg";
+import Host from "../assets/images/hosticon.svg";
 import { COLORS } from "../constants/colors";
 import { FONTS } from "../constants/fonts";
 
-export default function MyEventsCard({
+export default function Rate({
   title,
   image,
   date,
@@ -36,15 +32,7 @@ export default function MyEventsCard({
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity
-        activeOpacity={0.9}
-        onPress={() =>
-          router.push({
-            pathname: "/eventdetails",
-            params: { eventId },
-          })
-        }
-      >
+      <View>
         <View style={styles.imageContainer}>
           <Image source={image} style={styles.image} />
           <View style={styles.verificationContainer}>
@@ -57,34 +45,13 @@ export default function MyEventsCard({
 
         <View style={styles.detailsContainer}>
           <Text style={styles.title}>{title}</Text>
+          <View style={styles.divider}></View>
           <View style={styles.hostedbyItem}>
+            <Host width={16} />
             <Text style={styles.hostedbytext}>Hosted by: {hostedBy}</Text>
-            <CheckMark width={14} height={14} />
-          </View>
-          <View style={styles.infoContainer}>
-            <View style={styles.infoItem}>
-              <DateIcon width={14} height={14} />
-              <Text style={styles.subtext}>{date}</Text>
-            </View>
-            <View style={styles.infoItem}>
-              <TimeIcon width={14} height={14} />
-              <Text style={styles.subtext}>{time}</Text>
-            </View>
-            <View style={styles.infoItem}>
-              <LocationIcon width={14} height={14} />
-              <Text style={styles.subtext}>{location}</Text>
-            </View>
-            <View style={styles.divider}></View>
-          </View>
-          <View style={styles.statusCover}>
-            <View style={styles.statusContainer}>
-              <CheckMark2 width={14} height={14} color={iconColor} />
-              <Text style={styles.statusText}>{status}</Text>
-            </View>
-            <HamburgerIcon width={22} height={22} onPress={onpress} />
           </View>
         </View>
-      </TouchableOpacity>
+      </View>
     </View>
   );
 }
@@ -154,7 +121,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     gap: 5,
     alignItems: "center",
-    justifyContent: "space-between",
+    // justifyContent: "space-between",
   },
   subtext: {
     fontSize: 12,

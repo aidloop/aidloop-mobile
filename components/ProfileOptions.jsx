@@ -16,7 +16,7 @@ const Row = ({ icon, title, subtitle, logout, onPress }) => (
       <Text style={styles.subtitle}>{subtitle}</Text>
     </View>
     <TouchableOpacity onPress={onPress}>
-      <Right color={COLORS.primary} />
+      <Right color={COLORS.primary} width={18} height={18} />
     </TouchableOpacity>
   </View>
 );

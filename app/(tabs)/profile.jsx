@@ -122,8 +122,8 @@ export default function ProfileScreen() {
         <ScreenInfo
           ScreenTitle={"Profile"}
           icon={
-            <TouchableOpacity>
-              <Edit color={COLORS.white} />
+            <TouchableOpacity onPress={() => router.push("/editProfile")}>
+              <Edit color={COLORS.white} width={25} height={25} />
             </TouchableOpacity>
           }
         />
@@ -238,7 +238,7 @@ const styles = StyleSheet.create({
     borderColor: "#9E9E9E",
     alignItems: "center",
     justifyContent: "center",
-    borderWidth: 10,
+    borderWidth: 5,
   },
   dptext: { fontFamily: FONTS.semibold, color: COLORS.white, fontSize: 40 },
   text: {

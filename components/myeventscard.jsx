@@ -1,5 +1,14 @@
 import { useRouter } from "expo-router";
-import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { useState } from "react";
+import {
+  Image,
+  Modal,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import Cancel from "../assets/images/cancelevent.svg";
 import CheckMark from "../assets/images/checkmark.svg";
 import CheckMark2 from "../assets/images/checkmark2.svg";
 import DateIcon from "../assets/images/dateicon.svg";
@@ -26,25 +35,40 @@ export default function MyEventsCard({
   category,
   status,
   eventId,
-  onpress,
 }) {
   const router = useRouter();
 
-  const isCompleted = status === "Completed";
+  // --- 1. OUR TWO MODAL STATES ---
+  const [isMenuVisible, setIsMenuVisible] = useState(false);
+  const [isCancelModalVisible, setIsCancelModalVisible] = useState(false); // NEW STATE!
 
+  const isCompleted = status === "Completed";
   const iconColor = isCompleted ? "#448AFF" : "#1FDD19";
+
+  const handleViewDetails = () => {
+    setIsMenuVisible(false);
+    router.push({
+      pathname: "/eventdetails",
+      params: { eventId },
+    });
+  };
+
+  // --- 2. OPEN THE CANCEL MODAL INSTEAD OF AN ALERT ---
+  const handleCancelRegistration = () => {
+    setIsMenuVisible(false); // Close the hamburger menu
+    setIsCancelModalVisible(true); // Open the warning popup
+  };
+
+  // --- 3. EXECUTE THE CANCELLATION ---
+  const confirmCancel = () => {
+    console.log("Canceling event:", eventId);
+    setIsCancelModalVisible(false); // Close the modal
+    // TODO: We will add the API call here next!
+  };
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity
-        activeOpacity={0.9}
-        onPress={() =>
-          router.push({
-            pathname: "/eventdetails",
-            params: { eventId },
-          })
-        }
-      >
+      <View>
         <View style={styles.imageContainer}>
           <Image source={image} style={styles.image} />
           <View style={styles.verificationContainer}>
@@ -76,15 +100,96 @@ export default function MyEventsCard({
             </View>
             <View style={styles.divider}></View>
           </View>
+
           <View style={styles.statusCover}>
             <View style={styles.statusContainer}>
               <CheckMark2 width={14} height={14} color={iconColor} />
               <Text style={styles.statusText}>{status}</Text>
             </View>
-            <HamburgerIcon width={22} height={22} onPress={onpress} />
+
+            <TouchableOpacity
+              activeOpacity={0.7}
+              onPress={() => setIsMenuVisible(true)}
+              style={{ padding: 5 }}
+            >
+              <HamburgerIcon width={22} height={22} />
+            </TouchableOpacity>
           </View>
         </View>
-      </TouchableOpacity>
+      </View>
+
+      {/* --- MENU MODAL --- */}
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={isMenuVisible}
+        onRequestClose={() => setIsMenuVisible(false)}
+      >
+        <TouchableOpacity
+          style={styles.modalOverlay}
+          activeOpacity={1}
+          onPressOut={() => setIsMenuVisible(false)}
+        >
+          <View style={styles.menuBox}>
+            <TouchableOpacity
+              style={styles.menuItem}
+              onPress={handleViewDetails}
+            >
+              <Text style={styles.menuText}>View Details</Text>
+            </TouchableOpacity>
+
+            <View style={styles.menuDivider} />
+
+            <TouchableOpacity
+              style={styles.menuItem}
+              onPress={handleCancelRegistration}
+            >
+              <Text style={[styles.menuText, { color: "#FF3B30" }]}>
+                Cancel Registration
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </TouchableOpacity>
+      </Modal>
+
+      {/* --- NEW DESIGNED CANCEL CONFIRMATION MODAL --- */}
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={isCancelModalVisible}
+        onRequestClose={() => setIsCancelModalVisible(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.cancelModalBox}>
+            {/* Warning Icon Placeholder (Replace this Text with your SVG if you have one!) */}
+            <View style={styles.warningIconContainer}>
+              <Cancel width={100} height={100} />
+            </View>
+
+            <Text style={styles.cancelTitle}>Cancel Event?</Text>
+            <Text style={styles.cancelText}>
+              Are you sure you want to cancel this event? This action cannot be
+              undone.
+            </Text>
+
+            <TouchableOpacity
+              style={styles.noButton}
+              activeOpacity={0.7}
+              onPress={() => setIsCancelModalVisible(false)}
+            >
+              <Text style={styles.noButtonText}>No, Keep Event</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.yesButton}
+              activeOpacity={0.7}
+              onPress={confirmCancel}
+            >
+              <Text style={styles.yesButtonText}>Yes, Cancel Event</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -126,54 +231,34 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.medium,
     textAlign: "center",
   },
-
   detailsContainer: {
     paddingTop: 10,
     paddingBottom: 15,
     paddingHorizontal: 15,
     gap: 10,
   },
-  title: {
-    fontSize: 24,
-    fontFamily: FONTS.bold,
-    color: COLORS.primary,
-  },
-
+  title: { fontSize: 24, fontFamily: FONTS.bold, color: COLORS.primary },
   infoContainer: {
     flexDirection: "row",
     gap: 7,
     justifyContent: "space-between",
     flexWrap: "wrap",
   },
-  infoItem: {
-    flexDirection: "row",
-    gap: 5,
-    alignItems: "center",
-  },
+  infoItem: { flexDirection: "row", gap: 5, alignItems: "center" },
   hostedbyItem: {
     flexDirection: "row",
     gap: 5,
     alignItems: "center",
     justifyContent: "space-between",
   },
-  subtext: {
-    fontSize: 12,
-    fontFamily: FONTS.medium,
-    marginTop: 2,
-  },
-  hostedbytext: {
-    fontSize: 12,
-    fontFamily: FONTS.regular,
-    marginTop: 2,
-  },
-
+  subtext: { fontSize: 12, fontFamily: FONTS.medium, marginTop: 2 },
+  hostedbytext: { fontSize: 12, fontFamily: FONTS.regular, marginTop: 2 },
   divider: {
     width: "100%",
     backgroundColor: COLORS.neutral,
     height: 1,
     marginTop: 5,
   },
-
   statusCover: {
     flexDirection: "row",
     gap: 10,
@@ -195,5 +280,79 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontFamily: FONTS.medium,
     marginTop: 2,
+  },
+
+  /* --- MODAL MENU STYLES --- */
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.4)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  menuBox: {
+    backgroundColor: COLORS.white,
+    width: "70%",
+    borderRadius: 12,
+    paddingVertical: 10,
+    boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.2)",
+    elevation: 5,
+  },
+  menuItem: { paddingVertical: 15, alignItems: "center" },
+  menuText: { fontFamily: FONTS.semibold, fontSize: 18, color: COLORS.primary },
+  menuDivider: { height: 1, backgroundColor: "#E0E0E0", width: "100%" },
+
+  /* --- NEW CANCEL MODAL STYLES --- */
+  cancelModalBox: {
+    backgroundColor: COLORS.white,
+    width: "85%",
+    borderRadius: 24,
+    padding: 25,
+    alignItems: "center",
+    boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.2)",
+    elevation: 5,
+  },
+  warningIconContainer: {
+    marginBottom: 10,
+  },
+  cancelTitle: {
+    fontFamily: FONTS.semibold,
+    fontSize: 22,
+    color: "#000",
+    marginBottom: 10,
+    textAlign: "center",
+  },
+  cancelText: {
+    fontFamily: FONTS.regular,
+    fontSize: 16,
+    color: "#333",
+    textAlign: "center",
+    marginBottom: 25,
+    lineHeight: 22,
+  },
+  noButton: {
+    width: "100%",
+    borderWidth: 1.5,
+    borderColor: "#000",
+    borderRadius: 12,
+    paddingVertical: 14,
+    alignItems: "center",
+    marginBottom: 12,
+  },
+  noButtonText: {
+    fontFamily: FONTS.semibold,
+    fontSize: 18,
+    color: "#000",
+  },
+  yesButton: {
+    width: "100%",
+    backgroundColor: "#EB4E4E", // The bright red from your Figma design
+    borderRadius: 12,
+    paddingVertical: 14,
+    alignItems: "center",
+  },
+  yesButtonText: {
+    fontFamily: FONTS.semibold,
+    fontSize: 18,
+    color: COLORS.white,
   },
 });

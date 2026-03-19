@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
+  Image,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -116,6 +117,7 @@ export default function ProfileScreen() {
   const email = user?.email || "user@email.com";
   const isActive = user?.isActive ? "Active" : "" || "Undefined";
   const role = user?.role || "Volunteer";
+  const image = user?.avatar || require("../../assets/images/default.png");
   return (
     <View style={styles.safeareaview}>
       <View>
@@ -136,7 +138,7 @@ export default function ProfileScreen() {
         {!loading ? (
           <View>
             <View style={styles.dp}>
-              <Text style={styles.dptext}>{userName[0]}</Text>
+              <Image source={image} style={styles.dpimage} />
             </View>
             <View style={{ marginVertical: 10, alignItems: "center", gap: 3 }}>
               <Text style={styles.username}>{userName}</Text>
@@ -229,8 +231,8 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.primary,
     // width: "30%",
     aspectRatio: "",
-    height: 100,
-    width: 100,
+    height: 167,
+    width: 167,
     // flexDirection: "row",
     // marginTop: 30,
     alignSelf: "center",
@@ -239,8 +241,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     borderWidth: 5,
+    // overflow: "hidden",
   },
-  dptext: { fontFamily: FONTS.semibold, color: COLORS.white, fontSize: 40 },
+  dpimage: { width: "100%", resizeMode: "contain" },
   text: {
     fontFamily: FONTS.PoppinsSemiBold,
     fontSize: 24,

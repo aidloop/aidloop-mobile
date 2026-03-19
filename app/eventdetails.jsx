@@ -27,10 +27,14 @@ import { FONTS } from "../constants/fonts";
 export default function EventDetails() {
   const router = useRouter();
   const { eventId } = useLocalSearchParams();
+
   const [event, setEvent] = useState(null);
   const [loading, setLoading] = useState(true);
   const [registering, setRegistering] = useState(false);
   const [selectedRole, setSelectedRole] = useState("");
+  const [alreadyRegistered, setAlreadyRegistered] = useState(false);
+  const [userRole, setUserRole] = useState("");
+
   const formatDate = (dateString) => {
     if (!dateString) return "TBD";
     const date = new Date(dateString);
@@ -42,25 +46,37 @@ export default function EventDetails() {
   };
 
   useEffect(() => {
-    const fetchEventDetails = async () => {
-      if (!eventId) {
-        setLoading(false);
-        return;
-      }
-
+    const loadData = async () => {
       try {
         setLoading(true);
-        const response = await API.get(`/events/${eventId}`);
-        console.log("Event Details", response.data);
-        setEvent(response.data.data);
+
+        const [eventRes, regRes] = await Promise.all([
+          API.get(`/events/${eventId}`),
+          API.get("/applications/registrations/me"),
+        ]);
+
+        // EVENT
+        setEvent(eventRes.data.data);
+
+        // REGISTRATION CHECK
+        const registeredEvents = regRes.data || [];
+
+        const foundEvent = registeredEvents.find(
+          (item) => item.eventId?._id === eventId,
+        );
+
+        if (foundEvent) {
+          setAlreadyRegistered(true);
+          setUserRole(foundEvent.role);
+        }
       } catch (error) {
-        console.error("Error fetching event details:", error);
+        console.error("Error loading data:", error);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchEventDetails();
+    if (eventId) loadData();
   }, [eventId]);
 
   const handleRegister = async () => {
@@ -71,6 +87,7 @@ export default function EventDetails() {
     try {
       setRegistering(true);
       await registerForEvent(event._id, selectedRole);
+      setAlreadyRegistered(true);
 
       router.push("/eventregistrationsuccess");
     } catch (error) {
@@ -104,7 +121,7 @@ export default function EventDetails() {
     );
   }
 
-  if (!event) {
+  if (!event && !loading) {
     return (
       <View
         style={{
@@ -240,40 +257,53 @@ export default function EventDetails() {
               ))}
             </View>
 
-            {rolesArray.length > 0 && (
-              <View style={styles.pickerContainer}>
-                <Picker
-                  selectedValue={selectedRole}
-                  onValueChange={(itemValue) => setSelectedRole(itemValue)}
-                  style={styles.picker}
-                  dropdownIconColor={COLORS.primary}
-                >
-                  <Picker.Item
-                    label="Select Role"
-                    value=""
-                    color={COLORS.neutral}
-                  />
-                  {rolesArray.map((role) => (
-                    <Picker.Item key={role} label={role} value={role} />
-                  ))}
-                </Picker>
+            {/* 🔥 ALREADY REGISTERED */}
+            {alreadyRegistered ? (
+              <View style={styles.registeredContainer}>
+                <Text style={styles.infoText}>
+                  {"You're already registered ✅"}
+                </Text>
+                <Text style={styles.subText}>Role: {userRole}</Text>
               </View>
-            )}
+            ) : (
+              <>
+                {/* ROLE PICKER */}
+                {rolesArray.length > 0 && (
+                  <View style={styles.pickerContainer}>
+                    <Picker
+                      selectedValue={selectedRole}
+                      onValueChange={(value) => setSelectedRole(value)}
+                      style={styles.picker}
+                    >
+                      <Picker.Item label="Select Role" value="" />
+                      {rolesArray.map((role) => (
+                        <Picker.Item key={role} label={role} value={role} />
+                      ))}
+                    </Picker>
+                  </View>
+                )}
 
-            <TouchableOpacity
-              style={[
-                styles.registerButton,
-                { opacity: registering ? 0.7 : 1 },
-              ]}
-              disabled={!selectedRole || registering}
-              onPress={handleRegister}
-            >
-              {registering ? (
-                <ActivityIndicator color={COLORS.white} />
-              ) : (
-                <Text style={styles.registerText}>Register</Text>
-              )}
-            </TouchableOpacity>
+                {/* REGISTER BUTTON */}
+                <TouchableOpacity
+                  style={[
+                    styles.registerButton,
+                    {
+                      backgroundColor: selectedRole
+                        ? COLORS.primary
+                        : COLORS.neutral,
+                    },
+                  ]}
+                  disabled={!selectedRole || registering}
+                  onPress={handleRegister}
+                >
+                  {registering ? (
+                    <ActivityIndicator color="#fff" />
+                  ) : (
+                    <Text style={styles.registerText}>Register</Text>
+                  )}
+                </TouchableOpacity>
+              </>
+            )}
           </View>
         </View>
       </ScrollView>
@@ -362,7 +392,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   infoText: {
-    fontSize: 18,
+    fontSize: 17,
     fontFamily: FONTS.medium,
     marginTop: 3,
     marginLeft: 5,
@@ -421,6 +451,18 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: FONTS.medium,
     paddingHorizontal: 10,
+  },
+
+  registeredContainer: {
+    backgroundColor: COLORS.shadow,
+    // paddingHorizontal: 20,
+    paddingHorizontal: 10,
+    paddingVertical: 10,
+    borderRadius: 20,
+    borderColor: COLORS.neutral,
+    borderWidth: 1,
+    marginTop: 20,
+    marginBottom: 50,
   },
 
   registerButton: {

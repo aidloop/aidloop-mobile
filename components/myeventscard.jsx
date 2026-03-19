@@ -138,15 +138,11 @@ export default function MyEventsCard({
               <Text style={styles.menuText}>View Details</Text>
             </TouchableOpacity>
 
-            <View style={styles.menuDivider} />
-
             <TouchableOpacity
               style={styles.menuItem}
               onPress={handleCancelRegistration}
             >
-              <Text style={[styles.menuText, { color: "#FF3B30" }]}>
-                Cancel Registration
-              </Text>
+              <Text style={styles.menuText}>Cancel Registration</Text>
             </TouchableOpacity>
           </View>
         </TouchableOpacity>

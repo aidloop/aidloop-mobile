@@ -1,9 +1,9 @@
 import { router } from "expo-router";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import Successful from "../assets/images/Successful.svg";
-import { COLORS } from "../constants/colors";
-import { FONTS } from "../constants/fonts";
+import Successful from "../../assets/images/Successful.svg";
+import { COLORS } from "../../constants/colors";
+import { FONTS } from "../../constants/fonts";
 
 export default function ResetSuccessful() {
   return (

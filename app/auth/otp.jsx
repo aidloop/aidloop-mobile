@@ -3,10 +3,10 @@ import { useEffect, useState } from "react";
 import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { OtpInput } from "react-native-otp-entry";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { resendOTP, verifyOTP } from "../api/auth";
-import Back from "../assets/images/Back.svg";
-import { COLORS } from "../constants/colors";
-import { FONTS } from "../constants/fonts";
+import { resendOTP, verifyOTP } from "../../api/auth";
+import Back from "../../assets/images/Back.svg";
+import { COLORS } from "../../constants/colors";
+import { FONTS } from "../../constants/fonts";
 
 export default function Otp() {
   const router = useRouter();

@@ -1,4 +1,4 @@
-import { useNavigation, useRouter } from "expo-router";
+import { useRouter } from "expo-router";
 import { useState } from "react";
 import {
   Alert,
@@ -11,11 +11,11 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { login } from "../api/auth";
-import Google from "../assets/images/Google.svg";
-import { COLORS } from "../constants/colors";
-
 import { SafeAreaView } from "react-native-safe-area-context";
+import { register } from "../../api/auth";
+import Back from "../../assets/images/Back.svg";
+import Google from "../../assets/images/Google.svg";
+import { FONTS } from "../../constants/fonts";
 
 const Input = ({ InputText, placeholder, ...props }) => (
   <View style={styles.input}>
@@ -28,29 +28,29 @@ const Input = ({ InputText, placeholder, ...props }) => (
     />
   </View>
 );
-export default function Login() {
+export default function CreateAccount() {
   const router = useRouter();
 
-  const navigation = useNavigation();
-
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const isFormValid = email.length > 0 && password.length > 0;
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
-  const handleLogin = async () => {
-    if (!isFormValid) return;
+  const isFormValid =
+    fullName.length > 0 && email.length > 0 && password.length > 0;
 
+  const handleRegister = async () => {
     try {
       setLoading(true);
-      await login(email.trim(), password);
-      Alert.alert("Success", "Logged in successfully");
-      router.replace("/(tabs)/home");
+
+      await register(fullName, email.trim(), password);
+      Alert.alert("Success", "OTP sent to your email");
+      router.push({ pathname: "/otp", params: { email } });
     } catch (error) {
       Alert.alert(
-        "Login Failed",
-        error.response?.data?.message || "Invalid credentials/Network Error",
+        "Error",
+        error.response?.data?.message || "Registration failed",
       );
     } finally {
       setLoading(false);
@@ -63,6 +63,14 @@ export default function Login() {
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={{ flex: 1 }}
       >
+        <Back
+          width={30}
+          height={30}
+          onPress={() => {
+            router.back();
+          }}
+        />
+
         <ScrollView
           contentContainerStyle={styles.scrollContainer}
           keyboardShouldPersistTaps="handled"
@@ -70,7 +78,7 @@ export default function Login() {
         >
           <View>
             <View>
-              <Text style={styles.heading}>Welcome Back</Text>
+              <Text style={styles.heading}>Create an Account</Text>
               <Text style={styles.text}>
                 Continue supporting your community
               </Text>
@@ -86,6 +94,13 @@ export default function Login() {
             <View style={styles.border} />
           </View>
           <View style={styles.form}>
+            <Input
+              InputText={"Full Name"}
+              placeholder={"e.g. John Doe Scott"}
+              value={fullName}
+              onChangeText={setFullName}
+              autoCapitalize="words"
+            />
             <Input
               InputText={"Email Address"}
               placeholder={"Your Email Address here..."}
@@ -103,32 +118,25 @@ export default function Login() {
             />
           </View>
           <TouchableOpacity
-            onPress={handleLogin}
-            disabled={!isFormValid || loading}
+            onPress={handleRegister}
+            disabled={!isFormValid}
             style={[
               styles.createBtn,
               { backgroundColor: isFormValid ? "#1F3A5F" : "grey" },
             ]}
           >
             <Text style={styles.btnText}>
-              {loading ? "Logging in..." : "Log In"}
+              {loading ? "Creating Account..." : "Create Account"}
             </Text>
           </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => {
-              router.push("/forgotPassword");
-            }}
-          >
-            <Text style={styles.forgot}>Forgot Password</Text>
-          </TouchableOpacity>
           <View style={styles.bottomText}>
-            <Text style={styles.loginText}>Do not have an account? </Text>
+            <Text style={styles.loginText}>Already have an account? </Text>
             <TouchableOpacity
               onPress={() => {
-                router.replace("/createAccount");
+                router.replace("/login");
               }}
             >
-              <Text style={styles.loginPress}> Sign Up</Text>
+              <Text style={styles.loginPress}> Login</Text>
             </TouchableOpacity>
           </View>
         </ScrollView>
@@ -174,14 +182,14 @@ const styles = StyleSheet.create({
     fontSize: 28,
     color: "#000000",
     textAlign: "center",
-    fontFamily: "PoppinsSemiBold",
+    fontFamily: FONTS.semibold,
   },
   text: {
     textAlign: "center",
     fontSize: 18,
     color: "#6B7C93",
     fontWeight: 400,
-    fontFamily: "PoppinsRegular",
+    fontFamily: FONTS.regular,
     lineHeight: 26,
     marginTop: 20,
     paddingHorizontal: 60,
@@ -212,7 +220,7 @@ const styles = StyleSheet.create({
     borderColor: "#9E9E9E",
   },
 
-  form: { marginVertical: 20 },
+  // form: { marginVertical: 20 },
   input: { marginVertical: 10 },
 
   formInput: {
@@ -229,7 +237,7 @@ const styles = StyleSheet.create({
 
   bottomText: {
     position: "absolute",
-    bottom: -50,
+    bottom: 0,
     alignSelf: "center",
     flexDirection: "row",
     alignItems: "center",
@@ -241,14 +249,5 @@ const styles = StyleSheet.create({
     fontFamily: "PoppinsRegular",
     fontSize: 16,
     fontWeight: 400,
-  },
-
-  forgot: {
-    color: COLORS.primary,
-    fontFamily: "PoppinsRegular",
-    fontSize: 16,
-    fontWeight: 400,
-    textAlign: "center",
-    textDecorationLine: "underline",
   },
 });

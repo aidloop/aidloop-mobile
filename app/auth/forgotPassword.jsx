@@ -8,9 +8,9 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import Back from "../assets/images/Back.svg";
-import { COLORS } from "../constants/colors";
-import { FONTS } from "../constants/fonts";
+import Back from "../../assets/images/Back.svg";
+import { COLORS } from "../../constants/colors";
+import { FONTS } from "../../constants/fonts";
 
 const Input = ({ InputText, placeholder, ...props }) => (
   <View style={styles.input}>

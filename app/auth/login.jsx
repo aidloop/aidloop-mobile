@@ -1,7 +1,10 @@
-import { useRouter } from "expo-router";
-import { useState } from "react";
+import { useNavigation, useRouter } from "expo-router";
+import { useEffect, useState } from "react";
+
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
   Alert,
+  BackHandler,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -11,11 +14,13 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { login } from "../../api/auth";
+import Google from "../../assets/images/Google.svg";
+import { COLORS } from "../../constants/colors";
+
 import { SafeAreaView } from "react-native-safe-area-context";
-import { register } from "../api/auth";
-import Back from "../assets/images/Back.svg";
-import Google from "../assets/images/Google.svg";
-import { FONTS } from "../constants/fonts";
+
+import API from "../../api/api";
 
 const Input = ({ InputText, placeholder, ...props }) => (
   <View style={styles.input}>
@@ -28,29 +33,57 @@ const Input = ({ InputText, placeholder, ...props }) => (
     />
   </View>
 );
-export default function CreateAccount() {
+export default function Login() {
   const router = useRouter();
 
-  const [loading, setLoading] = useState(false);
+  const navigation = useNavigation();
 
-  const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const isFormValid =
-    fullName.length > 0 && email.length > 0 && password.length > 0;
+  const isFormValid = email.length > 0 && password.length > 0;
 
-  const handleRegister = async () => {
+  useEffect(() => {
+    const init = async () => {
+      // 1. Check onboarding
+      const hasOnboarded = await AsyncStorage.getItem("hasOnboarded");
+      if (!hasOnboarded) {
+        router.replace("/splash-one");
+        return; // stop further code
+      }
+
+      // 2. Optionally, check if already logged in
+      try {
+        await API.get("/user/me");
+        router.replace("/(tabs)/home");
+      } catch {
+        // not logged in → stay on login
+      }
+    };
+
+    init();
+
+    // 3. Disable back button on login
+    const backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      () => true,
+    );
+    return () => backHandler.remove();
+  }, []);
+
+  const handleLogin = async () => {
+    if (!isFormValid) return;
+
     try {
       setLoading(true);
-
-      await register(fullName, email.trim(), password);
-      Alert.alert("Success", "OTP sent to your email");
-      router.push({ pathname: "/otp", params: { email } });
+      await login(email.trim(), password);
+      Alert.alert("Success", "Logged in successfully");
+      router.replace("/(tabs)/home");
     } catch (error) {
       Alert.alert(
-        "Error",
-        error.response?.data?.message || "Registration failed",
+        "Login Failed",
+        error.response?.data?.message || "Invalid credentials/Network Error",
       );
     } finally {
       setLoading(false);
@@ -63,14 +96,6 @@ export default function CreateAccount() {
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={{ flex: 1 }}
       >
-        <Back
-          width={30}
-          height={30}
-          onPress={() => {
-            router.back();
-          }}
-        />
-
         <ScrollView
           contentContainerStyle={styles.scrollContainer}
           keyboardShouldPersistTaps="handled"
@@ -78,7 +103,7 @@ export default function CreateAccount() {
         >
           <View>
             <View>
-              <Text style={styles.heading}>Create an Account</Text>
+              <Text style={styles.heading}>Welcome Back</Text>
               <Text style={styles.text}>
                 Continue supporting your community
               </Text>
@@ -94,13 +119,6 @@ export default function CreateAccount() {
             <View style={styles.border} />
           </View>
           <View style={styles.form}>
-            <Input
-              InputText={"Full Name"}
-              placeholder={"e.g. John Doe Scott"}
-              value={fullName}
-              onChangeText={setFullName}
-              autoCapitalize="words"
-            />
             <Input
               InputText={"Email Address"}
               placeholder={"Your Email Address here..."}
@@ -118,25 +136,32 @@ export default function CreateAccount() {
             />
           </View>
           <TouchableOpacity
-            onPress={handleRegister}
-            disabled={!isFormValid}
+            onPress={handleLogin}
+            disabled={!isFormValid || loading}
             style={[
               styles.createBtn,
               { backgroundColor: isFormValid ? "#1F3A5F" : "grey" },
             ]}
           >
             <Text style={styles.btnText}>
-              {loading ? "Creating Account..." : "Create Account"}
+              {loading ? "Logging in..." : "Log In"}
             </Text>
           </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => {
+              router.push("/forgotPassword");
+            }}
+          >
+            <Text style={styles.forgot}>Forgot Password</Text>
+          </TouchableOpacity>
           <View style={styles.bottomText}>
-            <Text style={styles.loginText}>Already have an account? </Text>
+            <Text style={styles.loginText}>Do not have an account? </Text>
             <TouchableOpacity
               onPress={() => {
-                router.replace("/login");
+                router.replace("/createAccount");
               }}
             >
-              <Text style={styles.loginPress}> Login</Text>
+              <Text style={styles.loginPress}> Sign Up</Text>
             </TouchableOpacity>
           </View>
         </ScrollView>
@@ -182,14 +207,14 @@ const styles = StyleSheet.create({
     fontSize: 28,
     color: "#000000",
     textAlign: "center",
-    fontFamily: FONTS.semibold,
+    fontFamily: "PoppinsSemiBold",
   },
   text: {
     textAlign: "center",
     fontSize: 18,
     color: "#6B7C93",
     fontWeight: 400,
-    fontFamily: FONTS.regular,
+    fontFamily: "PoppinsRegular",
     lineHeight: 26,
     marginTop: 20,
     paddingHorizontal: 60,
@@ -220,7 +245,7 @@ const styles = StyleSheet.create({
     borderColor: "#9E9E9E",
   },
 
-  // form: { marginVertical: 20 },
+  form: { marginVertical: 20 },
   input: { marginVertical: 10 },
 
   formInput: {
@@ -237,7 +262,7 @@ const styles = StyleSheet.create({
 
   bottomText: {
     position: "absolute",
-    bottom: 0,
+    bottom: -50,
     alignSelf: "center",
     flexDirection: "row",
     alignItems: "center",
@@ -249,5 +274,14 @@ const styles = StyleSheet.create({
     fontFamily: "PoppinsRegular",
     fontSize: 16,
     fontWeight: 400,
+  },
+
+  forgot: {
+    color: COLORS.primary,
+    fontFamily: "PoppinsRegular",
+    fontSize: 16,
+    fontWeight: 400,
+    textAlign: "center",
+    textDecorationLine: "underline",
   },
 });

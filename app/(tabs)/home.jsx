@@ -2,6 +2,7 @@ import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
+  BackHandler,
   ScrollView,
   StyleSheet,
   Text,
@@ -46,8 +47,28 @@ export default function HomeScreen() {
       setLoading(false);
     }
   };
+
   useEffect(() => {
-    fetchEvents();
+    const init = async () => {
+      try {
+        setLoading(true);
+        await API.get("/user/me"); // auth check
+        await fetchEvents();
+      } catch {
+        router.replace("/auth/login"); // not logged in
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    init();
+
+    // Disable back button to prevent going to onboarding/login
+    const backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      () => true,
+    );
+    return () => backHandler.remove();
   }, []);
 
   if (loading) {

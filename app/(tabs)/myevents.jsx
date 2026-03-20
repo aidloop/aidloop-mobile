@@ -19,7 +19,6 @@ export default function MyEventsScreen() {
   const [activeTab, setActiveTab] = useState("upcoming");
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
-
   const [refreshing, setRefreshing] = useState(false);
 
   const filteredEvents =
@@ -39,8 +38,26 @@ export default function MyEventsScreen() {
   const fetchMyEvents = async () => {
     try {
       const response = await API.get("/applications/registrations/me");
-      console.log("MY EVENTS:", response.data);
-      setEvents(response.data || []);
+      const registrations = response.data || [];
+
+      const particularEvent = await Promise.all(
+        registrations.map(async (reg) => {
+          try {
+            const eventRes = await API.get(`/events/${reg.eventId._id}`);
+            const fullEventDetails = eventRes.data.data || eventRes.data;
+
+            return {
+              ...reg,
+              eventId: fullEventDetails,
+            };
+          } catch (err) {
+            console.error(`Failed to fetch event ${reg.eventId._id}`, err);
+            return reg;
+          }
+        }),
+      );
+
+      setEvents(particularEvent);
     } catch (error) {
       console.error("Error fetching my events:", error);
     }
@@ -131,10 +148,7 @@ export default function MyEventsScreen() {
                 ? { uri: event.image }
                 : require("../../assets/images/eventimage-1.png");
 
-            const hostedBy =
-              typeof event?.organizationId === "object"
-                ? event.organizationId.fullName
-                : "Organization";
+            const hostedBy = event?.organizationId?.fullName || "Organization";
 
             const people = event?.volunteerProgress
               ? `${event.volunteerProgress.filled}/${event.volunteerProgress.total}`
@@ -178,6 +192,7 @@ export default function MyEventsScreen() {
                 status={getStatusText(item?.status)}
                 volunteerRequirements={event?.requirements}
                 eventId={item.eventId._id}
+                regId={item.volunteerId}
                 onRefreshTrigger={onRefresh}
                 onpress={() =>
                   router.push({

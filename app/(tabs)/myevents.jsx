@@ -18,6 +18,7 @@ import API from "../../api/api";
 export default function MyEventsScreen() {
   const [activeTab, setActiveTab] = useState("upcoming");
   const [events, setEvents] = useState([]);
+  const [pEvent, setPEvent] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const [refreshing, setRefreshing] = useState(false);
@@ -131,10 +132,9 @@ export default function MyEventsScreen() {
                 ? { uri: event.image }
                 : require("../../assets/images/eventimage-1.png");
 
-            const hostedBy =
-              typeof event?.organizationId === "object"
-                ? event.organizationId.fullName
-                : "Organization";
+            const hostedBy = pEvent?.organizationId.fullName
+              ? pEvent?.organizationId.fullName
+              : "Organization";
 
             const people = event?.volunteerProgress
               ? `${event.volunteerProgress.filled}/${event.volunteerProgress.total}`

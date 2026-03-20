@@ -38,6 +38,7 @@ export default function MyEventsCard({
   category,
   status,
   eventId,
+  regId,
   onRefreshTrigger,
 }) {
   const router = useRouter();
@@ -72,7 +73,10 @@ export default function MyEventsCard({
 
   const handleViewCertificate = () => {
     setIsMenuVisible(false);
-    console.log("Navigating to view certificate for:", eventId);
+    router.push({
+      pathname: "/certificate",
+      params: { regId },
+    });
   };
 
   const handleDownloadCertificate = () => {

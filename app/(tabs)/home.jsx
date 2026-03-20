@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState } from "react";
 import {
   ActivityIndicator,
   BackHandler,
+  RefreshControl,
   ScrollView,
   StyleSheet,
   Text,

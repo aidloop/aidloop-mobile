@@ -13,7 +13,6 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { register } from "../../api/auth";
-import Back from "../../assets/images/Back.svg";
 import Google from "../../assets/images/Google.svg";
 import { FONTS } from "../../constants/fonts";
 
@@ -63,13 +62,13 @@ export default function CreateAccount() {
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={{ flex: 1 }}
       >
-        <Back
+        {/* <Back
           width={30}
           height={30}
           onPress={() => {
             router.back();
           }}
-        />
+        /> */}
 
         <ScrollView
           contentContainerStyle={styles.scrollContainer}
@@ -133,7 +132,7 @@ export default function CreateAccount() {
             <Text style={styles.loginText}>Already have an account? </Text>
             <TouchableOpacity
               onPress={() => {
-                router.replace("/login");
+                router.replace("/auth/login");
               }}
             >
               <Text style={styles.loginPress}> Login</Text>

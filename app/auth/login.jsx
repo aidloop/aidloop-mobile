@@ -149,7 +149,7 @@ export default function Login() {
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => {
-              router.push("/forgotPassword");
+              router.push("/auth/forgotPassword");
             }}
           >
             <Text style={styles.forgot}>Forgot Password</Text>
@@ -158,7 +158,7 @@ export default function Login() {
             <Text style={styles.loginText}>Do not have an account? </Text>
             <TouchableOpacity
               onPress={() => {
-                router.replace("/createAccount");
+                router.replace("/auth/createAccount");
               }}
             >
               <Text style={styles.loginPress}> Sign Up</Text>

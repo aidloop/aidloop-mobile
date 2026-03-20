@@ -1,4 +1,4 @@
-import { useNavigation, useRouter } from "expo-router";
+import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -35,8 +35,6 @@ const Input = ({ InputText, placeholder, ...props }) => (
 );
 export default function Login() {
   const router = useRouter();
-
-  const navigation = useNavigation();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");

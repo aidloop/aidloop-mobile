@@ -197,7 +197,7 @@ export default function MyEventsScreen() {
                 status={getStatusText(item?.status)}
                 volunteerRequirements={event?.requirements}
                 eventId={item.eventId._id}
-                regId={item.volunteerId}
+                regId={item._id}
                 onRefreshTrigger={onRefresh}
                 onpress={() =>
                   router.push({

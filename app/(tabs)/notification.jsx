@@ -1,12 +1,17 @@
-import { useState } from "react";
+import { useRouter } from "expo-router";
+import { useCallback, useEffect, useState } from "react";
 import {
+  ActivityIndicator,
+  Alert,
+  RefreshControl,
   ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
-import Calendar from "../../assets/images/calendar.svg";
+
+import API from "../../api/api";
 import Confirm from "../../assets/images/Checked.svg";
 import Ready from "../../assets/images/conrgrats.svg";
 import Event from "../../assets/images/EventNotification.svg";
@@ -45,66 +50,113 @@ const Notification = ({
 };
 
 export default function NotificationScreen() {
-  const [notifications, setNotifications] = useState([
-    {
-      id: 1,
-      icon: <Calendar />,
-      head: "Coastal Clean-Up Exercise",
-      details: "Your Events starts tomorrow at 8:00AM",
-      date: "2 hrs ago",
-      isRead: false,
-    },
-    {
-      id: 2,
-      icon: <Confirm />,
-      head: "Registration Confirmed",
-      details: "You are registered for Green Lagos Tree Planting.",
-      date: "1 day ago",
-      isRead: false,
-    },
-    {
-      id: 3,
-      icon: <Update />,
-      head: "Event Update",
-      details:
-        "The start time for Food Distribution Drive has changed to 10:30 AM.",
-      date: "2 days ago",
-      isRead: true,
-    },
-    {
-      id: 4,
-      icon: <Ready />,
-      head: "Certificate Ready",
-      details: "Your certificate for beach cleanup is now available",
-      date: "3 days ago",
-      isRead: true,
-      button: (
-        <TouchableOpacity style={styles.button}>
+  const [notifications, setNotifications] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+  const router = useRouter();
+
+  const fetchNotifications = async () => {
+    try {
+      const response = await API.get("/notifications");
+      const data = response.data?.data || response.data || [];
+
+      const sortedData = data.sort(
+        (old, recent) => new Date(recent.createdAt) - new Date(old.createdAt),
+      );
+      setNotifications(sortedData);
+    } catch (error) {
+      console.error("Error fetching notifications:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchNotifications();
+  }, []);
+
+  const refresh = useCallback(async () => {
+    setRefreshing(true);
+    await fetchNotifications();
+    setRefreshing(false);
+  }, []);
+
+  const unreadCount = notifications.filter((item) => !item.isRead).length;
+
+  const toggleReadStatus = async (id, currentStatus) => {
+    if (currentStatus) return;
+
+    setNotifications((prevNotifs) =>
+      prevNotifs.map((notif) =>
+        notif._id === id ? { ...notif, isRead: true } : notif,
+      ),
+    );
+
+    try {
+      await API.patch(`/notifications/${id}/read`);
+    } catch (error) {
+      console.log(error);
+      Alert.alert("Error", `${error.response.data.message}`);
+    }
+  };
+
+  const formatDate = (dateString) => {
+    if (!dateString) return "";
+    const d = new Date(dateString);
+    return d.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
+
+  const getIconForType = (type) => {
+    switch (type) {
+      case "registration":
+        return <Confirm />;
+      case "certificate":
+        return <Ready />;
+      case "event_update":
+      case "cancellation":
+        return <Update />;
+      default:
+        return <Event />;
+    }
+  };
+
+  const getButtonForType = (type, dataPayload) => {
+    if (type === "certificate") {
+      return (
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() =>
+            router.push({
+              pathname: "/certificate",
+              params: { regId: dataPayload?.registrationId },
+            })
+          }
+        >
           <Text style={styles.btnText}>Download it right now</Text>
           <Download />
         </TouchableOpacity>
-      ),
-    },
-    {
-      id: 5,
-      icon: <Event />,
-      head: "New Event Near You",
-      details: "Community Health Outreach is happening near you this weekend.",
-      date: "4 days ago",
-      isRead: true,
-    },
-  ]);
-
-  const unreadCount = notifications.filter((item) => !item.isRead).length; //this counts the total number of unread notifications
-
-  // Function to toggle a specific notification's read state
-  const toggleReadStatus = (id) => {
-    setNotifications((prevNotifs) =>
-      prevNotifs.map((notif) =>
-        notif.id === id ? { ...notif, isRead: !notif.isRead } : notif,
-      ),
-    );
+      );
+    }
+    return null;
   };
+
+  if (loading) {
+    return (
+      <View style={{ flex: 1, backgroundColor: COLORS.white }}>
+        <ScreenInfo ScreenTitle={"Notifications"} icon={<Notify />} />
+        <ActivityIndicator
+          size="large"
+          color={COLORS.primary}
+          style={{ marginTop: 50 }}
+        />
+      </View>
+    );
+  }
 
   return (
     <View style={{ flex: 1 }}>
@@ -116,7 +168,6 @@ export default function NotificationScreen() {
               textAlign: "center",
               fontFamily: FONTS.regular,
               color: COLORS.white,
-              // backgroundColor: "red",
               fontSize: 14,
             }}
           >
@@ -129,19 +180,40 @@ export default function NotificationScreen() {
         style={styles.safeview}
         contentContainerStyle={{ paddingBottom: 20 }}
         showsVerticalScrollIndicator={false}
-      >
-        {notifications.map((item) => (
-          <Notification
-            key={item.id}
-            icon={item.icon}
-            Head={item.head}
-            Details={item.details}
-            Date={item.date}
-            button={item.button}
-            isRead={item.isRead}
-            onToggle={() => toggleReadStatus(item.id)}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={refresh}
+            tintColor={COLORS.primary}
+            colors={[COLORS.highlight, COLORS.success, COLORS.primary]}
           />
-        ))}
+        }
+      >
+        {notifications.length === 0 ? (
+          <Text
+            style={{
+              textAlign: "center",
+              marginTop: 50,
+              fontFamily: FONTS.medium,
+              color: COLORS.neutral,
+            }}
+          >
+            No notifications yet.
+          </Text>
+        ) : (
+          notifications.map((item) => (
+            <Notification
+              key={item._id}
+              icon={getIconForType(item.type)}
+              Head={item.title}
+              Details={item.message}
+              Date={formatDate(item.createdAt)}
+              button={getButtonForType(item.type, item.data)}
+              isRead={item.isRead}
+              onToggle={() => toggleReadStatus(item._id, item.isRead)}
+            />
+          ))
+        )}
       </ScrollView>
     </View>
   );
@@ -153,14 +225,11 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.white,
     padding: 15,
   },
-
   notificationDetail: {
     fontFamily: FONTS.regular,
     fontSize: 13,
     flexWrap: "wrap",
-    // overflow: "scroll",
   },
-
   notificationHead: { fontFamily: FONTS.semibold, fontSize: 20 },
   notificationDate: {
     fontFamily: FONTS.regular,
@@ -170,7 +239,6 @@ const styles = StyleSheet.create({
   notification: {
     flexDirection: "row",
     backgroundColor: "#F6F6F6",
-    // justifyContent: "space-between",
     borderWidth: 1,
     borderRadius: 20,
     borderColor: "#448AFFA8",
@@ -178,9 +246,7 @@ const styles = StyleSheet.create({
     padding: 10,
     marginVertical: 10,
   },
-
   readnotification: {
-    // borderWidth: 0,
     borderColor: "transparent",
     shadowColor: "#000000",
     shadowOffset: { width: 0, height: 4 },
@@ -198,6 +264,5 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
   },
-
   btnText: { fontFamily: FONTS.semibold, fontSize: 14, color: COLORS.primary },
 });

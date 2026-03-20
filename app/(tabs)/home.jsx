@@ -1,5 +1,5 @@
 import { useRouter } from "expo-router";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   ActivityIndicator,
   BackHandler,
@@ -32,6 +32,7 @@ export default function HomeScreen() {
   };
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
 
   const fetchEvents = async () => {
     try {
@@ -69,6 +70,12 @@ export default function HomeScreen() {
       () => true,
     );
     return () => backHandler.remove();
+  }, []);
+
+  const refresh = useCallback(async () => {
+    setRefreshing(true);
+    await fetchEvents();
+    setRefreshing(false);
   }, []);
 
   if (loading) {
@@ -111,6 +118,14 @@ export default function HomeScreen() {
       <ScrollView
         style={styles.scrollview}
         showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl
+            tintColor={COLORS.highlight}
+            colors={[COLORS.highlight, COLORS.success, COLORS.neutral]}
+            refreshing={refreshing}
+            onRefresh={refresh}
+          />
+        }
       >
         <Header />
 

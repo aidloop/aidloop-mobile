@@ -26,19 +26,38 @@ import { COLORS } from "../../constants/colors";
 import { FONTS } from "../../constants/fonts";
 
 export default function ProfileScreen() {
-  const [user, setUser] = useState([]);
+  const [user, setUser] = useState({});
+  // NEW STATE: Store the counters
+  const [stats, setStats] = useState({ attended: 0, certificates: 0 });
   const [loading, setLoading] = useState(true);
   const [loggingout, setLoggingout] = useState(false);
   const router = useRouter();
 
-  const fetchProfile = async () => {
+  const fetchProfileData = async () => {
     try {
       setLoading(true);
-      const response = await API.get("/user/me");
-      console.log(response.data);
-      setUser(response.data);
+
+      const userResponse = await API.get("/user/me");
+      const userData = userResponse.data?.data || userResponse.data;
+      setUser(userData);
+
+      const regResponse = await API.get("/applications/registrations/me");
+      const registrations = regResponse.data?.data || regResponse.data || [];
+
+      const attendedEvents = registrations.filter(
+        (reg) => reg.status === "attended",
+      );
+
+      const earnedCertificates = attendedEvents.filter(
+        (reg) => reg.eventId?.certificateEnabled === true,
+      );
+
+      setStats({
+        attended: attendedEvents.length,
+        certificates: earnedCertificates.length,
+      });
     } catch (error) {
-      console.error("Error fetching user details:", error);
+      console.error("Error fetching profile data:", error);
     } finally {
       setLoading(false);
     }
@@ -51,13 +70,14 @@ export default function ProfileScreen() {
       Alert.alert("Logout Successful", "You have been securely logged out ");
       router.replace("/login");
     } catch (error) {
-      Alert.alert("Logout Failed", error);
+      Alert.alert("Logout Failed", error.message || "An error occurred");
     } finally {
       setLoggingout(false);
     }
   };
+
   useEffect(() => {
-    fetchProfile();
+    fetchProfileData();
   }, []);
 
   const rows = [
@@ -75,6 +95,9 @@ export default function ProfileScreen() {
       icon: <Certificate width={20} height={20} color={"#448AFF"} />,
       title: "Certificates",
       subtitle: "View and download your certificates",
+      onpress: () => {
+        router.push("/myevents");
+      },
     },
     {
       id: 3,
@@ -117,7 +140,10 @@ export default function ProfileScreen() {
   const email = user?.email || "user@email.com";
   const isActive = user?.isActive ? "Active" : "" || "Undefined";
   const role = user?.role || "Volunteer";
-  const image = user?.avatar || require("../../assets/images/default.png");
+  const image = user?.avatar
+    ? { uri: user.avatar }
+    : require("../../assets/images/default.png");
+
   return (
     <View style={styles.safeareaview}>
       <View>
@@ -145,9 +171,9 @@ export default function ProfileScreen() {
               <Text style={styles.email}>{email}</Text>
               <View style={{ flexDirection: "row", alignItems: "center" }}>
                 <Pressable style={styles.badge}>
-                  <Text style={styles.status}>{`${isActive} ${role}`}</Text>
+                  <Text style={styles.status}>{`${isActive} ${role} `}</Text>
                 </Pressable>
-                <TouchableOpacity onPress={fetchProfile}>
+                <TouchableOpacity onPress={fetchProfileData}>
                   <MaterialIcons
                     name="refresh"
                     size={20}
@@ -158,7 +184,11 @@ export default function ProfileScreen() {
             </View>
           </View>
         ) : (
-          <ActivityIndicator />
+          <ActivityIndicator
+            size="large"
+            color={COLORS.primary}
+            style={{ marginTop: 50 }}
+          />
         )}
 
         <View style={styles.certView}>
@@ -171,7 +201,7 @@ export default function ProfileScreen() {
                 color: COLORS.primary,
               }}
             >
-              {/* {noOfEvents} */}
+              {loading ? "-" : stats.attended}
             </Text>
             <View>
               <Text style={{ fontFamily: FONTS.regular, fontSize: 12 }}>
@@ -191,7 +221,7 @@ export default function ProfileScreen() {
                 color: COLORS.primary,
               }}
             >
-              {/* {noOfCertificate} */}
+              {loading ? "-" : stats.certificates}
             </Text>
             <View>
               <Text style={{ fontFamily: FONTS.regular, fontSize: 12 }}>
@@ -203,6 +233,7 @@ export default function ProfileScreen() {
             </View>
           </Pressable>
         </View>
+
         <View>
           {rows.map((item) => (
             <Row
@@ -223,27 +254,21 @@ export default function ProfileScreen() {
 const styles = StyleSheet.create({
   safeareaview: {
     flex: 1,
-    // justifyContent: "center",
-    // alignItems: "center",
     backgroundColor: COLORS.white,
   },
   dp: {
     backgroundColor: COLORS.primary,
-    // width: "30%",
-    aspectRatio: "",
     height: 167,
     width: 167,
-    // flexDirection: "row",
-    // marginTop: 30,
     alignSelf: "center",
-    borderRadius: "50%",
+    borderRadius: 83.5,
     borderColor: "#9E9E9E",
     alignItems: "center",
     justifyContent: "center",
     borderWidth: 5,
-    // overflow: "hidden",
+    overflow: "hidden",
   },
-  dpimage: { width: "100%", resizeMode: "contain" },
+  dpimage: { width: "100%", height: "100%", resizeMode: "cover" },
   text: {
     fontFamily: FONTS.PoppinsSemiBold,
     fontSize: 24,
@@ -262,16 +287,13 @@ const styles = StyleSheet.create({
     color: COLORS.white,
     textAlign: "center",
   },
-
   username: {
     fontFamily: FONTS.semibold,
     fontSize: 20,
-    // textAlign: "center"
   },
   email: {
     fontFamily: FONTS.regular,
     fontSize: 13,
-    //  textAlign: "center"
   },
   badge: {
     backgroundColor: "#52D17C21",
@@ -281,15 +303,17 @@ const styles = StyleSheet.create({
     borderColor: "#52D17CAD",
     borderRadius: 10,
   },
-
-  status: { fontFamily: FONTS.semibold, fontSize: 14, color: "#599F61" },
-
+  status: {
+    fontFamily: FONTS.semibold,
+    fontSize: 14,
+    color: "#599F61",
+    textTransform: "capitalize",
+  },
   certView: {
     flexDirection: "row",
     justifyContent: "space-evenly",
     marginVertical: 30,
   },
-
   certPress: {
     flexDirection: "row",
     backgroundColor: "#F9F9F9",

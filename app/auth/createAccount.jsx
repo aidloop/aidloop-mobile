@@ -45,7 +45,7 @@ export default function CreateAccount() {
 
       await register(fullName, email.trim(), password);
       Alert.alert("Success", "OTP sent to your email");
-      router.push({ pathname: "/otp", params: { email } });
+      router.push({ pathname: "/auth/otp", params: { email } });
     } catch (error) {
       Alert.alert(
         "Error",

@@ -53,9 +53,9 @@ export default function ForgotPassword() {
         />
 
         <TouchableOpacity
-          onPress={() => {
-            router.push("/otp");
-          }}
+          // onPress={() => {
+          //   router.push("/otp");
+          // }}
           disabled={email.length < 1}
           style={[
             styles.createBtn,

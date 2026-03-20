@@ -34,7 +34,7 @@ export default function Otp() {
       setLoading(true);
       await verifyOTP(String(email), otpCode);
       Alert.alert("Success", "Account verified successfully");
-      router.replace("/login");
+      router.replace("/auth/login");
     } catch (error) {
       Alert.alert(
         "Error",

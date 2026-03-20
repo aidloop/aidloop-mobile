@@ -232,6 +232,7 @@ const styles = StyleSheet.create({
     // paddingRight: 180,
     fontFamily: "PoppinsRegular",
     fontSize: 16,
+    color: "black",
   },
 
   bottomText: {

@@ -25,6 +25,7 @@ const RateEvents = () => {
 
   const [rating, setRating] = useState(0);
   const [review, setReview] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [selectedFeedback, setSelectedFeedback] = useState([]);
   const feedbackOptions = [
@@ -64,16 +65,34 @@ const RateEvents = () => {
       return;
     }
 
-    console.log("Ready to send to backend:", {
-      eventId: eventKey,
-      rating,
-      feedbackTags: selectedFeedback,
-      review,
-    });
+    try {
+      setIsSubmitting(true);
 
-    Alert.alert("Success!", "Thank you for your feedback!", [
-      { text: "OK", onPress: () => router.back() },
-    ]);
+      const payload = {
+        eventId: eventKey,
+        rating: rating,
+        tags: selectedFeedback,
+        comment: review,
+        organizerId: event.organizationId._id,
+      };
+
+      const response = await API.post("/ratings", payload);
+
+      console.log("Rating Success:", response.data);
+
+      Alert.alert("Success!", "Thank you for your feedback!", [
+        { text: "OK", onPress: () => router.back() },
+      ]);
+    } catch (error) {
+      console.error("Error submitting rating:", error);
+      Alert.alert(
+        "Oops!",
+        error.response?.data?.message ||
+          "Something went wrong while submitting your review.",
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -176,8 +195,13 @@ const RateEvents = () => {
           style={styles.submitButton}
           activeOpacity={0.8}
           onPress={handleSubmit}
+          disabled={isSubmitting} // <--- Prevents double clicks!
         >
-          <Text style={styles.submitButtonText}>Submit Review</Text>
+          {isSubmitting ? (
+            <ActivityIndicator color={COLORS.white} size="small" />
+          ) : (
+            <Text style={styles.submitButtonText}>Submit Review</Text>
+          )}
         </TouchableOpacity>
       </ScrollView>
     </View>

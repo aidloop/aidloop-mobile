@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
+  Image,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -33,9 +34,9 @@ export default function ProfileScreen() {
   const fetchProfile = async () => {
     try {
       setLoading(true);
-      const response = await API.get("/auth/status");
+      const response = await API.get("/user/me");
       console.log(response.data);
-      setUser(response.data.user);
+      setUser(response.data);
     } catch (error) {
       console.error("Error fetching user details:", error);
     } finally {
@@ -96,9 +97,9 @@ export default function ProfileScreen() {
     {
       id: 5,
       icon: <Signout width={20} height={20} color={"#448AFF"} />,
-      title: "Log out",
+      title: loggingout ? "Logging Out" : "Log Out",
       logout: true,
-      subtitle: "Sign out of your account",
+      subtitle: loggingout ? "Please Hold on" : "Sign out of your account",
       onpress: () => {
         Alert.alert("Confirm Logout", "Are you sure you want to logout?", [
           { text: "Yes", onPress: () => handleLogout() },
@@ -116,6 +117,7 @@ export default function ProfileScreen() {
   const email = user?.email || "user@email.com";
   const isActive = user?.isActive ? "Active" : "" || "Undefined";
   const role = user?.role || "Volunteer";
+  const image = user?.avatar || require("../../assets/images/default.png");
   return (
     <View style={styles.safeareaview}>
       <View>
@@ -136,7 +138,7 @@ export default function ProfileScreen() {
         {!loading ? (
           <View>
             <View style={styles.dp}>
-              <Text style={styles.dptext}>{userName[0]}</Text>
+              <Image source={image} style={styles.dpimage} />
             </View>
             <View style={{ marginVertical: 10, alignItems: "center", gap: 3 }}>
               <Text style={styles.username}>{userName}</Text>
@@ -169,14 +171,14 @@ export default function ProfileScreen() {
                 color: COLORS.primary,
               }}
             >
-              3
+              {/* {noOfEvents} */}
             </Text>
             <View>
               <Text style={{ fontFamily: FONTS.regular, fontSize: 12 }}>
-                Certificate
+                Events
               </Text>
               <Text style={{ fontFamily: FONTS.regular, fontSize: 12 }}>
-                Earned
+                Attended
               </Text>
             </View>
           </Pressable>
@@ -189,7 +191,7 @@ export default function ProfileScreen() {
                 color: COLORS.primary,
               }}
             >
-              3
+              {/* {noOfCertificate} */}
             </Text>
             <View>
               <Text style={{ fontFamily: FONTS.regular, fontSize: 12 }}>
@@ -229,8 +231,8 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.primary,
     // width: "30%",
     aspectRatio: "",
-    height: 100,
-    width: 100,
+    height: 167,
+    width: 167,
     // flexDirection: "row",
     // marginTop: 30,
     alignSelf: "center",
@@ -239,8 +241,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     borderWidth: 5,
+    // overflow: "hidden",
   },
-  dptext: { fontFamily: FONTS.semibold, color: COLORS.white, fontSize: 40 },
+  dpimage: { width: "100%", resizeMode: "contain" },
   text: {
     fontFamily: FONTS.PoppinsSemiBold,
     fontSize: 24,

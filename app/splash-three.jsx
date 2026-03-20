@@ -4,8 +4,15 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS } from "../constants/colors";
 import { FONTS } from "../constants/fonts";
 
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 export default function SplashScreen() {
   const router = useRouter();
+
+  const handleFinish = async () => {
+    await AsyncStorage.setItem("hasOnboarded", "true");
+    router.replace("/auth/login");
+  };
 
   return (
     <SafeAreaView style={styles.safeareaview}>
@@ -21,15 +28,12 @@ export default function SplashScreen() {
           />
         </View>
         <View style={styles.bottomcontainer}>
-          <Pressable
-            style={styles.btnBackground}
-            onPress={() => router.push("/createAccount")}
-          >
+          <Pressable style={styles.btnBackground} onPress={handleFinish}>
             <Text style={styles.btnText}>Next</Text>
           </Pressable>
           <Pressable
             style={styles.skipBtnBackground}
-            onPress={() => router.push("/splash")}
+            onPress={() => router.push("/auth/login")}
           >
             <Text style={styles.skipBtnText}>Skip</Text>
           </Pressable>

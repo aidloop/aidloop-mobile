@@ -1,12 +1,59 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
-import { Image, Pressable, StyleSheet, Text, View } from "react-native";
+import { useEffect, useState } from "react";
+import {
+  ActivityIndicator,
+  Image,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS } from "../constants/colors";
 import { FONTS } from "../constants/fonts";
 
 export default function SplashScreen() {
   const router = useRouter();
+  const [hasOnboarded, setHasOnboarded] = useState(null); // null = loading
 
+  useEffect(() => {
+    const init = async () => {
+      try {
+        const value = await AsyncStorage.getItem("hasOnboarded");
+        const onboarded = value === "true"; // ensure boolean
+        setHasOnboarded(onboarded);
+
+        if (onboarded) {
+          // Returning user → auto go to login
+          setTimeout(() => {
+            router.replace("/auth/login");
+          }, 2000); // 2s splash
+        }
+      } catch (err) {
+        console.error("Error reading AsyncStorage:", err);
+        setHasOnboarded(false); // fallback → first-time
+      }
+    };
+    init();
+  }, []);
+
+  // Show loader while AsyncStorage is reading
+  if (hasOnboarded === null) {
+    return (
+      <SafeAreaView style={styles.safeareaview}>
+        <View style={styles.container}>
+          <Image
+            source={require("../assets/images/splash-image.png")}
+            style={styles.logo}
+          />
+          <ActivityIndicator size="large" color={COLORS.primary} />
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  // First-time users → logo + button
   return (
     <SafeAreaView style={styles.safeareaview}>
       <View style={styles.container}>
@@ -14,12 +61,23 @@ export default function SplashScreen() {
           source={require("../assets/images/splash-image.png")}
           style={styles.logo}
         />
-        <Pressable
-          style={styles.btnBackground}
-          onPress={() => router.push("/splash-one")}
-        >
-          <Text style={styles.btnText}>Get Started</Text>
-        </Pressable>
+
+        {!hasOnboarded && (
+          <Pressable
+            style={styles.btnBackground}
+            onPress={async () => {
+              await AsyncStorage.setItem("hasOnboarded", "true");
+              router.replace("/splash-one");
+            }}
+          >
+            <Text style={styles.btnText}>Get Started</Text>
+          </Pressable>
+        )}
+
+        {/* Returning users → loader only */}
+        {hasOnboarded && (
+          <ActivityIndicator size="large" color={COLORS.primary} />
+        )}
       </View>
     </SafeAreaView>
   );

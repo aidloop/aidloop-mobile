@@ -49,7 +49,7 @@ export default function ProfileScreen() {
       setLoggingout(true);
       await logout();
       Alert.alert("Logout Successful", "You have been securely logged out ");
-      router.replace("/login");
+      router.replace("/auth/login");
     } catch (error) {
       Alert.alert("Logout Failed", error);
     } finally {

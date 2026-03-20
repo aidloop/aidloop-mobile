@@ -75,7 +75,7 @@ export default function NotificationScreen() {
     fetchNotifications();
   }, []);
 
-  const onRefresh = useCallback(async () => {
+  const refresh = useCallback(async () => {
     setRefreshing(true);
     await fetchNotifications();
     setRefreshing(false);
@@ -183,8 +183,9 @@ export default function NotificationScreen() {
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
-            onRefresh={onRefresh}
+            onRefresh={refresh}
             tintColor={COLORS.primary}
+            colors={[COLORS.highlight, COLORS.success, COLORS.primary]}
           />
         }
       >

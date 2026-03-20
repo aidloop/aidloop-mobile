@@ -132,7 +132,12 @@ export default function MyEventsScreen() {
             refreshing={refreshing}
             onRefresh={onRefresh}
             tintColor={COLORS.highlight}
-            colors={[COLORS.highlight]}
+            colors={[
+              COLORS.highlight,
+              COLORS.success,
+              COLORS.primary,
+              COLORS.neutral,
+            ]}
           />
         }
       >

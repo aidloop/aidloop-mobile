@@ -16,22 +16,42 @@ export default function TabsLayout() {
       tabBarPosition="bottom"
       screenOptions={{
         tabBarShowLabel: true,
+        tabBarShowIcon: true,
         swipeEnabled: true,
         tabBarActiveTintColor: COLORS.highlight,
         tabBarInactiveTintColor: COLORS.neutral,
+
         tabBarLabelStyle: {
           fontSize: 12,
           fontFamily: FONTS.medium,
-          textTransform: "none",
-        },
-        tabBarStyle: {
-          backgroundColor: "#fff",
-          elevation: 10,
-          height: 80,
-          paddingBottom: 10,
+          textTransform: "capitalize",
+          margin: 0,
+          padding: 0,
         },
 
-        tabBarIndicatorStyle: { backgroundColor: "transparent" },
+        tabBarItemStyle: {
+          justifyContent: "center",
+          alignItems: "center",
+          // backgroundColor: "green",
+          height: 80,
+        },
+
+        tabBarStyle: {
+          // backgroundColor: "red",
+          elevation: 10,
+          shadowColor: "#000",
+          shadowOffset: { width: 0, height: -2 },
+          shadowOpacity: 0.1,
+          shadowRadius: 4,
+          height: 80,
+          paddingBottom: 20,
+        },
+
+        tabBarIndicatorStyle: {
+          backgroundColor: COLORS.highlight,
+          // marginTop: -5,
+          paddingBottom: 10,
+        },
       }}
     >
       <MaterialTabs.Screen

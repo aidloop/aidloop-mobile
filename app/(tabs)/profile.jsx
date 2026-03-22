@@ -90,17 +90,9 @@ export default function ProfileScreen() {
         router.push("/myevents");
       },
     },
+
     {
       id: 2,
-      icon: <Certificate width={20} height={20} color={"#448AFF"} />,
-      title: "Certificates",
-      subtitle: "View and download your certificates",
-      onpress: () => {
-        router.push("/myevents");
-      },
-    },
-    {
-      id: 3,
       icon: <Notification width={20} height={20} color={"#448AFF"} />,
       title: "Notifications",
       subtitle: "View updates and reminders",
@@ -109,7 +101,7 @@ export default function ProfileScreen() {
       },
     },
     {
-      id: 4,
+      id: 3,
       icon: <Settings width={20} height={20} color={"#448AFF"} />,
       title: "Settings",
       subtitle: "View updates and reminders",
@@ -118,7 +110,7 @@ export default function ProfileScreen() {
       },
     },
     {
-      id: 5,
+      id: 4,
       icon: <Signout width={20} height={20} color={"#448AFF"} />,
       title: loggingout ? "Logging Out" : "Log Out",
       logout: true,

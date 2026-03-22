@@ -126,14 +126,14 @@ export default function ProfileScreen() {
 
   const name = user?.fullName || "User";
   const userName = name
-    .split(/([ -])/)
+    .split(/([ -_.])/)
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
     .join("");
   const email = user?.email || "user@email.com";
   const isActive = user?.isActive ? "Active" : "" || "Undefined";
   const role = user?.role || "Volunteer";
-  const image = user?.avatar
-    ? { uri: user.avatar }
+  const image = user?.profileImage
+    ? { uri: user.profileImage }
     : require("../../assets/images/default.png");
 
   return (

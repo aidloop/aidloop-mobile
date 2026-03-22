@@ -182,6 +182,7 @@ const styles = StyleSheet.create({
     width: 170,
     borderRadius: 100,
     paddingVertical: 5,
+    flex: 1,
   },
   viewDetailsText: {
     fontSize: 20,

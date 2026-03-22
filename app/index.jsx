@@ -10,6 +10,7 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import API from "../api/api";
 import { COLORS } from "../constants/colors";
 import { FONTS } from "../constants/fonts";
 
@@ -27,7 +28,12 @@ export default function Index() {
         if (onboarded) {
           // Returning user → auto go to login
           setTimeout(() => {
-            router.replace("/auth/login");
+            try {
+              API.get("/user/me");
+              router.replace("/(tabs)/home");
+            } catch {
+              router.replace("/auth/login");
+            }
           }, 2000); // 2s splash
         }
       } catch (err) {

@@ -17,6 +17,7 @@ import Header from "../../components/header";
 import SearchBar from "../../components/searchbar";
 
 import { COLORS } from "../../constants/colors";
+import { FONTS } from "../../constants/fonts";
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -105,6 +106,7 @@ export default function HomeScreen() {
             style={{
               marginTop: 10,
               color: COLORS.primary,
+              fontFamily: FONTS.regular,
             }}
           >
             Loading Events...
@@ -159,9 +161,12 @@ export default function HomeScreen() {
               location={event.location?.venue || "TBD"}
               city={event.location?.city || "Undefined"}
               time={`${event.startTime} - ${event.endTime}` || "TBD"}
-              people={`${event.volunteerSlots} slots` || "Undefined"}
+              people={
+                `${event.registeredCount}/${event.volunteerSlots} slots` ||
+                "Undefined"
+              }
               role={
-                event.roles?.length > 0 ? event.roles.join(", ") : "Volunteer"
+                event.roles?.length > 0 ? `${event.roles[0]}...` : "Volunteer"
               }
               rating={event.rating || "No Ratings"}
               about={event.description || "No Description"}
@@ -194,6 +199,7 @@ export default function HomeScreen() {
                 // textAlign: "center",
                 marginTop: 50,
                 color: COLORS.neutral,
+                fontFamily: FONTS.semibold,
               }}
             >
               No events available right now.

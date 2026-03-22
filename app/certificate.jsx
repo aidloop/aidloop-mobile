@@ -71,8 +71,6 @@ export default function Certificate() {
     );
   }
 
-  // --- THE WEBVIEW MAGIC ---
-  // iOS reads PDFs directly. Android needs Google's viewer wrapper.
   const pdfUrl = certificate?.certificateUrl;
   const webViewSource =
     Platform.OS === "ios"
@@ -86,7 +84,6 @@ export default function Certificate() {
       <ScreenInfo ScreenTitle={"Certificate"} />
 
       <View style={styles.content}>
-        {/* REPLACED <Image> WITH <WebView> */}
         <View style={styles.webViewContainer}>
           <WebView
             source={webViewSource}

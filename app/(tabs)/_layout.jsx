@@ -1,4 +1,5 @@
-import { Tabs } from "expo-router";
+import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
+import { withLayoutContext } from "expo-router";
 import HomeIcon from "../../assets/images/homeicon.svg";
 import MyEventsIcon from "../../assets/images/myeventsicon.svg";
 import NotificationIcon from "../../assets/images/notificationicon.svg";
@@ -6,30 +7,34 @@ import ProfileIcon from "../../assets/images/profileicon.svg";
 import { COLORS } from "../../constants/colors";
 import { FONTS } from "../../constants/fonts";
 
+const { Navigator } = createMaterialTopTabNavigator();
+export const MaterialTabs = withLayoutContext(Navigator);
+
 export default function TabsLayout() {
   return (
-    <Tabs
+    <MaterialTabs
+      tabBarPosition="bottom"
       screenOptions={{
-        headerShown: false,
         tabBarShowLabel: true,
-        tabBarStyle: {
-          backgroundColor: "#fff",
-          borderTopWidth: 0,
-          elevation: 10,
-          paddingTop: 10,
-          paddingBottom: 10,
-          height: 80,
-        },
+        swipeEnabled: true,
         tabBarActiveTintColor: COLORS.highlight,
         tabBarInactiveTintColor: COLORS.neutral,
         tabBarLabelStyle: {
-          fontSize: 14,
+          fontSize: 12,
           fontFamily: FONTS.medium,
-          marginTop: 2,
+          textTransform: "none",
         },
+        tabBarStyle: {
+          backgroundColor: "#fff",
+          elevation: 10,
+          height: 80,
+          paddingBottom: 10,
+        },
+
+        tabBarIndicatorStyle: { backgroundColor: "transparent" },
       }}
     >
-      <Tabs.Screen
+      <MaterialTabs.Screen
         name="home"
         options={{
           title: "Home",
@@ -38,7 +43,7 @@ export default function TabsLayout() {
           ),
         }}
       />
-      <Tabs.Screen
+      <MaterialTabs.Screen
         name="myevents"
         options={{
           title: "My Events",
@@ -47,7 +52,7 @@ export default function TabsLayout() {
           ),
         }}
       />
-      <Tabs.Screen
+      <MaterialTabs.Screen
         name="notification"
         options={{
           title: "Notifications",
@@ -56,7 +61,7 @@ export default function TabsLayout() {
           ),
         }}
       />
-      <Tabs.Screen
+      <MaterialTabs.Screen
         name="profile"
         options={{
           title: "Profile",
@@ -65,6 +70,6 @@ export default function TabsLayout() {
           ),
         }}
       />
-    </Tabs>
+    </MaterialTabs>
   );
 }

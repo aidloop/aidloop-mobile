@@ -3,14 +3,14 @@ import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
-  Image,
   Linking,
-  ScrollView,
+  Platform,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
+import { WebView } from "react-native-webview"; // <-- Added WebView import
 
 import API from "../api/api";
 import ScreenInfo from "../components/screenInfo";
@@ -33,14 +33,12 @@ export default function Certificate() {
         const response = await API.get("/certificates/my-certificates");
         const allCertificates = response.data?.data || response.data || [];
 
-        //Made a trick to find specific certificate that matches the registration ID passed from the previous screen
         const foundCert = allCertificates.find(
           (cert) => cert.registrationId === regId,
         );
 
         if (foundCert) {
           setCertificate(foundCert);
-          console.log(certificate);
         } else {
           Alert.alert(
             "Not Found",
@@ -73,26 +71,48 @@ export default function Certificate() {
     );
   }
 
+  // --- THE WEBVIEW MAGIC ---
+  // iOS reads PDFs directly. Android needs Google's viewer wrapper.
+  const pdfUrl = certificate?.certificateUrl;
+  const webViewSource =
+    Platform.OS === "ios"
+      ? { uri: pdfUrl }
+      : {
+          uri: `https://docs.google.com/gview?embedded=true&url=${encodeURIComponent(pdfUrl)}`,
+        };
+
   return (
     <View style={styles.container}>
       <ScreenInfo ScreenTitle={"Certificate"} />
 
-      <ScrollView contentContainerStyle={styles.scrollContent}>
-        <Image
-          source={{ uri: certificate?.certificateUrl }}
-          style={styles.previewImage}
-        />
-        <Text>{certificate?.certificateUrl}</Text>
+      <View style={styles.content}>
+        {/* REPLACED <Image> WITH <WebView> */}
+        <View style={styles.webViewContainer}>
+          <WebView
+            source={webViewSource}
+            style={styles.webView}
+            startInLoadingState={true}
+            renderLoading={() => (
+              <ActivityIndicator
+                size="small"
+                color={COLORS.primary}
+                style={styles.webviewLoader}
+              />
+            )}
+          />
+        </View>
+
         <TouchableOpacity
           style={styles.downloadBtn}
           onPress={() => {
-            Linking.openURL(certificate.certificateUrl);
+            if (certificate?.certificateUrl) {
+              Linking.openURL(certificate.certificateUrl);
+            }
           }}
-          //   disabled={isDownloading}
         >
           <Text style={styles.downloadText}>Download PDF</Text>
         </TouchableOpacity>
-      </ScrollView>
+      </View>
     </View>
   );
 }
@@ -100,15 +120,30 @@ export default function Certificate() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: COLORS.white },
   center: { flex: 1, backgroundColor: COLORS.white },
-  scrollContent: { padding: 20, alignItems: "center" },
-  previewImage: {
+  content: { flex: 1, padding: 20, alignItems: "center" },
+
+  webViewContainer: {
     width: "100%",
-    height: 300,
-    resizeMode: "contain",
+    flex: 0.3,
     borderWidth: 1,
     borderColor: COLORS.primary,
     borderRadius: 8,
+    overflow: "hidden",
+
+    marginBottom: 20,
   },
+  webView: {
+    flex: 1,
+    backgroundColor: "transparent",
+  },
+  webviewLoader: {
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    marginLeft: -10,
+    marginTop: -10,
+  },
+
   downloadBtn: {
     backgroundColor: COLORS.primary,
     flexDirection: "row",
@@ -116,8 +151,8 @@ const styles = StyleSheet.create({
     width: "100%",
     paddingVertical: 15,
     borderRadius: 30,
-    marginTop: 30,
     justifyContent: "center",
+    marginBottom: 20,
   },
   downloadText: { color: "#fff", fontFamily: FONTS.semibold, fontSize: 24 },
 });

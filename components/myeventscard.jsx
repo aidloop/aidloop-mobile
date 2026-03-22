@@ -185,7 +185,7 @@ export default function MyEventsCard({
                   style={styles.menuItem}
                   onPress={handleRateEvent}
                 >
-                  <Text style={styles.menuText}>Rate Event</Text>
+                  <Text style={styles.menuText}>Rate Organizer</Text>
                 </TouchableOpacity>
 
                 <View style={styles.menuDivider} />

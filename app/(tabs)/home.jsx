@@ -1,7 +1,8 @@
-import { useRouter } from "expo-router";
+import { router, useFocusEffect, usePathname } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import {
   ActivityIndicator,
+  Alert,
   BackHandler,
   RefreshControl,
   ScrollView,
@@ -20,7 +21,7 @@ import { COLORS } from "../../constants/colors";
 import { FONTS } from "../../constants/fonts";
 
 export default function HomeScreen() {
-  const router = useRouter();
+  // const router = useRouter();
   const formatDate = (dateString) => {
     if (!dateString) return "TBD";
 
@@ -35,6 +36,34 @@ export default function HomeScreen() {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+
+  const pathname = usePathname();
+  useFocusEffect(
+    useCallback(() => {
+      const onBackPress = () => {
+        if (pathname !== "/home" && pathname !== "/") {
+          return false;
+        }
+
+        Alert.alert("Exit App", "Are you sure you want to exit AidLoop?", [
+          {
+            text: "Cancel",
+            onPress: () => null,
+            style: "cancel",
+          },
+          { text: "YES", onPress: () => BackHandler.exitApp() },
+        ]);
+        return true;
+      };
+
+      const backHandlerSubscription = BackHandler.addEventListener(
+        "hardwareBackPress",
+        onBackPress,
+      );
+
+      return () => backHandlerSubscription.remove();
+    }, [pathname]),
+  );
 
   const fetchEvents = async () => {
     try {
@@ -55,10 +84,10 @@ export default function HomeScreen() {
     const init = async () => {
       try {
         setLoading(true);
-        await API.get("/user/me"); // auth check
+        await API.get("/user/me");
         await fetchEvents();
       } catch {
-        router.replace("/auth/login"); // not logged in
+        router.replace("/auth/login");
       } finally {
         setLoading(false);
       }
@@ -66,12 +95,12 @@ export default function HomeScreen() {
 
     init();
 
-    // Disable back button to prevent going to onboarding/login
-    const backHandler = BackHandler.addEventListener(
-      "hardwareBackPress",
-      () => true,
-    );
-    return () => backHandler.remove();
+    // // Disable back button to prevent going to onboarding/login
+    // const backHandler = BackHandler.addEventListener(
+    //   "hardwareBackPress",
+    //   () => true,
+    // );
+    // return () => backHandler.remove();
   }, []);
 
   const refresh = useCallback(async () => {

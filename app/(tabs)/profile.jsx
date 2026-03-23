@@ -56,6 +56,7 @@ export default function ProfileScreen() {
         attended: attendedEvents.length,
         certificates: earnedCertificates.length,
       });
+      console.log("Fetched user:", userData);
     } catch (error) {
       console.error("Error fetching profile data:", error);
     } finally {

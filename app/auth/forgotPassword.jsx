@@ -1,6 +1,8 @@
 import { router } from "expo-router";
 import { useState } from "react";
 import {
+  ActivityIndicator,
+  Alert,
   StyleSheet,
   Text,
   TextInput,
@@ -8,6 +10,7 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { forgotPassword } from "../../api/auth";
 import Back from "../../assets/images/Back.svg";
 import { COLORS } from "../../constants/colors";
 import { FONTS } from "../../constants/fonts";
@@ -25,6 +28,32 @@ const Input = ({ InputText, placeholder, ...props }) => (
 );
 export default function ForgotPassword() {
   const [email, setEmail] = useState("");
+  const [loading, setLoading] = useState(false);
+  const isValidEmail = /\S+@\S+\.\S+/.test(email);
+
+  const handleSendCode = async () => {
+    if (!email) return;
+
+    try {
+      setLoading(true);
+
+      await forgotPassword(email.trim());
+
+      Alert.alert("Success", "OTP sent to your email");
+
+      router.push({
+        pathname: "/auth/forgotPasswordOtp",
+        params: { email },
+      });
+    } catch (error) {
+      Alert.alert(
+        "Error",
+        error.response?.data?.message || "Something went wrong",
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <SafeAreaView style={{}}>
@@ -53,16 +82,18 @@ export default function ForgotPassword() {
         />
 
         <TouchableOpacity
-          // onPress={() => {
-          //   router.push("/otp");
-          // }}
-          disabled={email.length < 1}
+          onPress={handleSendCode}
+          disabled={!isValidEmail || loading}
           style={[
             styles.createBtn,
             { backgroundColor: email.length > 0 ? COLORS.primary : "grey" },
           ]}
         >
-          <Text style={styles.btnText}>Send Code</Text>
+          {loading ? (
+            <ActivityIndicator color={COLORS.white} />
+          ) : (
+            <Text style={styles.btnText}>Send Code</Text>
+          )}
         </TouchableOpacity>
       </View>
     </SafeAreaView>

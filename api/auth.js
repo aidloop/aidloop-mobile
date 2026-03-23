@@ -74,3 +74,38 @@ export const resendOTP = async (email) => {
     throw error;
   }
 };
+
+// FORGOT PASSWORD - SEND OTP
+
+export const forgotPassword = async (email) => {
+  try {
+    const response = await API.post("/auth/forgot-password-otp", { email });
+    return response.data;
+  } catch (error) {
+    console.error(
+      "Forgot Password Error:",
+      error.response?.data || error.message,
+    );
+    throw error;
+  }
+};
+
+// RESET PASSWORD
+
+export const resetPassword = async (email, otp, newPassword) => {
+  try {
+    console.log({ email, otp, newPassword });
+    const response = await API.post("/auth/reset-password-otp", {
+      email,
+      otp,
+      password: newPassword,
+    });
+    return response.data;
+  } catch (error) {
+    console.error(
+      "Reset Password Error:",
+      error.response?.data || error.message,
+    );
+    throw error;
+  }
+};

@@ -146,6 +146,7 @@ export default function Login() {
             onPress={() => {
               router.push("/auth/forgotPassword");
             }}
+            style={{ marginTop: 10 }}
           >
             <Text style={styles.forgot}>Forgot Password</Text>
           </TouchableOpacity>

@@ -1,11 +1,31 @@
-import { router } from "expo-router";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { useRouter } from "expo-router";
+import { useEffect } from "react";
+import {
+  BackHandler,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Successful from "../../assets/images/Successful.svg";
 import { COLORS } from "../../constants/colors";
 import { FONTS } from "../../constants/fonts";
 
 export default function ResetSuccessful() {
+  const router = useRouter();
+
+  useEffect(() => {
+    const backAction = () => true;
+
+    const backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      backAction,
+    );
+
+    return () => backHandler.remove();
+  }, []);
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#fff" }}>
       <View style={styles.safeview}>
@@ -20,7 +40,7 @@ export default function ResetSuccessful() {
 
         <TouchableOpacity
           onPress={() => {
-            router.replace("/login");
+            router.replace("/auth/login");
           }}
           style={styles.createBtn}
         >

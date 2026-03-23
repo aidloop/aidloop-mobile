@@ -1,6 +1,7 @@
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { useState } from "react";
 import {
+  Alert,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -15,6 +16,8 @@ import Back from "../../assets/images/Back.svg";
 import Hide from "../../assets/images/Hide.svg";
 import { COLORS } from "../../constants/colors";
 import { FONTS } from "../../constants/fonts";
+
+import { resetPassword } from "../../api/auth";
 
 const Input = ({ InputText, placeholder, ...props }) => {
   const [hidePassword, setHidePassword] = useState(true);
@@ -45,6 +48,13 @@ export default function ResetPassword() {
   const [password, setPassword] = useState("");
   const [cpassword, setcPassword] = useState("");
 
+  const { email, otp } = useLocalSearchParams();
+
+  const emailParam = Array.isArray(email) ? email[0] : email;
+  const otpParam = Array.isArray(otp) ? otp[0] : otp;
+
+  const [loading, setLoading] = useState(false);
+
   const hasMinimumLength = password.length >= 8;
   const hasNumber = /\d/.test(password);
   const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
@@ -52,6 +62,26 @@ export default function ResetPassword() {
 
   const valid =
     hasMinimumLength && hasNumber && hasSpecialChar && passwordsMatch;
+
+  const handleResetPassword = async () => {
+    if (!valid) return;
+
+    try {
+      setLoading(true);
+      console.log("Resetting password with:", emailParam, otpParam, password);
+
+      await resetPassword(emailParam, otpParam, password.trim());
+
+      router.replace("/auth/resetSuccessful");
+    } catch (error) {
+      Alert.alert(
+        "Reset Password Error",
+        error.response?.data?.message || "Reset failed",
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#fff" }}>
@@ -91,12 +121,17 @@ export default function ResetPassword() {
               value={cpassword}
               onChangeText={setcPassword}
             />
+            {cpassword.length > 0 && !passwordsMatch && (
+              <Text style={{ color: "red", marginTop: 5 }}>
+                Passwords do not match
+              </Text>
+            )}
 
             <View style={styles.requirementsContainer}>
               <Text
                 style={[
                   styles.rqrmtText,
-                  { color: hasMinimumLength ? COLORS.neutral : "red" },
+                  { color: hasMinimumLength ? COLORS.success : "red" },
                 ]}
               >
                 {"\u2022"} At least 8 characters
@@ -104,7 +139,7 @@ export default function ResetPassword() {
               <Text
                 style={[
                   styles.rqrmtText,
-                  { color: hasNumber ? COLORS.neutral : "red" },
+                  { color: hasNumber ? COLORS.success : "red" },
                 ]}
               >
                 {"\u2022"} One number
@@ -112,7 +147,7 @@ export default function ResetPassword() {
               <Text
                 style={[
                   styles.rqrmtText,
-                  { color: hasSpecialChar ? COLORS.neutral : "red" },
+                  { color: hasSpecialChar ? COLORS.success : "red" },
                 ]}
               >
                 {"\u2022"} One special character
@@ -120,16 +155,16 @@ export default function ResetPassword() {
             </View>
 
             <TouchableOpacity
-              onPress={() => {
-                router.replace("/resetSuccessful");
-              }}
+              onPress={handleResetPassword}
               disabled={!valid}
               style={[
                 styles.createBtn,
                 { backgroundColor: valid ? COLORS.primary : "grey" },
               ]}
             >
-              <Text style={styles.btnText}>Reset Password</Text>
+              <Text style={styles.btnText}>
+                {loading ? "Resetting..." : "Reset Password"}
+              </Text>
             </TouchableOpacity>
           </View>
         </ScrollView>

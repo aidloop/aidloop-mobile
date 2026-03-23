@@ -1,7 +1,6 @@
 import { router } from "expo-router";
 import { Alert, ScrollView, View } from "react-native";
 import { logout } from "../api/auth";
-import Privacy from "../assets/images/flat-color-icons_privacy.svg";
 import Help from "../assets/images/ic_sharp-help.svg";
 import Logout from "../assets/images/line-md_logout.svg";
 import Conditions from "../assets/images/material-symbols_policy-rounded.svg";
@@ -37,14 +36,14 @@ export default function Settings() {
         router.push("/notification");
       },
     },
+    // {
+    //   id: 2,
+    //   title: "Privacy & Security",
+    //   icon: <Privacy width={30} height={30} />,
+    //   subtitle: "Update password and security settings",
+    // },
     {
       id: 2,
-      title: "Privacy & Security",
-      icon: <Privacy width={30} height={30} />,
-      subtitle: "Update password and security settings",
-    },
-    {
-      id: 3,
       icon: <Conditions width={30} height={30} />,
       title: "Terms Of Service",
       subtitle: "View terms and conditions",
@@ -53,7 +52,7 @@ export default function Settings() {
       },
     },
     {
-      id: 4,
+      id: 3,
       icon: <Help width={30} height={30} />,
       title: "Privacy Policy",
       subtitle: "Check out Aidloop's privacy policy",
@@ -62,7 +61,7 @@ export default function Settings() {
       },
     },
     {
-      id: 5,
+      id: 4,
       icon: <Logout width={30} height={30} color={"#F44336"} />,
       title: "Logout",
       logout: true,

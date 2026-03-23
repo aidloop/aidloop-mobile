@@ -47,29 +47,14 @@ export default function ProfileScreen() {
     fullName.trim() && email.trim() && skills.trim() && interests.trim();
 
   const pickImage = async () => {
-    try {
-      const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: "Images", // string works
-        allowsEditing: true,
-        aspect: [1, 1],
-        quality: 0.8,
-      });
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 0.8,
+    });
 
-      if (result.canceled) return; // user pressed cancel
-
-      // In latest SDK, result.assets is an array of selected images
-      const selectedImage = result.assets?.[0]?.uri;
-
-      if (!selectedImage) {
-        Alert.alert("Error", "Could not select image. Try again.");
-        return;
-      }
-
-      setImage(selectedImage); // safe
-    } catch (err) {
-      console.error("Image pick error:", err);
-      Alert.alert("Error", "Failed to pick image");
-    }
+    if (!result.canceled) setImage(result.assets[0].uri);
   };
 
   useEffect(() => {
@@ -99,40 +84,63 @@ export default function ProfileScreen() {
     try {
       setLoading(true);
 
-      let uploadedImageUrl = null;
+      let finalImageUrl = image;
 
-      // Only upload if the image is a local file (file://)
       if (image?.startsWith("file://")) {
+        const filename = image.split("/").pop();
+        const match = /\.(\w+)$/.exec(filename);
+        let type = match ? `image/${match[1]}` : `image/jpeg`;
+        if (type === "image/jpg") type = "image/jpeg";
+
         const formData = new FormData();
-        formData.append("file", {
+
+        formData.append("image", {
           uri: image,
-          name: "profile.jpg",
-          type: "image/jpeg",
+          name: filename,
+          type: type,
         });
 
-        const uploadRes = await API.post("/user/me/profile-image", formData, {
-          headers: { "Content-Type": "multipart/form-data" },
+        console.log("Uploading image to /user/profile-image...");
+        const uploadRes = await API.post("/user/profile-image", formData, {
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "multipart/form-data",
+          },
+          transformRequest: (data) => data,
         });
 
-        uploadedImageUrl = uploadRes.data.url || uploadRes.data.profileImage;
+        console.log("Image Upload Success:", uploadRes.data);
+
+        finalImageUrl =
+          uploadRes.data?.url || uploadRes.data?.profileImage || uploadRes.data;
       }
 
       const payload = {
         fullName,
         email,
-        skills: skills.split(",").map((s) => s.trim()),
-        interests: interests.split(",").map((i) => i.trim()),
-        profileImage: uploadedImageUrl || image, // use uploaded URL or existing
+        skills: skills
+          .split(",")
+          .filter(Boolean)
+          .map((s) => s.trim()),
+        interests: interests
+          .split(",")
+          .filter(Boolean)
+          .map((i) => i.trim()),
+        profileImage: finalImageUrl,
       };
 
+      console.log("Saving profile data...", payload);
       const res = await API.put("/user/me", payload);
 
-      console.log("UPDATED:", res.data);
-      Alert.alert("Success", "Profile updated!");
+      console.log("PROFILE UPDATED PERFECTLY:", res.data);
+      Alert.alert("Success", "Profile updated successfully!");
       router.back();
     } catch (err) {
       console.log("ERROR FULL:", err.response?.data || err.message);
-      Alert.alert("Error", err.response?.data?.message || err.message);
+      Alert.alert(
+        "Error",
+        err.response?.data?.message || err.response?.data || err.message,
+      );
     } finally {
       setLoading(false);
     }

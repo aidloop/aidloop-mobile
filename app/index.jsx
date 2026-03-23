@@ -26,15 +26,19 @@ export default function Index() {
         setHasOnboarded(onboarded);
 
         if (onboarded) {
-          // Returning user → auto go to login
-          setTimeout(() => {
+          setTimeout(async () => {
             try {
-              API.get("/user/me");
-              router.replace("/(tabs)/home");
-            } catch {
+              const res = await API.get("/user/me"); // await the fetch
+              if (res.data) {
+                router.replace("/(tabs)/home"); // only go home if user exists
+              } else {
+                router.replace("/auth/login");
+              }
+            } catch (err) {
+              console.warn("User not authenticated, sending to login", err);
               router.replace("/auth/login");
             }
-          }, 2000); // 2s splash
+          }, 2000);
         }
       } catch (err) {
         console.error("Error reading AsyncStorage:", err);

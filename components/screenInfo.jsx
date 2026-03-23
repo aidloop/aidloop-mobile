@@ -1,12 +1,13 @@
 import { router } from "expo-router";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import Back from "../assets/images/Back.svg";
 import { COLORS } from "../constants/colors";
 import { FONTS } from "../constants/fonts";
 
 const ScreenInfo = ({ ScreenTitle, subtext, icon }) => {
   return (
-    <View style={styles.header}>
+    <SafeAreaView style={styles.header}>
       <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
         <Back color={COLORS.white} height={34} width={34} />
       </TouchableOpacity>
@@ -17,7 +18,7 @@ const ScreenInfo = ({ ScreenTitle, subtext, icon }) => {
       </View>
 
       <View style={styles.iconContainer}>{icon}</View>
-    </View>
+    </SafeAreaView>
   );
 };
 
@@ -25,8 +26,8 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: "row",
     backgroundColor: COLORS.primary,
-    paddingTop: 50,
-    paddingBottom: 15,
+    // paddingTop: 50,
+    paddingBottom: -25,
     paddingHorizontal: 15,
     alignItems: "center",
     justifyContent: "center",

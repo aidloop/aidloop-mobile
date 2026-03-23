@@ -97,7 +97,7 @@ const RateEvents = () => {
 
   return (
     <View style={styles.container}>
-      <ScreenInfo ScreenTitle={"Rate Events"} />
+      <ScreenInfo ScreenTitle={"Rate Organizer"} />
 
       <ScrollView
         contentContainerStyle={styles.scrollContent}

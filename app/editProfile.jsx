@@ -47,14 +47,29 @@ export default function ProfileScreen() {
     fullName.trim() && email.trim() && skills.trim() && interests.trim();
 
   const pickImage = async () => {
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [1, 1],
-      quality: 0.8,
-    });
+    try {
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: "Images", // string works
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 0.8,
+      });
 
-    if (!result.canceled) setImage(result.assets[0].uri);
+      if (result.canceled) return; // user pressed cancel
+
+      // In latest SDK, result.assets is an array of selected images
+      const selectedImage = result.assets?.[0]?.uri;
+
+      if (!selectedImage) {
+        Alert.alert("Error", "Could not select image. Try again.");
+        return;
+      }
+
+      setImage(selectedImage); // safe
+    } catch (err) {
+      console.error("Image pick error:", err);
+      Alert.alert("Error", "Failed to pick image");
+    }
   };
 
   useEffect(() => {
@@ -84,18 +99,35 @@ export default function ProfileScreen() {
     try {
       setLoading(true);
 
+      let uploadedImageUrl = null;
+
+      // Only upload if the image is a local file (file://)
+      if (image?.startsWith("file://")) {
+        const formData = new FormData();
+        formData.append("file", {
+          uri: image,
+          name: "profile.jpg",
+          type: "image/jpeg",
+        });
+
+        const uploadRes = await API.post("/user/me/profile-image", formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+
+        uploadedImageUrl = uploadRes.data.url || uploadRes.data.profileImage;
+      }
+
       const payload = {
         fullName,
         email,
         skills: skills.split(",").map((s) => s.trim()),
         interests: interests.split(",").map((i) => i.trim()),
-        profileImage: image,
+        profileImage: uploadedImageUrl || image, // use uploaded URL or existing
       };
 
       const res = await API.put("/user/me", payload);
 
       console.log("UPDATED:", res.data);
-
       Alert.alert("Success", "Profile updated!");
       router.back();
     } catch (err) {

@@ -14,7 +14,6 @@ import {
   View,
 } from "react-native";
 import { login } from "../../api/auth";
-import Google from "../../assets/images/Google.svg";
 import { COLORS } from "../../constants/colors";
 
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -103,16 +102,8 @@ export default function Login() {
                 Continue supporting your community
               </Text>
             </View>
-            <TouchableOpacity style={styles.googleBtn}>
-              <Google width={30} height={30} />
-              <Text style={styles.googletext}>Google</Text>
-            </TouchableOpacity>
           </View>
-          <View style={styles.dividerContainer}>
-            <View style={styles.border} />
-            <Text>or</Text>
-            <View style={styles.border} />
-          </View>
+
           <View style={styles.form}>
             <Input
               InputText={"Email Address"}
@@ -241,7 +232,7 @@ const styles = StyleSheet.create({
     borderColor: "#9E9E9E",
   },
 
-  form: { marginVertical: 20 },
+  form: { marginVertical: 30 },
   input: { marginVertical: 10 },
 
   formInput: {

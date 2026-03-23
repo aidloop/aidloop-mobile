@@ -13,7 +13,6 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { register } from "../../api/auth";
-import Google from "../../assets/images/Google.svg";
 import { FONTS } from "../../constants/fonts";
 
 const Input = ({ InputText, placeholder, ...props }) => (
@@ -82,16 +81,8 @@ export default function CreateAccount() {
                 Continue supporting your community
               </Text>
             </View>
-            <TouchableOpacity style={styles.googleBtn}>
-              <Google width={30} height={30} />
-              <Text style={styles.googletext}>Google</Text>
-            </TouchableOpacity>
           </View>
-          <View style={styles.dividerContainer}>
-            <View style={styles.border} />
-            <Text>or</Text>
-            <View style={styles.border} />
-          </View>
+
           <View style={styles.form}>
             <Input
               InputText={"Full Name"}
@@ -211,6 +202,7 @@ const styles = StyleSheet.create({
     height: 54,
     borderRadius: 10,
   },
+  form: { marginTop: 30 },
 
   scrollContainer: { padding: 30 },
   border: {

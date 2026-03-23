@@ -71,6 +71,25 @@ const Filter = () => {
         contentContainerStyle={{ paddingBottom: 100 }}
       >
         <Text style={styles.filterText}>Filter</Text>
+        {/* LOCATION */}
+        <View style={styles.section}>
+          <Text style={styles.sectionHeader}>Location</Text>
+          <View style={styles.sectionContents}>
+            {["Lagos", "Nigeria", "West Africa", "Abuja", "Jos"].map(
+              (location) => (
+                <ContentButton
+                  key={location}
+                  text={location}
+                  isSelected={selectedLocation === location}
+                  onPress={() => {
+                    setSelectedLocation(location);
+                    console.log("Preferred location is: ", location);
+                  }}
+                />
+              ),
+            )}
+          </View>
+        </View>
         {/* CATEGORY */}
         <View style={styles.section}>
           <Text style={styles.sectionHeader}>Category</Text>
@@ -83,12 +102,16 @@ const Filter = () => {
             <ContentButton
               icon={
                 <Heart
-                  color={selectedCategory === "Charity" ? "#FFF" : "#448AFF"}
+                  color={
+                    selectedCategory === "Community Service"
+                      ? "#FFF"
+                      : "#448AFF"
+                  }
                 />
               }
-              text={"Charity"}
-              isSelected={selectedCategory === "Charity"}
-              onPress={() => setSelectedCategory("Charity")}
+              text={"Community Service"}
+              isSelected={selectedCategory === "Community Service"}
+              onPress={() => setSelectedCategory("Community Service")}
             />
             <ContentButton
               icon={
@@ -139,25 +162,6 @@ const Filter = () => {
                 }}
               />
             ))}
-          </View>
-        </View>
-        {/* LOCATION */}
-        <View style={styles.section}>
-          <Text style={styles.sectionHeader}>Location</Text>
-          <View style={styles.sectionContents}>
-            {["Lagos", "Nigeria", "West Africa", "Abuja", "Jos"].map(
-              (location) => (
-                <ContentButton
-                  key={location}
-                  text={location}
-                  isSelected={selectedLocation === location}
-                  onPress={() => {
-                    setSelectedLocation(location);
-                    console.log("Preferred location is: ", location);
-                  }}
-                />
-              ),
-            )}
           </View>
         </View>
       </ScrollView>

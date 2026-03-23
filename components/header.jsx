@@ -5,7 +5,7 @@ import { FONTS } from "../constants/fonts";
 export default function Header() {
   return (
     <View>
-      <Text style={styles.text}>AIDLoop</Text>
+      <Text style={styles.text}>AIDLOOP</Text>
     </View>
   );
 }

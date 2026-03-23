@@ -70,10 +70,10 @@ const RateEvents = () => {
 
       const payload = {
         eventId: eventKey,
-        rating: rating,
-        tags: selectedFeedback,
-        comment: review,
-        organizerId: event.organizationId._id,
+        rating: Number(rating),
+        tags: selectedFeedback.length ? selectedFeedback : null,
+        comment: review || "",
+        organizerId: event.organizationId?._id,
       };
 
       const response = await API.post("/ratings", payload);
@@ -84,7 +84,7 @@ const RateEvents = () => {
         { text: "OK", onPress: () => router.back() },
       ]);
     } catch (error) {
-      console.error("Error submitting rating:", error);
+      // console.error("Error submitting rating:", error);
       Alert.alert(
         "Oops!",
         error.response?.data?.message ||

@@ -157,7 +157,9 @@ export default function EventDetails() {
     event.organizationId?.verificationStatus === "approved"
       ? "Verified"
       : "Unverified";
-  const rating = event.rating || "No Ratings";
+  const rating = event.organizerRating?.average
+    ? Number(event.organizerRating.average).toFixed(1)
+    : "No Ratings";
   const role = event.roles?.length > 0 ? event.roles.join(", ") : "Volunteer";
   const displayDate = formatDate(event.date);
   const displayTime = `${event.startTime} - ${event.endTime}`;
@@ -399,7 +401,7 @@ const styles = StyleSheet.create({
     fontSize: 17,
     fontFamily: FONTS.medium,
     marginTop: 3,
-    marginLeft: 5,
+    marginHorizontal: 5,
   },
   infoText2: {
     fontSize: 18,

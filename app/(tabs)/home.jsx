@@ -187,7 +187,13 @@ export default function HomeScreen() {
               }
               title={event.name || "Untitled Event"}
               date={formatDate(event.date) || "TBD"}
-              location={event.location?.venue || "TBD"}
+              location={
+                event.location?.venue
+                  ? event.location.venue.length > 20
+                    ? event.location.venue.slice(0, 17) + "..."
+                    : event.location.venue
+                  : "TBD"
+              }
               city={event.location?.city || "Undefined"}
               time={`${event.startTime} - ${event.endTime}` || "TBD"}
               people={
@@ -197,7 +203,11 @@ export default function HomeScreen() {
               role={
                 event.roles?.length > 0 ? `${event.roles[0]}...` : "Volunteer"
               }
-              rating={event.rating || "No Ratings"}
+              rating={
+                event.organizerRating?.average
+                  ? Number(event.organizerRating.average).toFixed(1)
+                  : "No Ratings"
+              }
               about={event.description || "No Description"}
               category={event.category || "Undefined"}
               hostedBy={event.organizationId.fullName || "Unknown Host "}

@@ -181,11 +181,22 @@ export default function MyEventsScreen() {
                 }
                 title={event?.name}
                 date={formatDate(event?.date)}
-                location={`${event?.location?.venue || "TBD"}, ${event?.location?.city || "Unknown"}`}
+                location={(() => {
+                  const venue = event?.location?.venue || "TBD";
+                  const city = event?.location?.city || "Unknown";
+                  const combined = `${venue}, ${city}`;
+                  return combined.length > 17
+                    ? combined.slice(0, 14) + "..."
+                    : combined;
+                })()}
                 time={`${event?.startTime} - ${event?.endTime}`}
                 people={people}
                 role={item?.role}
-                rating={"No Ratings"}
+                rating={
+                  event.organizerRating?.average
+                    ? Number(event.organizerRating.average).toFixed(1)
+                    : "No Ratings"
+                }
                 hostedBy={hostedBy}
                 benefits={
                   event?.certificateEnabled

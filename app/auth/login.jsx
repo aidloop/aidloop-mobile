@@ -17,6 +17,7 @@ import { login } from "../../api/auth";
 import { COLORS } from "../../constants/colors";
 
 import { SafeAreaView } from "react-native-safe-area-context";
+import { FONTS } from "../../constants/fonts";
 
 const Input = ({ InputText, placeholder, ...props }) => (
   <View style={styles.input}>
@@ -181,8 +182,14 @@ const styles = StyleSheet.create({
   loginText: {
     textAlign: "center",
     fontSize: 18,
+    fontFamily: FONTS.regular,
   },
-  loginPress: { fontSize: 18, color: "#1F3A5F", fontWeight: 500 },
+  loginPress: {
+    fontSize: 18,
+    color: "#1F3A5F",
+    // fontWeight: 500,
+    fontFamily: FONTS.semibold,
+  },
   btnText: {
     color: "white",
     textAlign: "center",
@@ -225,7 +232,10 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
 
-  scrollContainer: { padding: 30 },
+  scrollContainer: {
+    padding: 30,
+    flexGrow: 1,
+  },
   border: {
     borderWidth: 0.25,
     width: "45%",
@@ -249,11 +259,13 @@ const styles = StyleSheet.create({
   },
 
   bottomText: {
-    position: "absolute",
-    bottom: -50,
+    marginTop: "auto",
+    paddingTop: 40,
+    paddingBottom: 20,
     alignSelf: "center",
     flexDirection: "row",
     alignItems: "center",
+    fontFamily: FONTS.regular,
   },
 
   inputText: {

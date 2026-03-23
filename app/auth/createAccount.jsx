@@ -159,8 +159,14 @@ const styles = StyleSheet.create({
   loginText: {
     textAlign: "center",
     fontSize: 18,
+    fontFamily: FONTS.regular,
   },
-  loginPress: { fontSize: 18, color: "#1F3A5F", fontWeight: 500 },
+  loginPress: {
+    fontSize: 18,
+    color: "#1F3A5F",
+    fontWeight: 500,
+    fontFamily: FONTS.semibold,
+  },
   btnText: {
     color: "white",
     textAlign: "center",
@@ -204,7 +210,10 @@ const styles = StyleSheet.create({
   },
   form: { marginTop: 30 },
 
-  scrollContainer: { padding: 30 },
+  scrollContainer: {
+    padding: 30,
+    flexGrow: 1,
+  },
   border: {
     borderWidth: 0.25,
     width: "45%",
@@ -226,10 +235,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "black",
   },
-
   bottomText: {
-    position: "absolute",
-    bottom: 0,
+    marginTop: "auto",
+    paddingTop: 40,
+    paddingBottom: 20,
     alignSelf: "center",
     flexDirection: "row",
     alignItems: "center",

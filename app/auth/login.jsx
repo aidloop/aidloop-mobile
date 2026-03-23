@@ -1,7 +1,6 @@
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
   Alert,
   BackHandler,
@@ -19,8 +18,6 @@ import Google from "../../assets/images/Google.svg";
 import { COLORS } from "../../constants/colors";
 
 import { SafeAreaView } from "react-native-safe-area-context";
-
-import API from "../../api/api";
 
 const Input = ({ InputText, placeholder, ...props }) => (
   <View style={styles.input}>
@@ -43,24 +40,24 @@ export default function Login() {
   const isFormValid = email.length > 0 && password.length > 0;
 
   useEffect(() => {
-    const init = async () => {
-      // 1. Check onboarding
-      const hasOnboarded = await AsyncStorage.getItem("hasOnboarded");
-      if (!hasOnboarded) {
-        router.replace("/splash-one");
-        return; // stop further code
-      }
+    // const init = async () => {
+    //   // 1. Check onboarding
+    //   const hasOnboarded = await AsyncStorage.getItem("hasOnboarded");
+    //   if (!hasOnboarded) {
+    //     router.replace("/splash-one");
+    //     return; // stop further code
+    //   }
 
-      // 2. Optionally, check if already logged in
-      try {
-        await API.get("/user/me");
-        router.replace("/(tabs)/home");
-      } catch {
-        // not logged in → stay on login
-      }
-    };
+    //   // 2. Optionally, check if already logged in
+    //   try {
+    //     await API.get("/user/me");
+    //     router.replace("/(tabs)/home");
+    //   } catch {
+    //     // not logged in → stay on login
+    //   }
+    // };
 
-    init();
+    // init();
 
     // 3. Disable back button on login
     const backHandler = BackHandler.addEventListener(

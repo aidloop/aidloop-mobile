@@ -4,7 +4,6 @@ import CheckMark from "../assets/images/checkmark.svg";
 import DateIcon from "../assets/images/dateicon.svg";
 import LocationIcon from "../assets/images/locationicon.svg";
 import PeopleIcon from "../assets/images/peopleicon.svg";
-import RegisterIcon from "../assets/images/registericon.svg";
 import RoleIcon from "../assets/images/roleicon.svg";
 import StarIcon from "../assets/images/staricon.svg";
 import TimeIcon from "../assets/images/timeicon.svg";
@@ -88,7 +87,6 @@ export default function EventCard({
           >
             <Text style={styles.viewDetailsText}>View Details</Text>
           </TouchableOpacity>
-          <RegisterIcon width={22} height={22} />
         </View>
       </View>
     </View>
@@ -182,6 +180,7 @@ const styles = StyleSheet.create({
     width: 170,
     borderRadius: 100,
     paddingVertical: 5,
+    flex: 1,
   },
   viewDetailsText: {
     fontSize: 20,

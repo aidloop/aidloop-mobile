@@ -185,7 +185,7 @@ export default function MyEventsCard({
                   style={styles.menuItem}
                   onPress={handleRateEvent}
                 >
-                  <Text style={styles.menuText}>Rate Event</Text>
+                  <Text style={styles.menuText}>Rate Organizer</Text>
                 </TouchableOpacity>
 
                 <View style={styles.menuDivider} />
@@ -195,15 +195,6 @@ export default function MyEventsCard({
                   onPress={handleViewCertificate}
                 >
                   <Text style={styles.menuText}>View Certificate</Text>
-                </TouchableOpacity>
-
-                <View style={styles.menuDivider} />
-
-                <TouchableOpacity
-                  style={styles.menuItem}
-                  onPress={handleDownloadCertificate}
-                >
-                  <Text style={styles.menuText}>Download Certificate</Text>
                 </TouchableOpacity>
               </>
             ) : (
@@ -375,6 +366,7 @@ const styles = StyleSheet.create({
     width: "70%",
     borderRadius: 12,
     paddingVertical: 10,
+    paddingHorizontal: 30,
     boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.2)",
     elevation: 5,
   },

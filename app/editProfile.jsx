@@ -68,7 +68,7 @@ export default function ProfileScreen() {
         setEmail(data.email || "");
         setSkills(data.skills?.join(", ") || "");
         setInterests(data.interests?.join(", ") || "");
-        setImage(data.avatar || null);
+        setImage(data.profileImage || null);
       } catch (err) {
         console.error(err);
         Alert.alert("Error", "Failed to load profile");
@@ -89,6 +89,7 @@ export default function ProfileScreen() {
         email,
         skills: skills.split(",").map((s) => s.trim()),
         interests: interests.split(",").map((i) => i.trim()),
+        profileImage: image,
       };
 
       const res = await API.put("/user/me", payload);
@@ -96,6 +97,7 @@ export default function ProfileScreen() {
       console.log("UPDATED:", res.data);
 
       Alert.alert("Success", "Profile updated!");
+      router.back();
     } catch (err) {
       console.log("ERROR FULL:", err.response?.data || err.message);
       Alert.alert("Error", err.response?.data?.message || err.message);

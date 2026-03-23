@@ -1,4 +1,6 @@
-import { Tabs } from "expo-router";
+import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
+import { withLayoutContext } from "expo-router";
+import { useSafeAreaInsets } from "react-native-safe-area-context"; // Import this
 import HomeIcon from "../../assets/images/homeicon.svg";
 import MyEventsIcon from "../../assets/images/myeventsicon.svg";
 import NotificationIcon from "../../assets/images/notificationicon.svg";
@@ -6,30 +8,53 @@ import ProfileIcon from "../../assets/images/profileicon.svg";
 import { COLORS } from "../../constants/colors";
 import { FONTS } from "../../constants/fonts";
 
+const { Navigator } = createMaterialTopTabNavigator();
+export const MaterialTabs = withLayoutContext(Navigator);
+
 export default function TabsLayout() {
+  const insets = useSafeAreaInsets();
+  const TAB_BAR_HEIGHT = 60 + insets.bottom;
+
   return (
-    <Tabs
+    <MaterialTabs
+      tabBarPosition="bottom"
       screenOptions={{
-        headerShown: false,
         tabBarShowLabel: true,
-        tabBarStyle: {
-          backgroundColor: "#fff",
-          borderTopWidth: 0,
-          elevation: 10,
-          paddingTop: 10,
-          paddingBottom: 10,
-          height: 80,
-        },
+        tabBarShowIcon: true,
+        swipeEnabled: true,
         tabBarActiveTintColor: COLORS.highlight,
         tabBarInactiveTintColor: COLORS.neutral,
+
         tabBarLabelStyle: {
-          fontSize: 14,
+          fontSize: 12,
           fontFamily: FONTS.medium,
-          marginTop: 2,
+          textTransform: "capitalize",
+          margin: 0,
+        },
+
+        tabBarItemStyle: {
+          justifyContent: "center",
+          alignItems: "center",
+          height: TAB_BAR_HEIGHT,
+        },
+
+        tabBarStyle: {
+          backgroundColor: "#fff",
+          elevation: 10,
+          shadowColor: "#000",
+          shadowOffset: { width: 0, height: -2 },
+          shadowOpacity: 0.1,
+          shadowRadius: 4,
+          height: TAB_BAR_HEIGHT,
+          paddingBottom: insets.bottom > 0 ? insets.bottom / 2 : 0,
+        },
+
+        tabBarIndicatorStyle: {
+          display: "none",
         },
       }}
     >
-      <Tabs.Screen
+      <MaterialTabs.Screen
         name="home"
         options={{
           title: "Home",
@@ -38,7 +63,7 @@ export default function TabsLayout() {
           ),
         }}
       />
-      <Tabs.Screen
+      <MaterialTabs.Screen
         name="myevents"
         options={{
           title: "My Events",
@@ -47,7 +72,7 @@ export default function TabsLayout() {
           ),
         }}
       />
-      <Tabs.Screen
+      <MaterialTabs.Screen
         name="notification"
         options={{
           title: "Notifications",
@@ -56,7 +81,7 @@ export default function TabsLayout() {
           ),
         }}
       />
-      <Tabs.Screen
+      <MaterialTabs.Screen
         name="profile"
         options={{
           title: "Profile",
@@ -65,6 +90,6 @@ export default function TabsLayout() {
           ),
         }}
       />
-    </Tabs>
+    </MaterialTabs>
   );
 }

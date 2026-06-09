@@ -7,6 +7,7 @@ import {
   RefreshControl,
   ScrollView,
   StyleSheet,
+  Switch,
   Text,
   TouchableOpacity,
   View,
@@ -27,40 +28,51 @@ export default function Explore() {
     return date.toLocaleDateString("en-US", {
       month: "long",
       day: "numeric",
-      year: "numeric", // Added year back to match the Figma design (May 18, 2026)
+      year: "numeric",
     });
   };
 
+  const [allEvents, setAllEvents] = useState([]);
   const [events, setEvents] = useState([]);
+
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+
   const [filterActive, setFilterActive] = useState(false);
+  const [activeCategory, setActiveCategory] = useState("All");
+
+  const [filterCategory, setFilterCategory] = useState("All");
+  const [filterDate, setFilterDate] = useState("Any");
+  const [filterDistance, setFilterDistance] = useState("Any");
+  const [verifiedOnly, setVerifiedOnly] = useState(false);
+
+  const categories = [
+    "All",
+    "Health",
+    "Education",
+    "Environment",
+    "Community Service",
+    "Tech",
+  ];
+  const dateOptions = ["Any", "This Week", "This Month"];
+  const distanceOptions = ["Any", "< 5km", "< 10 km", "< 20 km"];
 
   const pathname = usePathname();
 
   useFocusEffect(
     useCallback(() => {
       const onBackPress = () => {
-        if (pathname !== "/home" && pathname !== "/") {
-          return false;
-        }
-
+        if (pathname !== "/home" && pathname !== "/") return false;
         Alert.alert("Exit App", "Are you sure you want to exit AidLoop?", [
-          {
-            text: "Cancel",
-            onPress: () => null,
-            style: "cancel",
-          },
+          { text: "Cancel", onPress: () => null, style: "cancel" },
           { text: "YES", onPress: () => BackHandler.exitApp() },
         ]);
         return true;
       };
-
       const backHandlerSubscription = BackHandler.addEventListener(
         "hardwareBackPress",
         onBackPress,
       );
-
       return () => backHandlerSubscription.remove();
     }, [pathname]),
   );
@@ -69,7 +81,8 @@ export default function Explore() {
     try {
       setLoading(true);
       const response = await API.get("/events");
-      console.log("Fetched Events:", response.data);
+
+      setAllEvents(response.data.events);
       setEvents(response.data.events);
     } catch (error) {
       console.error("Error fetching events:", error);
@@ -90,21 +103,89 @@ export default function Explore() {
         setLoading(false);
       }
     };
-
     init();
   }, []);
 
   const refresh = useCallback(async () => {
     setRefreshing(true);
+
+    handleClearFilters();
     await fetchEvents();
+
     setRefreshing(false);
   }, []);
+
+  const runFilters = (categoryToApply) => {
+    let filteredList = [...allEvents];
+
+    if (categoryToApply !== "All") {
+      filteredList = filteredList.filter(
+        (event) => event.category === categoryToApply,
+      );
+    }
+
+    if (verifiedOnly) {
+      filteredList = filteredList.filter(
+        (event) => event.organizationId?.verificationStatus === "approved",
+      );
+    }
+
+    if (filterDate !== "Any") {
+      const today = new Date();
+
+      filteredList = filteredList.filter((event) => {
+        if (!event.date) return false;
+        const eventDate = new Date(event.date);
+
+        if (filterDate === "This Week") {
+          const nextWeek = new Date(today);
+          nextWeek.setDate(today.getDate() + 7);
+          return eventDate >= today && eventDate <= nextWeek;
+        }
+
+        if (filterDate === "This Month") {
+          return (
+            eventDate.getMonth() === today.getMonth() &&
+            eventDate.getFullYear() === today.getFullYear()
+          );
+        }
+
+        return true;
+      });
+    }
+
+    if (filterDistance !== "Any") {
+      console.log("Distance filtering requires user GPS coordinates!");
+    }
+
+    setEvents(filteredList);
+  };
+
+  const handleClearFilters = () => {
+    setFilterCategory("All");
+    setActiveCategory("All");
+    setFilterDate("Any");
+    setFilterDistance("Any");
+    setVerifiedOnly(false);
+    setEvents(allEvents);
+  };
+
+  const handleApplyFilters = () => {
+    setActiveCategory(filterCategory);
+    setFilterActive(false);
+    runFilters(filterCategory);
+  };
+
+  const handleHorizontalPillPress = (cat) => {
+    setActiveCategory(cat);
+    setFilterCategory(cat);
+    runFilters(cat);
+  };
 
   if (loading) {
     return (
       <SafeAreaView style={[styles.safeareaview, styles.scrollview]}>
         <Header />
-
         <TouchableOpacity
           activeOpacity={0.8}
           onPress={() => router.push("../search")}
@@ -114,11 +195,7 @@ export default function Explore() {
           </View>
         </TouchableOpacity>
         <View
-          style={{
-            flex: 1,
-            justifyContent: "center",
-            alignItems: "center",
-          }}
+          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
         >
           <ActivityIndicator size={40} color={COLORS.highlight} />
           <Text
@@ -154,29 +231,141 @@ export default function Explore() {
         <TouchableOpacity activeOpacity={0.8}>
           <SearchBar
             onFilterPress={() => {
-              console.log("Filter button clicked. Old value:", filterActive);
+              if (!filterActive) setFilterCategory(activeCategory);
               setFilterActive(!filterActive);
             }}
           />
         </TouchableOpacity>
 
         {filterActive ? (
-          <View>
-            <View></View>
+          <View style={styles.expandedFilterContainer}>
+            <Text style={styles.filterLabel}>CATEGORY</Text>
+            <View style={styles.pillWrap}>
+              {categories.map((cat) => (
+                <TouchableOpacity
+                  key={cat}
+                  style={[
+                    styles.filterPill,
+                    filterCategory === cat && styles.filterPillActive,
+                  ]}
+                  onPress={() => setFilterCategory(cat)}
+                >
+                  <Text
+                    style={[
+                      styles.filterPillText,
+                      filterCategory === cat && styles.filterPillTextActive,
+                    ]}
+                  >
+                    {cat}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+
+            <Text style={styles.filterLabel}>DATE</Text>
+            <View style={styles.pillWrap}>
+              {dateOptions.map((dateObj) => (
+                <TouchableOpacity
+                  key={dateObj}
+                  style={[
+                    styles.filterPill,
+                    filterDate === dateObj && styles.filterPillActive,
+                  ]}
+                  onPress={() => setFilterDate(dateObj)}
+                >
+                  <Text
+                    style={[
+                      styles.filterPillText,
+                      filterDate === dateObj && styles.filterPillTextActive,
+                    ]}
+                  >
+                    {dateObj}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+
+            <Text style={styles.filterLabel}>DISTANCE</Text>
+            <View style={styles.pillWrap}>
+              {distanceOptions.map((dist) => (
+                <TouchableOpacity
+                  key={dist}
+                  style={[
+                    styles.filterPill,
+                    filterDistance === dist && styles.filterPillActive,
+                  ]}
+                  onPress={() => setFilterDistance(dist)}
+                >
+                  <Text
+                    style={[
+                      styles.filterPillText,
+                      filterDistance === dist && styles.filterPillTextActive,
+                    ]}
+                  >
+                    {dist}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+
+            <View style={styles.toggleRow}>
+              <Text style={styles.toggleText}>Verified NGOs only</Text>
+              <Switch
+                value={verifiedOnly}
+                onValueChange={setVerifiedOnly}
+                trackColor={{ false: "#E2E8F0", true: "#C3D4F7" }}
+                thumbColor={verifiedOnly ? "#203A5E" : "#f4f3f4"}
+              />
+            </View>
+
+            <View style={styles.actionRow}>
+              <TouchableOpacity onPress={handleClearFilters}>
+                <Text style={styles.clearText}>Clear all filters</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={handleApplyFilters}>
+                <Text style={styles.applyText}>Apply all Filters</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         ) : (
-          <View>
-            <View></View>
+          <View style={styles.categoriesContainer}>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.categoriesScroll}
+            >
+              {categories.map((cat, index) => {
+                const isActive = activeCategory === cat;
+                return (
+                  <TouchableOpacity
+                    key={index}
+                    activeOpacity={0.7}
+                    onPress={() => handleHorizontalPillPress(cat)}
+                    style={[
+                      styles.categoryPill,
+                      isActive && styles.categoryPillActive,
+                    ]}
+                  >
+                    <Text
+                      style={[
+                        styles.categoryText,
+                        isActive && styles.categoryTextActive,
+                      ]}
+                    >
+                      {cat}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </ScrollView>
           </View>
         )}
 
         {events.length > 0 ? (
           events.map((event) => {
-            // Calculate slots left safely
             const totalSlots = event.volunteerSlots || 0;
             const registered = event.registeredCount || 0;
             const slotsLeft = Math.max(0, totalSlots - registered);
-
             return (
               <EventCard
                 key={event._id || Math.random().toString()}
@@ -189,7 +378,6 @@ export default function Explore() {
                 category={event.category || "Volunteer"}
                 title={event.name || "Untitled Event"}
                 organization={event.organizationId?.fullName || "Unknown Host"}
-                // New boolean check for verification
                 isVerified={
                   event.organizationId?.verificationStatus === "approved"
                 }
@@ -199,25 +387,19 @@ export default function Explore() {
                     ? `${event.startTime} - ${event.endTime}`
                     : "TBD"
                 }
-                // Combines venue and city into one string for the UI
                 location={
                   event.location?.venue
                     ? `${event.location.venue}, ${event.location.city || ""}`
                     : "TBD"
                 }
                 slotsLeft={slotsLeft}
-                // New boolean check for the certificate pill
                 hasCertificate={!!event.certificateEnabled}
               />
             );
           })
         ) : (
           <View
-            style={{
-              alignItems: "center",
-              justifyContent: "center",
-              gap: 10,
-            }}
+            style={{ alignItems: "center", justifyContent: "center", gap: 10 }}
           >
             <Text
               style={{
@@ -226,7 +408,7 @@ export default function Explore() {
                 fontFamily: FONTS.semibold,
               }}
             >
-              No events available right now.
+              No events match your filters.
             </Text>
             <TouchableOpacity
               style={{
@@ -236,9 +418,9 @@ export default function Explore() {
                 borderRadius: 20,
                 borderWidth: 1,
               }}
-              onPress={fetchEvents}
+              onPress={handleClearFilters}
             >
-              <Text>Refresh</Text>
+              <Text>Clear Filters</Text>
             </TouchableOpacity>
           </View>
         )}
@@ -248,11 +430,72 @@ export default function Explore() {
 }
 
 const styles = StyleSheet.create({
-  safeareaview: { flex: 1, backgroundColor: COLORS.white },
-  scrollview: {
-    flex: 1,
+  safeareaview: { flex: 1, backgroundColor: "#F8FAFC" },
+  scrollview: { flex: 1, paddingHorizontal: 20, marginTop: 20 },
+  categoriesContainer: { marginVertical: 16 },
+  categoriesScroll: { gap: 10, paddingRight: 20 },
+  categoryPill: {
+    paddingHorizontal: 18,
+    paddingVertical: 8,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: "#E2E8F0",
     backgroundColor: COLORS.white,
-    paddingHorizontal: 20,
-    marginTop: 20,
+    justifyContent: "center",
+    alignItems: "center",
   },
+  categoryPillActive: { backgroundColor: "#203A5E", borderColor: "#203A5E" },
+  categoryText: { fontFamily: FONTS.medium, fontSize: 14, color: "#4A5568" },
+  categoryTextActive: { color: COLORS.white },
+  expandedFilterContainer: {
+    backgroundColor: COLORS.white,
+    padding: 20,
+    borderRadius: 16,
+    marginVertical: 16,
+    borderWidth: 1,
+    borderColor: "#E2E8F0",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.05,
+    shadowRadius: 10,
+    elevation: 2,
+  },
+  filterLabel: {
+    fontFamily: FONTS.medium,
+    fontSize: 12,
+    color: "#6B7C93",
+    letterSpacing: 1,
+    marginBottom: 12,
+  },
+  pillWrap: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 10,
+    marginBottom: 24,
+  },
+  filterPill: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: "#E2E8F0",
+    backgroundColor: COLORS.white,
+  },
+  filterPillActive: { backgroundColor: "#203A5E", borderColor: "#203A5E" },
+  filterPillText: { fontFamily: FONTS.medium, fontSize: 13, color: "#1A202C" },
+  filterPillTextActive: { color: COLORS.white },
+  toggleRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 32,
+  },
+  toggleText: { fontFamily: FONTS.medium, fontSize: 16, color: "#2D3748" },
+  actionRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  clearText: { fontFamily: FONTS.medium, fontSize: 14, color: "#E53E3E" },
+  applyText: { fontFamily: FONTS.semibold, fontSize: 15, color: "#3182CE" },
 });

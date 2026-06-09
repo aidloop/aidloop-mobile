@@ -1,11 +1,9 @@
 import { useRouter } from "expo-router";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
-// Pulling in your standard icons (you may need to adjust the import names to match your SVG files)
+import VerifiedIcon from "../assets/images/Checked.svg";
 import CalendarIcon from "../assets/images/Date.svg";
 import LocationIcon from "../assets/images/Location.svg";
-// You will need to export these two new icons from Figma if you haven't already:
-import VerifiedIcon from "../assets/images/Checked.svg";
 import GroupIcon from "../assets/images/peopleicon.svg";
 
 import { COLORS } from "../constants/colors";
@@ -29,36 +27,37 @@ export default function EventCard({
   return (
     <TouchableOpacity
       activeOpacity={0.9}
-      onPress={() => router.push(`/eventdetails?id=${eventId}`)}
+      onPress={() =>
+        router.push({
+          pathname: "/eventdetails",
+          params: {
+            eventId,
+          },
+        })
+      }
       style={styles.cardContainer}
     >
-      {/* --- TOP: Image Banner & Floating Tag --- */}
       <View style={styles.imageContainer}>
         <Image
           source={typeof image === "string" ? { uri: image } : image}
           style={styles.coverImage}
         />
 
-        {/* Floating Category Tag */}
         <View style={styles.categoryTag}>
           <Text style={styles.categoryText}>{category}</Text>
         </View>
       </View>
 
-      {/* --- MIDDLE: Event Details --- */}
       <View style={styles.detailsContainer}>
-        {/* Title */}
         <Text style={styles.title} numberOfLines={1}>
           {title}
         </Text>
 
-        {/* Organization Row */}
         <View style={styles.orgRow}>
           <Text style={styles.orgText}>{organization}</Text>
           {isVerified && <VerifiedIcon width={16} height={16} />}
         </View>
 
-        {/* Date & Time Row */}
         <View style={styles.infoRow}>
           <CalendarIcon width={16} height={16} />
           <Text style={styles.infoText}>
@@ -66,7 +65,6 @@ export default function EventCard({
           </Text>
         </View>
 
-        {/* Location Row */}
         <View style={styles.infoRow}>
           <LocationIcon width={16} height={16} />
           <Text style={styles.infoText} numberOfLines={1}>
@@ -75,18 +73,14 @@ export default function EventCard({
         </View>
       </View>
 
-      {/* Divider */}
       <View style={styles.divider} />
 
-      {/* --- BOTTOM: Footer Section --- */}
       <View style={styles.footerRow}>
-        {/* Slots Left */}
         <View style={styles.slotsContainer}>
           <GroupIcon width={18} height={18} />
           <Text style={styles.slotsText}>{slotsLeft} slots left</Text>
         </View>
 
-        {/* Certificate Pill */}
         {hasCertificate && (
           <View style={styles.certificatePill}>
             <Text style={styles.certificateText}>Certificate</Text>
@@ -103,11 +97,10 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     marginBottom: 20,
     borderWidth: 1,
-    borderColor: "#E2E8F0", // Soft outline from the design
-    overflow: "hidden", // Keeps the image inside the rounded corners
+    borderColor: "#E2E8F0",
+    overflow: "hidden",
   },
 
-  // Image Section
   imageContainer: {
     width: "100%",
     height: 140,
@@ -134,15 +127,14 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
 
-  // Middle Details Section
   detailsContainer: {
     padding: 16,
-    paddingBottom: 12, // Less padding at the bottom to sit closer to the divider
+    paddingBottom: 12,
   },
   title: {
     fontFamily: FONTS.bold,
     fontSize: 18,
-    color: "#0B1B3D", // Very dark navy/black
+    color: "#0B1B3D",
     marginBottom: 4,
   },
   orgRow: {
@@ -169,14 +161,12 @@ const styles = StyleSheet.create({
     flexShrink: 1,
   },
 
-  // Divider
   divider: {
     height: 1,
     backgroundColor: "#EDF2F7",
     marginHorizontal: 16,
   },
 
-  // Footer Section
   footerRow: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -192,10 +182,10 @@ const styles = StyleSheet.create({
   slotsText: {
     fontFamily: FONTS.semibold,
     fontSize: 14,
-    color: "#3B5998", // Blue matching the icon
+    color: COLORS.primary,
   },
   certificatePill: {
-    backgroundColor: "#F59E0B", // The orange from the design
+    backgroundColor: COLORS.highlight,
     paddingVertical: 6,
     paddingHorizontal: 12,
     borderRadius: 16,

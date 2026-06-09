@@ -1,10 +1,8 @@
-import { router, useFocusEffect, usePathname } from "expo-router";
-import { useCallback, useEffect, useState } from "react";
+import { router } from "expo-router";
+import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
-  Alert,
-  BackHandler,
-  RefreshControl,
+  Image,
   ScrollView,
   StyleSheet,
   Text,
@@ -12,135 +10,115 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import API from "../../api/api";
+import API from "../../api/api"; // Make sure your API is imported!
+
+// Components
 import EventCard from "../../components/eventcard";
-import Header from "../../components/header";
-import SearchBar from "../../components/searchbar";
+import StatCard from "../../components/statcard";
+
+// Icons (Replace with your actual SVGs)
+import FlameIcon from "../../assets/images/Flame.svg";
+import MedalIcon from "../../assets/images/Medal.svg";
+import NotificationIcon from "../../assets/images/Notification.svg";
+import SilverBadgeIcon from "../../assets/images/SilverBadge.svg";
+import SparkleIcon from "../../assets/images/Sparkle.svg";
+import TrendIcon from "../../assets/images/Trend.svg";
 
 import { COLORS } from "../../constants/colors";
 import { FONTS } from "../../constants/fonts";
 
-export default function HomeScreen() {
-  // const router = useRouter();
-  const formatDate = (dateString) => {
-    if (!dateString) return "TBD";
-
-    const date = new Date(dateString);
-
-    return date.toLocaleDateString("en-US", {
-      // year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
-  };
-  const [events, setEvents] = useState([]);
+export default function Home() {
+  const [greeting, setGreeting] = useState("Good morning");
   const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
 
-  const pathname = usePathname();
-  useFocusEffect(
-    useCallback(() => {
-      const onBackPress = () => {
-        if (pathname !== "/home" && pathname !== "/") {
-          return false;
-        }
+  // --- DYNAMIC DATA STATES ---
+  const [user, setUser] = useState(null);
+  const [userStats, setUserStats] = useState({
+    done: 0,
+    reliability: 0,
+    upcoming: 0,
+  });
 
-        Alert.alert("Exit App", "Are you sure you want to exit AidLoop?", [
-          {
-            text: "Cancel",
-            onPress: () => null,
-            style: "cancel",
-          },
-          { text: "YES", onPress: () => BackHandler.exitApp() },
-        ]);
-        return true;
-      };
-
-      const backHandlerSubscription = BackHandler.addEventListener(
-        "hardwareBackPress",
-        onBackPress,
-      );
-
-      return () => backHandlerSubscription.remove();
-    }, [pathname]),
-  );
-
-  const fetchEvents = async () => {
-    try {
-      setLoading(true);
-      const response = await API.get("/events");
-
-      console.log("Fetched Events:", response.data);
-
-      setEvents(response.data.events);
-    } catch (error) {
-      console.error("Error fetching events:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
+  // 1. Set Time of Day
   useEffect(() => {
-    const init = async () => {
+    const hour = new Date().getHours();
+    if (hour < 12) setGreeting("Good morning");
+    else if (hour < 18) setGreeting("Good afternoon");
+    else setGreeting("Good evening");
+  }, []);
+
+  // 2. Fetch User Data from API
+  useEffect(() => {
+    const fetchUserData = async () => {
       try {
         setLoading(true);
-        await API.get("/user/me");
-        await fetchEvents();
-      } catch {
-        router.replace("/auth/login");
+        // Fetch the current logged-in user
+        const response = await API.get("/user/me");
+        const userData = response.data; // Adjust based on your API response structure
+
+        setUser(userData);
+
+        // Map the backend data to our local stats state.
+        // NOTE: Change these property names if your API uses different keys!
+        setUserStats({
+          done: userData?.eventsCompleted || 0,
+          reliability: userData?.reliabilityScore || 0,
+          upcoming: userData?.upcomingEventsCount || 0,
+        });
+      } catch (error) {
+        console.error("Failed to fetch user data on Home screen:", error);
       } finally {
         setLoading(false);
       }
     };
 
-    init();
-
-    // // Disable back button to prevent going to onboarding/login
-    // const backHandler = BackHandler.addEventListener(
-    //   "hardwareBackPress",
-    //   () => true,
-    // );
-    // return () => backHandler.remove();
+    fetchUserData();
   }, []);
 
-  const refresh = useCallback(async () => {
-    setRefreshing(true);
-    await fetchEvents();
-    setRefreshing(false);
-  }, []);
+  // 3. Populate the Stat Cards Dynamically
+  const statsData = [
+    {
+      id: 1,
+      Icon: MedalIcon,
+      bgColor: "#FFF4E5",
+      value: userStats.done.toString(), // Dynamic
+      label: "Events Done",
+    },
+    {
+      id: 2,
+      Icon: TrendIcon,
+      bgColor: "#EBF8FF",
+      value: `${userStats.reliability}%`, // Dynamic
+      label: "Reliability",
+    },
+    {
+      id: 3,
+      Icon: FlameIcon,
+      bgColor: "#F0FFF4",
+      value: userStats.upcoming.toString(), // Dynamic
+      label: "Upcoming",
+    },
+  ];
 
+  // --- LOADING SCREEN ---
   if (loading) {
     return (
-      <SafeAreaView style={[styles.safeareaview, styles.scrollview]}>
-        <Header pageHeader={"AIDLOOP"} />
-
-        <TouchableOpacity
-          activeOpacity={0.8}
-          onPress={() => router.push("../search")}
-        >
-          <View pointerEvents="none">
-            <SearchBar />
-          </View>
-        </TouchableOpacity>
-        <View
+      <SafeAreaView
+        style={[
+          styles.safeareaview,
+          { justifyContent: "center", alignItems: "center" },
+        ]}
+      >
+        <ActivityIndicator size={40} color={COLORS.highlight} />
+        <Text
           style={{
-            // backgroundColor: "green",
-            flex: 1,
-            justifyContent: "center",
-            alignItems: "center",
+            marginTop: 10,
+            color: COLORS.primary,
+            fontFamily: FONTS.regular,
           }}
         >
-          <ActivityIndicator size={40} color={COLORS.highlight} />
-          <Text
-            style={{
-              marginTop: 10,
-              color: COLORS.primary,
-              fontFamily: FONTS.regular,
-            }}
-          >
-            Loading Events...
-          </Text>
-        </View>
+          Loading Dashboard...
+        </Text>
       </SafeAreaView>
     );
   }
@@ -148,128 +126,243 @@ export default function HomeScreen() {
   return (
     <SafeAreaView style={styles.safeareaview}>
       <ScrollView
-        style={styles.scrollview}
         showsVerticalScrollIndicator={false}
-        refreshControl={
-          <RefreshControl
-            tintColor={COLORS.highlight}
-            colors={[COLORS.highlight, COLORS.success, COLORS.neutral]}
-            refreshing={refreshing}
-            onRefresh={refresh}
-          />
-        }
+        contentContainerStyle={styles.scrollContainer}
       >
-        <Header />
-
-        <TouchableOpacity
-          activeOpacity={0.8}
-          onPress={() => router.push("../search")}
-        >
-          <View pointerEvents="none">
-            <SearchBar />
-          </View>
-        </TouchableOpacity>
-
-        {events.length > 0 ? (
-          events.map((event) => (
-            <EventCard
-              key={event._id || "undefined"}
-              eventId={event._id}
-              image={
-                event.image
-                  ? { uri: event.image }
-                  : require("../../assets/images/eventimage-1.png")
+        {/* --- 1. HEADER SECTION --- */}
+        <View style={styles.headerContainer}>
+          <View style={styles.profileSection}>
+            <Image
+              // Load dynamic avatar if it exists, otherwise use fallback
+              source={
+                user?.profileImage
+                  ? { uri: user.profileImage }
+                  : require("../../assets/images/defaultProfile.jpg")
               }
-              verification={
-                event.organizationId?.verificationStatus === "approved"
-                  ? "Verified"
-                  : "Unverified"
-              }
-              title={event.name || "Untitled Event"}
-              date={formatDate(event.date) || "TBD"}
-              location={
-                event.location?.venue
-                  ? event.location.venue.length > 20
-                    ? event.location.venue.slice(0, 17) + "..."
-                    : event.location.venue
-                  : "TBD"
-              }
-              city={event.location?.city || "Undefined"}
-              time={`${event.startTime} - ${event.endTime}` || "TBD"}
-              people={
-                `${event.registeredCount}/${event.volunteerSlots} slots` ||
-                "Undefined"
-              }
-              role={
-                event.roles?.length > 0 ? `${event.roles[0]}...` : "Volunteer"
-              }
-              rating={
-                event.organizerRating?.average
-                  ? Number(event.organizerRating.average).toFixed(1)
-                  : "No Ratings"
-              }
-              about={event.description || "No Description"}
-              category={event.category || "Undefined"}
-              hostedBy={event?.organizationId?.fullName || "Unknown Host "}
-              benefits={
-                event.certificateEnabled
-                  ? "Certificate of Participation"
-                  : "No benefits"
-              }
-              volunteerRequirements={
-                event.requirements?.length > 0
-                  ? event.requirements.join(", ")
-                  : "None"
-              }
+              style={styles.avatar}
             />
-          ))
-        ) : (
-          <View
-            style={{
-              // flex: 1,
-              alignItems: "center",
-              justifyContent: "center",
-              // backgroundColor: COLORS.highlight,
-              gap: 10,
-            }}
-          >
-            <Text
-              style={{
-                // textAlign: "center",
-                marginTop: 50,
-                color: COLORS.neutral,
-                fontFamily: FONTS.semibold,
-              }}
-            >
-              No events available right now.
-            </Text>
-            <TouchableOpacity
-              style={{
-                borderColor: COLORS.primary,
-                paddingHorizontal: 20,
-                // alignSelf: "flex-start",
-                paddingVertical: 10,
-                borderRadius: 20,
-                borderWidth: 1,
-                // marginTop: 20,
-              }}
-              onPress={fetchEvents}
-            >
-              <Text>Refresh</Text>
-            </TouchableOpacity>
+            <View>
+              <Text style={styles.greetingText}>{greeting} 👋</Text>
+              {/* Dynamic User Name */}
+              <Text style={styles.userName}>
+                {user?.fullName.trim().split(" ")[0].toUpperCase() ||
+                  "Volunteer"}
+              </Text>
+            </View>
           </View>
-        )}
+
+          <TouchableOpacity style={styles.notificationBtn} activeOpacity={0.7}>
+            <NotificationIcon width={24} height={24} />
+            <View style={styles.notificationDot} />
+          </TouchableOpacity>
+        </View>
+
+        {/* --- 2. STATS ROW (Now using the Map and Component!) --- */}
+        <View style={styles.statsRow}>
+          {statsData.map((stat) => (
+            <StatCard
+              key={stat.id}
+              Icon={stat.Icon}
+              iconBgColor={stat.bgColor}
+              value={stat.value}
+              label={stat.label}
+            />
+          ))}
+        </View>
+
+        {/* --- 3. GAMIFICATION / PROGRESS CARD --- */}
+        <View style={styles.progressCard}>
+          <View style={styles.progressHeader}>
+            <View style={styles.badgeRow}>
+              <SilverBadgeIcon width={32} height={32} />
+              <View style={styles.badgeTextContainer}>
+                <Text style={styles.badgeTitle}>Silver Volunteer</Text>
+                {/* Dynamic Reliability */}
+                <Text style={styles.badgeSubtitle}>
+                  {userStats.reliability}% reliability score
+                </Text>
+              </View>
+            </View>
+            <View style={styles.eventsCountBox}>
+              {/* Dynamic Event Count */}
+              <Text style={styles.eventsCountNumber}>{userStats.done}</Text>
+              <Text style={styles.eventsCountLabel}>events</Text>
+            </View>
+          </View>
+
+          <View style={styles.progressBarContainer}>
+            {/* Dynamic Progress Bar width based on events done! */}
+            <View
+              style={[
+                styles.progressBarFill,
+                { width: `${Math.min((userStats.done / 10) * 100, 100)}%` },
+              ]}
+            />
+          </View>
+
+          <View style={styles.progressFooter}>
+            <Text style={styles.progressFooterText}>Gold at 10 events</Text>
+            {/* Dynamic percentage to next rank */}
+            <Text style={styles.progressFooterText}>
+              {Math.min((userStats.done / 10) * 100, 100)}%
+            </Text>
+          </View>
+        </View>
+
+        {/* --- 4. SECTION HEADER --- */}
+        <View style={styles.sectionHeader}>
+          <View style={styles.sectionTitleRow}>
+            <SparkleIcon width={20} height={20} />
+            <Text style={styles.sectionTitle}>Recommended for You</Text>
+          </View>
+          <TouchableOpacity onPress={() => router.push("/explore")}>
+            <Text style={styles.seeAllText}>All {">"}</Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* --- 5. EVENT CARD (Can be hooked up to API later!) --- */}
+        <EventCard
+          eventId={"123"}
+          image={require("../../assets/images/eventimage-1.png")}
+          category="Tech"
+          title="Tech Literacy Workshop"
+          organization="Digital Youth Initiative"
+          isVerified={true}
+          date="May 18, 2026"
+          time="10:00 AM"
+          location="Ikeja City Mall, Lagos"
+          slotsLeft={12}
+          hasCertificate={true}
+        />
       </ScrollView>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  safeareaview: { flex: 1, backgroundColor: COLORS.white },
-  scrollview: {
+  safeareaview: {
     flex: 1,
-    backgroundColor: COLORS.white,
-    paddingHorizontal: 20,
-    marginTop: 20,
+    backgroundColor: "#F8FAFC",
   },
+  scrollContainer: {
+    paddingHorizontal: 20,
+    paddingTop: 20,
+    paddingBottom: 40,
+  },
+
+  // Header Styles
+  headerContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 24,
+  },
+  profileSection: { flexDirection: "row", alignItems: "center", gap: 12 },
+  avatar: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    borderWidth: 1,
+    borderColor: "#1F3A5F",
+  },
+  greetingText: {
+    fontFamily: FONTS.regular,
+    fontSize: 13,
+    color: "#6B7C93",
+    marginBottom: 2,
+  },
+  userName: { fontFamily: FONTS.bold, fontSize: 18, color: "#0B1B3D" },
+  notificationBtn: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: COLORS.white,
+    justifyContent: "center",
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: "#E2E8F0",
+    position: "relative",
+  },
+  notificationDot: {
+    position: "absolute",
+    top: 10,
+    right: 12,
+    width: 8,
+    height: 8,
+    backgroundColor: "#E53E3E",
+    borderRadius: 4,
+    borderWidth: 1,
+    borderColor: COLORS.white,
+  },
+
+  // Stats Row Container
+  statsRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 24,
+  },
+
+  // Progress Card Styles
+  progressCard: {
+    backgroundColor: "#1F3A5F",
+    borderRadius: 16,
+    padding: 20,
+    marginBottom: 30,
+  },
+  progressHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+    marginBottom: 24,
+  },
+  badgeRow: { flexDirection: "row", alignItems: "center", gap: 12 },
+  badgeTitle: {
+    fontFamily: FONTS.bold,
+    fontSize: 18,
+    color: COLORS.white,
+    marginBottom: 4,
+  },
+  badgeSubtitle: { fontFamily: FONTS.regular, fontSize: 12, color: "#A0AEC0" },
+  eventsCountBox: { alignItems: "flex-end" },
+  eventsCountNumber: {
+    fontFamily: FONTS.bold,
+    fontSize: 28,
+    color: COLORS.white,
+    lineHeight: 32,
+  },
+  eventsCountLabel: {
+    fontFamily: FONTS.regular,
+    fontSize: 12,
+    color: "#A0AEC0",
+  },
+  progressBarContainer: {
+    width: "100%",
+    height: 6,
+    backgroundColor: "rgba(255,255,255,0.2)",
+    borderRadius: 3,
+    marginBottom: 10,
+    overflow: "hidden",
+  },
+  progressBarFill: {
+    height: "100%",
+    backgroundColor: COLORS.white,
+    borderRadius: 3,
+  },
+  progressFooter: { flexDirection: "row", justifyContent: "space-between" },
+  progressFooterText: {
+    fontFamily: FONTS.regular,
+    fontSize: 12,
+    color: COLORS.white,
+  },
+
+  // Section Header Styles
+  sectionHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 16,
+  },
+  sectionTitleRow: { flexDirection: "row", alignItems: "center", gap: 8 },
+  sectionTitle: { fontFamily: FONTS.bold, fontSize: 18, color: "#1A202C" },
+  seeAllText: { fontFamily: FONTS.medium, fontSize: 14, color: "#1F3A5F" },
 });

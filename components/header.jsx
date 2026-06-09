@@ -2,10 +2,10 @@ import { StyleSheet, Text, View } from "react-native";
 import { COLORS } from "../constants/colors";
 import { FONTS } from "../constants/fonts";
 
-export default function Header() {
+export default function Header({ pageHeader }) {
   return (
     <View>
-      <Text style={styles.text}>AIDLOOP</Text>
+      <Text style={styles.text}>{pageHeader}</Text>
     </View>
   );
 }

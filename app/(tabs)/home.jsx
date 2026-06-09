@@ -112,7 +112,7 @@ export default function HomeScreen() {
   if (loading) {
     return (
       <SafeAreaView style={[styles.safeareaview, styles.scrollview]}>
-        <Header />
+        <Header pageHeader={"AIDLOOP"} />
 
         <TouchableOpacity
           activeOpacity={0.8}

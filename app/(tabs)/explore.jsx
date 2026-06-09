@@ -21,23 +21,23 @@ import { COLORS } from "../../constants/colors";
 import { FONTS } from "../../constants/fonts";
 
 export default function Explore() {
-  // const router = useRouter();
   const formatDate = (dateString) => {
     if (!dateString) return "TBD";
-
     const date = new Date(dateString);
-
     return date.toLocaleDateString("en-US", {
-      // year: "numeric",
       month: "long",
       day: "numeric",
+      year: "numeric", // Added year back to match the Figma design (May 18, 2026)
     });
   };
+
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [filterActive, setFilterActive] = useState(false);
 
   const pathname = usePathname();
+
   useFocusEffect(
     useCallback(() => {
       const onBackPress = () => {
@@ -69,9 +69,7 @@ export default function Explore() {
     try {
       setLoading(true);
       const response = await API.get("/events");
-
       console.log("Fetched Events:", response.data);
-
       setEvents(response.data.events);
     } catch (error) {
       console.error("Error fetching events:", error);
@@ -94,13 +92,6 @@ export default function Explore() {
     };
 
     init();
-
-    // // Disable back button to prevent going to onboarding/login
-    // const backHandler = BackHandler.addEventListener(
-    //   "hardwareBackPress",
-    //   () => true,
-    // );
-    // return () => backHandler.remove();
   }, []);
 
   const refresh = useCallback(async () => {
@@ -124,7 +115,6 @@ export default function Explore() {
         </TouchableOpacity>
         <View
           style={{
-            // backgroundColor: "green",
             flex: 1,
             justifyContent: "center",
             alignItems: "center",
@@ -159,83 +149,78 @@ export default function Explore() {
           />
         }
       >
-        <Header />
+        <Header pageHeader={"Explore Events"} />
 
-        <TouchableOpacity
-          activeOpacity={0.8}
-          onPress={() => router.push("../search")}
-        >
-          <View pointerEvents="none">
-            <SearchBar />
-          </View>
+        <TouchableOpacity activeOpacity={0.8}>
+          <SearchBar
+            onFilterPress={() => {
+              console.log("Filter button clicked. Old value:", filterActive);
+              setFilterActive(!filterActive);
+            }}
+          />
         </TouchableOpacity>
 
+        {filterActive ? (
+          <View>
+            <View></View>
+          </View>
+        ) : (
+          <View>
+            <View></View>
+          </View>
+        )}
+
         {events.length > 0 ? (
-          events.map((event) => (
-            <EventCard
-              key={event._id || "undefined"}
-              eventId={event._id}
-              image={
-                event.image
-                  ? { uri: event.image }
-                  : require("../../assets/images/eventimage-1.png")
-              }
-              verification={
-                event.organizationId?.verificationStatus === "approved"
-                  ? "Verified"
-                  : "Unverified"
-              }
-              title={event.name || "Untitled Event"}
-              date={formatDate(event.date) || "TBD"}
-              location={
-                event.location?.venue
-                  ? event.location.venue.length > 20
-                    ? event.location.venue.slice(0, 17) + "..."
-                    : event.location.venue
-                  : "TBD"
-              }
-              city={event.location?.city || "Undefined"}
-              time={`${event.startTime} - ${event.endTime}` || "TBD"}
-              people={
-                `${event.registeredCount}/${event.volunteerSlots} slots` ||
-                "Undefined"
-              }
-              role={
-                event.roles?.length > 0 ? `${event.roles[0]}...` : "Volunteer"
-              }
-              rating={
-                event.organizerRating?.average
-                  ? Number(event.organizerRating.average).toFixed(1)
-                  : "No Ratings"
-              }
-              about={event.description || "No Description"}
-              category={event.category || "Undefined"}
-              hostedBy={event?.organizationId?.fullName || "Unknown Host "}
-              benefits={
-                event.certificateEnabled
-                  ? "Certificate of Participation"
-                  : "No benefits"
-              }
-              volunteerRequirements={
-                event.requirements?.length > 0
-                  ? event.requirements.join(", ")
-                  : "None"
-              }
-            />
-          ))
+          events.map((event) => {
+            // Calculate slots left safely
+            const totalSlots = event.volunteerSlots || 0;
+            const registered = event.registeredCount || 0;
+            const slotsLeft = Math.max(0, totalSlots - registered);
+
+            return (
+              <EventCard
+                key={event._id || Math.random().toString()}
+                eventId={event._id}
+                image={
+                  event.image
+                    ? { uri: event.image }
+                    : require("../../assets/images/eventimage-1.png")
+                }
+                category={event.category || "Volunteer"}
+                title={event.name || "Untitled Event"}
+                organization={event.organizationId?.fullName || "Unknown Host"}
+                // New boolean check for verification
+                isVerified={
+                  event.organizationId?.verificationStatus === "approved"
+                }
+                date={formatDate(event.date)}
+                time={
+                  event.startTime
+                    ? `${event.startTime} - ${event.endTime}`
+                    : "TBD"
+                }
+                // Combines venue and city into one string for the UI
+                location={
+                  event.location?.venue
+                    ? `${event.location.venue}, ${event.location.city || ""}`
+                    : "TBD"
+                }
+                slotsLeft={slotsLeft}
+                // New boolean check for the certificate pill
+                hasCertificate={!!event.certificateEnabled}
+              />
+            );
+          })
         ) : (
           <View
             style={{
-              // flex: 1,
               alignItems: "center",
               justifyContent: "center",
-              // backgroundColor: COLORS.highlight,
               gap: 10,
             }}
           >
             <Text
               style={{
-                // textAlign: "center",
                 marginTop: 50,
                 color: COLORS.neutral,
                 fontFamily: FONTS.semibold,
@@ -247,11 +232,9 @@ export default function Explore() {
               style={{
                 borderColor: COLORS.primary,
                 paddingHorizontal: 20,
-                // alignSelf: "flex-start",
                 paddingVertical: 10,
                 borderRadius: 20,
                 borderWidth: 1,
-                // marginTop: 20,
               }}
               onPress={fetchEvents}
             >

@@ -1,191 +1,208 @@
 import { useRouter } from "expo-router";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import CheckMark from "../assets/images/checkmark.svg";
-import DateIcon from "../assets/images/dateicon.svg";
-import LocationIcon from "../assets/images/locationicon.svg";
-import PeopleIcon from "../assets/images/peopleicon.svg";
-import RoleIcon from "../assets/images/roleicon.svg";
-import StarIcon from "../assets/images/staricon.svg";
-import TimeIcon from "../assets/images/timeicon.svg";
+
+// Pulling in your standard icons (you may need to adjust the import names to match your SVG files)
+import CalendarIcon from "../assets/images/Date.svg";
+import LocationIcon from "../assets/images/Location.svg";
+// You will need to export these two new icons from Figma if you haven't already:
+import VerifiedIcon from "../assets/images/Checked.svg";
+import GroupIcon from "../assets/images/peopleicon.svg";
+
 import { COLORS } from "../constants/colors";
 import { FONTS } from "../constants/fonts";
 
 export default function EventCard({
-  title,
+  eventId,
   image,
+  category,
+  title,
+  organization,
+  isVerified,
   date,
   time,
   location,
-  people,
-  city,
-  rating,
-  role,
-  verification,
-  hostedBy,
-  volunteerRequirements,
-  benefits,
-  about,
-  category,
-  eventId,
+  slotsLeft,
+  hasCertificate,
 }) {
   const router = useRouter();
+
   return (
-    <View style={styles.container}>
+    <TouchableOpacity
+      activeOpacity={0.9}
+      onPress={() => router.push(`/eventdetails?id=${eventId}`)}
+      style={styles.cardContainer}
+    >
+      {/* --- TOP: Image Banner & Floating Tag --- */}
       <View style={styles.imageContainer}>
-        <Image source={image} style={styles.image} />
-        <View style={styles.statusContainer}>
-          <CheckMark width={22} height={22} style={styles.statusIcon} />
-          <View style={styles.statusTextContainer}>
-            <Text style={styles.statusText}>{verification}</Text>
-          </View>
+        <Image
+          source={typeof image === "string" ? { uri: image } : image}
+          style={styles.coverImage}
+        />
+
+        {/* Floating Category Tag */}
+        <View style={styles.categoryTag}>
+          <Text style={styles.categoryText}>{category}</Text>
         </View>
       </View>
 
+      {/* --- MIDDLE: Event Details --- */}
       <View style={styles.detailsContainer}>
-        <Text style={styles.title}>{title}</Text>
-        <View style={styles.infoContainer}>
-          <View style={styles.divider}></View>
-          <View style={styles.infoItem}>
-            <DateIcon width={14} height={14} color={"#6B7C93"} />
-            <Text style={styles.subtext}>{date}</Text>
-          </View>
-          <View style={styles.infoItem}>
-            <TimeIcon width={14} height={14} />
-            <Text style={styles.subtext}>{time}</Text>
-          </View>
-          <View style={styles.infoItem}>
-            <LocationIcon width={14} height={14} />
-            <Text style={styles.subtext}>{location}</Text>
-          </View>
+        {/* Title */}
+        <Text style={styles.title} numberOfLines={1}>
+          {title}
+        </Text>
+
+        {/* Organization Row */}
+        <View style={styles.orgRow}>
+          <Text style={styles.orgText}>{organization}</Text>
+          {isVerified && <VerifiedIcon width={16} height={16} />}
         </View>
-        <View style={styles.infoContainer}>
-          <View style={styles.infoItem}>
-            <PeopleIcon width={14} height={14} />
-            <Text style={styles.subtext}>{people}</Text>
-          </View>
-          <View style={styles.infoItem}>
-            <RoleIcon width={14} height={14} />
-            <Text style={styles.subtext}>{role}</Text>
-          </View>
-          <View style={styles.infoItem}>
-            <StarIcon width={20} height={20} />
-            <Text style={styles.subtext}>{rating}</Text>
-          </View>
+
+        {/* Date & Time Row */}
+        <View style={styles.infoRow}>
+          <CalendarIcon width={16} height={16} />
+          <Text style={styles.infoText}>
+            {date} • {time}
+          </Text>
         </View>
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity
-            style={styles.viewDetailsButton}
-            activeOpacity={0.9}
-            onPress={() =>
-              router.push({
-                pathname: "/eventdetails",
-                params: {
-                  eventId,
-                },
-              })
-            }
-          >
-            <Text style={styles.viewDetailsText}>View Details</Text>
-          </TouchableOpacity>
+
+        {/* Location Row */}
+        <View style={styles.infoRow}>
+          <LocationIcon width={16} height={16} />
+          <Text style={styles.infoText} numberOfLines={1}>
+            {location}
+          </Text>
         </View>
       </View>
-    </View>
+
+      {/* Divider */}
+      <View style={styles.divider} />
+
+      {/* --- BOTTOM: Footer Section --- */}
+      <View style={styles.footerRow}>
+        {/* Slots Left */}
+        <View style={styles.slotsContainer}>
+          <GroupIcon width={18} height={18} />
+          <Text style={styles.slotsText}>{slotsLeft} slots left</Text>
+        </View>
+
+        {/* Certificate Pill */}
+        {hasCertificate && (
+          <View style={styles.certificatePill}>
+            <Text style={styles.certificateText}>Certificate</Text>
+          </View>
+        )}
+      </View>
+    </TouchableOpacity>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    backgroundColor: "#FFFFFF",
+  cardContainer: {
+    backgroundColor: COLORS.white,
     borderRadius: 16,
-    width: "100%",
-    boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.1)",
-    marginBottom: 25,
-  },
-  image: {
-    width: "100%",
-    borderTopLeftRadius: 16,
-    borderTopRightRadius: 16,
-    height: 150,
-  },
-  statusContainer: {
-    width: 55,
-    alignItems: "center",
-    gap: 2,
-    position: "absolute",
-    right: 5,
-    justifyContent: "center",
-    top: "10%",
-    transform: [{ translateY: -7 }],
-  },
-  statusTextContainer: {
-    backgroundColor: COLORS.neutral,
-    paddingHorizontal: 2,
-    paddingVertical: 1,
-    borderRadius: 3,
-    boxShadow: "0px 1px 5px rgba(0, 0, 0, 0.5)",
-    width: 50,
-  },
-  statusText: {
-    color: COLORS.white,
-    fontSize: 9,
-    fontFamily: FONTS.medium,
-    textAlign: "center",
+    marginBottom: 20,
+    borderWidth: 1,
+    borderColor: "#E2E8F0", // Soft outline from the design
+    overflow: "hidden", // Keeps the image inside the rounded corners
   },
 
+  // Image Section
+  imageContainer: {
+    width: "100%",
+    height: 140,
+    position: "relative",
+    backgroundColor: "#F3F4F6",
+  },
+  coverImage: {
+    width: "100%",
+    height: "100%",
+    resizeMode: "cover",
+  },
+  categoryTag: {
+    position: "absolute",
+    top: 12,
+    left: 12,
+    backgroundColor: COLORS.white,
+    paddingVertical: 6,
+    paddingHorizontal: 16,
+    borderRadius: 20,
+  },
+  categoryText: {
+    color: "#1F3A5F",
+    fontFamily: FONTS.semibold,
+    fontSize: 12,
+  },
+
+  // Middle Details Section
   detailsContainer: {
-    paddingTop: 10,
-    paddingBottom: 15,
-    paddingHorizontal: 15,
-    gap: 10,
+    padding: 16,
+    paddingBottom: 12, // Less padding at the bottom to sit closer to the divider
   },
   title: {
-    fontSize: 24,
     fontFamily: FONTS.bold,
-    color: COLORS.primary,
+    fontSize: 18,
+    color: "#0B1B3D", // Very dark navy/black
+    marginBottom: 4,
   },
-
-  infoContainer: {
+  orgRow: {
     flexDirection: "row",
-    gap: 7,
-    justifyContent: "space-between",
-    flexWrap: "wrap",
-  },
-  infoItem: {
-    flexDirection: "row",
-    gap: 5,
     alignItems: "center",
+    gap: 6,
+    marginBottom: 12,
   },
-  subtext: {
-    fontSize: 12,
-    fontFamily: FONTS.medium,
-    marginTop: 2,
+  orgText: {
+    fontFamily: FONTS.regular,
+    fontSize: 14,
+    color: "#6B7C93",
+  },
+  infoRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    marginBottom: 8,
+  },
+  infoText: {
+    fontFamily: FONTS.regular,
+    fontSize: 14,
+    color: "#6B7C93",
+    flexShrink: 1,
   },
 
+  // Divider
   divider: {
-    width: "100%",
-    backgroundColor: COLORS.neutral,
     height: 1,
-    marginTop: -5,
+    backgroundColor: "#EDF2F7",
+    marginHorizontal: 16,
   },
 
-  buttonContainer: {
+  // Footer Section
+  footerRow: {
     flexDirection: "row",
-    gap: 10,
-    alignItems: "center",
     justifyContent: "space-between",
-    marginTop: 10,
+    alignItems: "center",
+    padding: 16,
+    paddingTop: 12,
   },
-  viewDetailsButton: {
-    backgroundColor: COLORS.primary,
-    width: 170,
-    borderRadius: 100,
-    paddingVertical: 5,
-    flex: 1,
+  slotsContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
   },
-  viewDetailsText: {
-    fontSize: 20,
-    color: COLORS.white,
-    textAlign: "center",
+  slotsText: {
     fontFamily: FONTS.semibold,
+    fontSize: 14,
+    color: "#3B5998", // Blue matching the icon
+  },
+  certificatePill: {
+    backgroundColor: "#F59E0B", // The orange from the design
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 16,
+  },
+  certificateText: {
+    color: COLORS.white,
+    fontFamily: FONTS.medium,
+    fontSize: 12,
   },
 });

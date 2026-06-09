@@ -1,6 +1,7 @@
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import { withLayoutContext } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context"; // Import this
+import ExploreIcon from "../../assets/images/explore.svg";
 import HomeIcon from "../../assets/images/homeicon.svg";
 import MyEventsIcon from "../../assets/images/myeventsicon.svg";
 import NotificationIcon from "../../assets/images/notificationicon.svg";
@@ -60,6 +61,15 @@ export default function TabsLayout() {
           title: "Home",
           tabBarIcon: ({ color }) => (
             <HomeIcon width={24} height={24} color={color} />
+          ),
+        }}
+      />
+      <MaterialTabs.Screen
+        name="explore"
+        options={{
+          title: "Explore",
+          tabBarIcon: ({ color }) => (
+            <ExploreIcon width={24} height={24} color={color} />
           ),
         }}
       />

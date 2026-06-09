@@ -16,7 +16,6 @@
       "adaptiveIcon": {
         "backgroundColor": "#fff",
         "foregroundImage": "./assets/images/icon.png",
-        // "backgroundImage": "./assets/images/android-icon-background.png",
         "monochromeImage": "./assets/images/icon.png"
       },
       "edgeToEdgeEnabled": true,
@@ -48,9 +47,8 @@
     "extra": {
       "router": {},
       "eas": {
-        "projectId": "355cf0e3-96ce-4220-a8c6-d9e122e12754"
+        "projectId": "32b2725a-4a26-49f2-900c-84a1b8680227"
       }
-    },
-    "owner": "dev_leumas"
+    }
   }
 }

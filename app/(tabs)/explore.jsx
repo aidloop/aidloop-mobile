@@ -20,7 +20,7 @@ import SearchBar from "../../components/searchbar";
 import { COLORS } from "../../constants/colors";
 import { FONTS } from "../../constants/fonts";
 
-export default function HomeScreen() {
+export default function Explore() {
   // const router = useRouter();
   const formatDate = (dateString) => {
     if (!dateString) return "TBD";

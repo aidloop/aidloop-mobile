@@ -10,13 +10,13 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import API from "../../api/api"; // Make sure your API is imported!
+import API from "../../api/api";
 
 // Components
 import EventCard from "../../components/eventcard";
 import StatCard from "../../components/statcard";
 
-// Icons (Replace with your actual SVGs)
+// Icons
 import FlameIcon from "../../assets/images/Flame.svg";
 import MedalIcon from "../../assets/images/Medal.svg";
 import NotificationIcon from "../../assets/images/Notification.svg";
@@ -39,7 +39,7 @@ export default function Home() {
     upcoming: 0,
   });
 
-  // 1. Set Time of Day
+  // set correct greeting based on time of day
   useEffect(() => {
     const hour = new Date().getHours();
     if (hour < 12) setGreeting("Good morning");
@@ -47,19 +47,17 @@ export default function Home() {
     else setGreeting("Good evening");
   }, []);
 
-  // 2. Fetch User Data from API
+  // fetch user data and stats
   useEffect(() => {
     const fetchUserData = async () => {
       try {
         setLoading(true);
         // Fetch the current logged-in user
         const response = await API.get("/user/me");
-        const userData = response.data; // Adjust based on your API response structure
+        const userData = response.data;
 
         setUser(userData);
 
-        // Map the backend data to our local stats state.
-        // NOTE: Change these property names if your API uses different keys!
         setUserStats({
           done: userData?.eventsCompleted || 0,
           reliability: userData?.reliabilityScore || 0,
@@ -75,7 +73,6 @@ export default function Home() {
     fetchUserData();
   }, []);
 
-  // 3. Populate the Stat Cards Dynamically
   const statsData = [
     {
       id: 1,
@@ -133,7 +130,6 @@ export default function Home() {
         <View style={styles.headerContainer}>
           <View style={styles.profileSection}>
             <Image
-              // Load dynamic avatar if it exists, otherwise use fallback
               source={
                 user?.profileImage
                   ? { uri: user.profileImage }
@@ -143,7 +139,6 @@ export default function Home() {
             />
             <View>
               <Text style={styles.greetingText}>{greeting} 👋</Text>
-              {/* Dynamic User Name */}
               <Text style={styles.userName}>
                 {user?.fullName.trim().split(" ")[0].toUpperCase() ||
                   "Volunteer"}
@@ -157,7 +152,6 @@ export default function Home() {
           </TouchableOpacity>
         </View>
 
-        {/* --- 2. STATS ROW (Now using the Map and Component!) --- */}
         <View style={styles.statsRow}>
           {statsData.map((stat) => (
             <StatCard
@@ -170,28 +164,24 @@ export default function Home() {
           ))}
         </View>
 
-        {/* --- 3. GAMIFICATION / PROGRESS CARD --- */}
         <View style={styles.progressCard}>
           <View style={styles.progressHeader}>
             <View style={styles.badgeRow}>
               <SilverBadgeIcon width={32} height={32} />
               <View style={styles.badgeTextContainer}>
                 <Text style={styles.badgeTitle}>Silver Volunteer</Text>
-                {/* Dynamic Reliability */}
                 <Text style={styles.badgeSubtitle}>
                   {userStats.reliability}% reliability score
                 </Text>
               </View>
             </View>
             <View style={styles.eventsCountBox}>
-              {/* Dynamic Event Count */}
               <Text style={styles.eventsCountNumber}>{userStats.done}</Text>
               <Text style={styles.eventsCountLabel}>events</Text>
             </View>
           </View>
 
           <View style={styles.progressBarContainer}>
-            {/* Dynamic Progress Bar width based on events done! */}
             <View
               style={[
                 styles.progressBarFill,
@@ -202,14 +192,12 @@ export default function Home() {
 
           <View style={styles.progressFooter}>
             <Text style={styles.progressFooterText}>Gold at 10 events</Text>
-            {/* Dynamic percentage to next rank */}
             <Text style={styles.progressFooterText}>
               {Math.min((userStats.done / 10) * 100, 100)}%
             </Text>
           </View>
         </View>
 
-        {/* --- 4. SECTION HEADER --- */}
         <View style={styles.sectionHeader}>
           <View style={styles.sectionTitleRow}>
             <SparkleIcon width={20} height={20} />
@@ -220,7 +208,6 @@ export default function Home() {
           </TouchableOpacity>
         </View>
 
-        {/* --- 5. EVENT CARD (Can be hooked up to API later!) --- */}
         <EventCard
           eventId={"123"}
           image={require("../../assets/images/eventimage-1.png")}

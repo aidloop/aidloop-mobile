@@ -5,7 +5,13 @@ import SearchIcon from "../assets/images/searchicon.svg";
 import { COLORS } from "../constants/colors";
 import { FONTS } from "../constants/fonts";
 
-export default function SearchBar({ search, onFilterPress, ...props }) {
+export default function SearchBar({
+  value,
+  onChangeText,
+  search,
+  onFilterPress,
+  ...props
+}) {
   return (
     <View style={styles.container}>
       <View style={styles.inputContainer}>
@@ -14,6 +20,8 @@ export default function SearchBar({ search, onFilterPress, ...props }) {
           placeholderTextColor={COLORS.neutral}
           style={styles.input}
           returnKeyType="search"
+          value={value}
+          onChangeText={onChangeText}
           {...props}
         />
         <TouchableOpacity onPress={search} style={styles.searchIcon}>

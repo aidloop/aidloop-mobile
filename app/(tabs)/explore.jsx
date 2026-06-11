@@ -40,6 +40,7 @@ export default function Explore() {
 
   const [filterActive, setFilterActive] = useState(false);
   const [activeCategory, setActiveCategory] = useState("All");
+  const [searchQuery, setSearchQuery] = useState("");
 
   const [filterCategory, setFilterCategory] = useState("All");
   const [filterDate, setFilterDate] = useState("Any");
@@ -115,24 +116,42 @@ export default function Explore() {
     setRefreshing(false);
   }, []);
 
-  const runFilters = (categoryToApply) => {
+  const runFilters = (categoryToApply, currentSearchQuery = searchQuery) => {
     let filteredList = [...allEvents];
 
+    if (currentSearchQuery.trim() !== "") {
+      const lowerCaseQuery = currentSearchQuery.toLowerCase();
+      filteredList = filteredList.filter((event) => {
+        // Check if the query matches the event name, organization name, or venue
+        const matchName = event.name?.toLowerCase().includes(lowerCaseQuery);
+        const matchHost = event.organizationId?.fullName
+          ?.toLowerCase()
+          .includes(lowerCaseQuery);
+        const matchVenue = event.location?.venue
+          ?.toLowerCase()
+          .includes(lowerCaseQuery);
+
+        return matchName || matchHost || matchVenue;
+      });
+    }
+
+    // 2. CATEGORY FILTER
     if (categoryToApply !== "All") {
       filteredList = filteredList.filter(
         (event) => event.category === categoryToApply,
       );
     }
 
+    // 3. VERIFIED FILTER
     if (verifiedOnly) {
       filteredList = filteredList.filter(
         (event) => event.organizationId?.verificationStatus === "approved",
       );
     }
 
+    // 4. DATE FILTER
     if (filterDate !== "Any") {
       const today = new Date();
-
       filteredList = filteredList.filter((event) => {
         if (!event.date) return false;
         const eventDate = new Date(event.date);
@@ -149,13 +168,8 @@ export default function Explore() {
             eventDate.getFullYear() === today.getFullYear()
           );
         }
-
         return true;
       });
-    }
-
-    if (filterDistance !== "Any") {
-      console.log("Distance filtering requires user GPS coordinates!");
     }
 
     setEvents(filteredList);
@@ -167,6 +181,7 @@ export default function Explore() {
     setFilterDate("Any");
     setFilterDistance("Any");
     setVerifiedOnly(false);
+    setSearchQuery("");
     setEvents(allEvents);
   };
 
@@ -230,6 +245,11 @@ export default function Explore() {
 
         <TouchableOpacity activeOpacity={0.8}>
           <SearchBar
+            value={searchQuery}
+            onChangeText={(text) => {
+              setSearchQuery(text);
+              runFilters(activeCategory, text);
+            }}
             onFilterPress={() => {
               if (!filterActive) setFilterCategory(activeCategory);
               setFilterActive(!filterActive);
@@ -454,10 +474,10 @@ const styles = StyleSheet.create({
     marginVertical: 16,
     borderWidth: 1,
     borderColor: "#E2E8F0",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.05,
-    shadowRadius: 10,
+    // boxShadowColor: "#000",
+    // shadowOffset: { width: 0, height: 4 },
+    // shadowOpacity: 0.05,
+    // shadowRadius: 10,
     elevation: 2,
   },
   filterLabel: {

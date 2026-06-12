@@ -1,8 +1,9 @@
 import { router } from "expo-router";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Image,
+  RefreshControl,
   ScrollView,
   StyleSheet,
   Text,
@@ -32,7 +33,7 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
 
   const [refreshing, setRefreshing] = useState(false);
-  // --- DYNAMIC DATA STATES ---
+
   const [user, setUser] = useState(null);
   const [userStats, setUserStats] = useState({
     done: 0,
@@ -40,7 +41,7 @@ export default function Home() {
     upcoming: 0,
   });
 
-  // set correct greeting based on time of day
+  // Set correct greeting based on time of day
   useEffect(() => {
     const hour = new Date().getHours();
     if (hour < 12) setGreeting("Good morning");
@@ -48,48 +49,51 @@ export default function Home() {
     else setGreeting("Good evening");
   }, []);
 
-  // fetch user data and stats
-  // fetch user data and stats
+  const loadData = async () => {
+    try {
+      // Fetch BOTH the user profile and their event registrations simultaneously!
+      const [userResponse, regResponse] = await Promise.all([
+        API.get("/user/me"),
+        API.get("/applications/registrations/me"),
+      ]);
+
+      const userData = userResponse.data?.data || userResponse.data;
+      const registrations = regResponse.data?.data || regResponse.data || [];
+
+      setUser(userData);
+
+      const completedCount = registrations.filter(
+        (reg) => reg.status === "attended",
+      ).length;
+      const upcomingCount = registrations.filter(
+        (reg) => reg.status === "registered",
+      ).length;
+
+      setUserStats({
+        done: completedCount,
+        reliability: userData?.reliabilityScore || "♾♾",
+        upcoming: upcomingCount,
+      });
+    } catch (error) {
+      console.error("Failed to fetch user data on Home screen:", error);
+    }
+  };
+
+  // 1. Initial Page Load
   useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        setLoading(true);
-
-        // Fetch BOTH the user profile and their event registrations simultaneously!
-        const [userResponse, regResponse] = await Promise.all([
-          API.get("/user/me"),
-          API.get("/applications/registrations/me"),
-        ]);
-
-        // Safely extract the data depending on your API's exact response structure
-        const userData = userResponse.data?.data || userResponse.data;
-        const registrations = regResponse.data?.data || regResponse.data || [];
-
-        setUser(userData);
-
-        // Filter the registrations exactly like you did on the Profile & MyEvents screens
-        const completedCount = registrations.filter(
-          (reg) => reg.status === "attended",
-        ).length;
-
-        const upcomingCount = registrations.filter(
-          (reg) => reg.status === "registered",
-        ).length;
-
-        // Update the stats state!
-        setUserStats({
-          done: completedCount,
-          reliability: userData?.reliabilityScore || "null",
-          upcoming: upcomingCount,
-        });
-      } catch (error) {
-        console.error("Failed to fetch user data on Home screen:", error);
-      } finally {
-        setLoading(false);
-      }
+    const init = async () => {
+      setLoading(true);
+      await loadData();
+      setLoading(false);
     };
+    init();
+  }, []);
 
-    fetchUserData();
+  // 2. Pull-to-Refresh Action
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true); // Shows the spinning wheel at the top
+    await loadData(); // Re-fetches all the data
+    setRefreshing(false); // Hides the spinning wheel
   }, []);
 
   const statsData = [
@@ -97,26 +101,25 @@ export default function Home() {
       id: 1,
       Icon: MedalIcon,
       bgColor: "#FFF4E5",
-      value: userStats.done.toString(), // Dynamic
+      value: userStats.done.toString(),
       label: "Events Done",
     },
     {
       id: 2,
       Icon: TrendIcon,
       bgColor: "#EBF8FF",
-      value: `${userStats.reliability}%`, // Dynamic
+      value: `${userStats.reliability}%`,
       label: "Reliability",
     },
     {
       id: 3,
       Icon: FlameIcon,
       bgColor: "#F0FFF4",
-      value: userStats.upcoming.toString(), // Dynamic
+      value: userStats.upcoming.toString(),
       label: "Upcoming",
     },
   ];
 
-  // --- LOADING SCREEN ---
   if (loading) {
     return (
       <SafeAreaView
@@ -144,6 +147,14 @@ export default function Home() {
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContainer}
+        refreshControl={
+          <RefreshControl
+            tintColor={COLORS.highlight}
+            colors={[COLORS.highlight, COLORS.success, COLORS.neutral]}
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+          />
+        }
       >
         {/* --- 1. HEADER SECTION --- */}
         <View style={styles.headerContainer}>
@@ -159,18 +170,23 @@ export default function Home() {
             <View>
               <Text style={styles.greetingText}>{greeting} 👋</Text>
               <Text style={styles.userName}>
-                {user?.fullName.trim().split(" ")[0].toUpperCase() ||
-                  "Volunteer"}
+                {user?.fullName?.trim().split(" ")[0].toUpperCase() ||
+                  "VOLUNTEER"}
               </Text>
             </View>
           </View>
 
-          <TouchableOpacity style={styles.notificationBtn} activeOpacity={0.7}>
+          <TouchableOpacity
+            style={styles.notificationBtn}
+            activeOpacity={0.7}
+            onPress={() => router.push("/notification")}
+          >
             <NotificationIcon width={24} height={24} />
             <View style={styles.notificationDot} />
           </TouchableOpacity>
         </View>
 
+        {/* --- 2. STATS ROW --- */}
         <View style={styles.statsRow}>
           {statsData.map((stat) => (
             <StatCard
@@ -183,6 +199,7 @@ export default function Home() {
           ))}
         </View>
 
+        {/* --- 3. DASHBOARD CARD --- */}
         <View style={styles.progressCard}>
           <View style={styles.progressHeader}>
             <View style={styles.badgeRow}>
@@ -217,6 +234,7 @@ export default function Home() {
           </View>
         </View>
 
+        {/* --- 4. SECTION HEADER --- */}
         <View style={styles.sectionHeader}>
           <View style={styles.sectionTitleRow}>
             <SparkleIcon width={20} height={20} />
@@ -227,6 +245,7 @@ export default function Home() {
           </TouchableOpacity>
         </View>
 
+        {/* --- 5. EVENT CARD --- */}
         <EventCard
           eventId={"123"}
           image={require("../../assets/images/eventimage-1.png")}
@@ -246,15 +265,8 @@ export default function Home() {
 }
 
 const styles = StyleSheet.create({
-  safeareaview: {
-    flex: 1,
-    backgroundColor: "#F8FAFC",
-  },
-  scrollContainer: {
-    paddingHorizontal: 20,
-    paddingTop: 20,
-    paddingBottom: 40,
-  },
+  safeareaview: { flex: 1, backgroundColor: "#F8FAFC" },
+  scrollContainer: { paddingHorizontal: 20, paddingTop: 20, paddingBottom: 40 },
 
   // Header Styles
   headerContainer: {

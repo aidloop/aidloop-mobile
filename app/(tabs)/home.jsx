@@ -31,6 +31,7 @@ export default function Home() {
   const [greeting, setGreeting] = useState("Good morning");
   const [loading, setLoading] = useState(true);
 
+  const [refreshing, setRefreshing] = useState(false);
   // --- DYNAMIC DATA STATES ---
   const [user, setUser] = useState(null);
   const [userStats, setUserStats] = useState({
@@ -48,20 +49,38 @@ export default function Home() {
   }, []);
 
   // fetch user data and stats
+  // fetch user data and stats
   useEffect(() => {
     const fetchUserData = async () => {
       try {
         setLoading(true);
-        // Fetch the current logged-in user
-        const response = await API.get("/user/me");
-        const userData = response.data;
+
+        // Fetch BOTH the user profile and their event registrations simultaneously!
+        const [userResponse, regResponse] = await Promise.all([
+          API.get("/user/me"),
+          API.get("/applications/registrations/me"),
+        ]);
+
+        // Safely extract the data depending on your API's exact response structure
+        const userData = userResponse.data?.data || userResponse.data;
+        const registrations = regResponse.data?.data || regResponse.data || [];
 
         setUser(userData);
 
+        // Filter the registrations exactly like you did on the Profile & MyEvents screens
+        const completedCount = registrations.filter(
+          (reg) => reg.status === "attended",
+        ).length;
+
+        const upcomingCount = registrations.filter(
+          (reg) => reg.status === "registered",
+        ).length;
+
+        // Update the stats state!
         setUserStats({
-          done: userData?.eventsCompleted || 0,
-          reliability: userData?.reliabilityScore || 0,
-          upcoming: userData?.upcomingEventsCount || 0,
+          done: completedCount,
+          reliability: userData?.reliabilityScore || "null",
+          upcoming: upcomingCount,
         });
       } catch (error) {
         console.error("Failed to fetch user data on Home screen:", error);

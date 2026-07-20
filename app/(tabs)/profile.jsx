@@ -38,7 +38,7 @@ export default function ProfileScreen() {
       setLoading(true);
 
       const userResponse = await API.get("/user/me");
-      const userData = userResponse.data?.data || userResponse.data;
+      const userData = userResponse.data?.user || userResponse.data;
       setUser(userData);
 
       const regResponse = await API.get("/applications/registrations/me");

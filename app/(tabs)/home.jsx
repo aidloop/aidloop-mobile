@@ -57,7 +57,7 @@ export default function Home() {
         API.get("/applications/registrations/me"),
       ]);
 
-      const userData = userResponse.data?.data || userResponse.data;
+      const userData = userResponse.data?.user || userResponse.data;
       const registrations = regResponse.data?.data || regResponse.data || [];
 
       setUser(userData);
